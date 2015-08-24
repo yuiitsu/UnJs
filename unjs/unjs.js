@@ -88,8 +88,8 @@ var UnJs = function(){
             } 
             if(!controller_name){
                 self.res.writeHead(404, {'Content-Type': 'text/plain'});
-                self.res.write('404');
-                self.res.end();
+                //self.res.write('404');
+                self.display('404');
                 return;
             }
             self.import(controller_name, res, params);
@@ -193,33 +193,53 @@ var UnJs = function(){
      * 模板输出
      */
     self.display = function(template_name, data){
-        var out_data = data;
-        Fs.readFile('./'+ Config.template_dir +'/'+ template_name +'.html', 'utf-8', function(error, data){
 
-            var html = data;
-
-            // include
-            var patt = /\{\% include \'(.+)\' \%\}/ig;
-            while(sub = patt.exec(data)){
-                var subs = sub;
-                content = Fs.readFileSync('./template/' + subs[1], 'utf-8');
-                html = html.replace(subs[0], content);
-            }
-
-            // 替换数据
-            if(out_data){
-                var patt = /\{\{ (.+?) \}\}/ig;
-                while(item = patt.exec(html)){
-                    var items = item;
-                    html = html .replace(items[0], out_data[items[1]]);
+        var getTemplate = function(template_file){
+            Fs.readFile(template_file, 'utf-8', function(error, data){
+                var html = data;
+                // include
+                var patt = /\{\% include \'(.+)\' \%\}/ig;
+                while(sub = patt.exec(data)){
+                    var subs = sub;
+                    content = Fs.readFileSync('./template/' + subs[1], 'utf-8');
+                    html = html.replace(subs[0], content);
                 }
+
+                // 替换数据
+                if(out_data){
+                    var patt = /\{\{ (.+?) \}\}/ig;
+                    while(item = patt.exec(html)){
+                        var items = item;
+                        html = html .replace(items[0], out_data[items[1]]);
+                    }
+                }
+
+                self.res.writeHead(200, {'Content-Type': 'text/html'});
+                self.res.write(html);
+                self.res.end();
+
+            })
+        }
+
+        var out_data = data;
+        // 检测文件
+        var template_file = './'+ self.config.template_dir +'/' + template_name +'.html';
+        Fs.exists(template_file, function(exists){
+            if(!exists){
+                template_file = './unjs/'+ self.config.template_dir +'/'+ template_name +'.html';
+                if(Fs.existsSync(template_file)){
+                    getTemplate(template_file);           
+                }else{
+                    self.res.writeHead(200, {'Content-Type': 'text/html'});
+                    self.res.write('Not Found Tempate File');
+                    self.res.end();
+                }
+            }else{
+                getTemplate(template_file);           
             }
+        });
 
-            self.res.writeHead(200, {'Content-Type': 'text/html'});
-            self.res.write(html);
-            self.res.end();
-
-        })
+        
     }
     
     /**

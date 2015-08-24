@@ -13,7 +13,10 @@ var Config = {
     'template_dir': 'template',
 
     // 静态文件目录
-    'static_dir': '/static/'
+    'static_dir': '/static/',
+
+    // 404
+    '404': ''
 }
 
 module.exports = Config;

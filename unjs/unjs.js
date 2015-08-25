@@ -122,6 +122,15 @@ var UnJs = function(){
     }
 
     /**
+     * 跳转
+     */
+    self.redirect = function(url){
+        self.res.setHeader('Location', url);
+        self.res.writeHead(302);
+        self.end();
+    }
+
+    /**
      * 输出
      */
     self.write = function(str){
@@ -133,6 +142,17 @@ var UnJs = function(){
      */
     self.end = function(){
         self.res.end();
+    }
+
+    /**
+     * 读取文件
+     * @params filePath 文件地址
+     * @params callback 回调函数
+     */
+    self.readFile = function(filePath, callback){
+        Fs.readFile(filePath, 'utf-8', function(error, data){
+            callback(error, data);
+        })
     }
 
     /**

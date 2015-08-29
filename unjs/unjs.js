@@ -212,7 +212,9 @@ var UnJs = function(){
     /**
      * 模板输出
      */
-    self.display = function(template_name, data){
+    self.display = function(template_name, data, res){
+
+        var res = res;
 
         var getTemplate = function(template_file){
             Fs.readFile(template_file, 'utf-8', function(error, data){
@@ -234,9 +236,9 @@ var UnJs = function(){
                     }
                 }
 
-                self.res.writeHead(200, {'Content-Type': 'text/html'});
-                self.res.write(html);
-                self.res.end();
+                res.writeHead(200, {'Content-Type': 'text/html'});
+                res.write(html);
+                res.end();
 
             })
         }
@@ -258,8 +260,15 @@ var UnJs = function(){
                 getTemplate(template_file);           
             }
         });
+    }
 
-        
+    /**
+     * 读取文件 
+     */ 
+    self.readFile = function(filePath, callback){
+        Fs.readFile(filePath, 'utf-8', function(error, data){
+            callback(error, data);
+        });
     }
     
     /**

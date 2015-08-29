@@ -5,7 +5,7 @@
 var Index = function(unjs){
     var self = this;
 
-    unjs.display('index', {});
+    unjs.display('index', {}, unjs.res);
 }
 
 module.exports = Index;

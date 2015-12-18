@@ -1,3 +1,4 @@
+
 /**
  * UnJs
  * 
@@ -6,7 +7,7 @@
  */
 
 // UnJs
-var UnJs = require('./unjs/unjs');
+var Server = require('./unjs/unjs');
 
 // Config
 var Config = require('./conf/config');
@@ -14,10 +15,5 @@ var Config = require('./conf/config');
 // route
 var Route = require('./conf/route');
 
-var u = new UnJs();
-
-u.setConfig(Config);
-u.setRoute(Route);
-
-u.run();
+Server.run(Config, Route);
 

@@ -3,9 +3,11 @@
  */
 
 var Index = function(unjs){
-    var self = this;
 
-    unjs.display('index', {}, unjs.res);
+    unjs.display('index', {
+        'title': 'Unjs 一个基于NodeJs的简易Web开发框架',
+        'list': ''
+    });
 }
 
 module.exports = Index;

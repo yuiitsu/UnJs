@@ -217,42 +217,38 @@ var UnJs = function(){
         var getTemplate = function(template_file){
             Fs.readFile(template_file, 'utf-8', function(error, data){
                 var html = data;
-                var hasSub = false;
-                //
-                var done = self.pending(function(returns) {
-                    // 遍历字典
-                    for(var key in returns) {
-                        html = html.replace(key, returns[key]);
-                    }
+                var subTemplate = [];
 
-                    // 替换数据
-                    if(out_data){
-                        var patt = /\{\{ (.+?) \}\}/ig;
-                        while(item = patt.exec(html)){
-                            var items = item;
-                            html = html .replace(items[0], out_data[items[1]]);
-                        }
-                    }
-
-                    self.end(html);
-                    //self.response.writeHead(200, {'Content-Type': 'text/html'});
-                    //self.response.write(html);
-                    //self.response.end();
-                });
-
-                // include
+                // 解析include，将值存入数组，以便并发异步调用
                 var patt = /\{\% include \'(.+)\' \%\}/ig;
                 while(sub = patt.exec(data)){
-                    hasSub = true;
                     var subs = sub;
-                    Fs.readFile('./template/' + subs[1], 'utf-8', done(subs[0]));
+                    subTemplate.push([subs[0], subs[1]]);
                 }
 
-                if (!hasSub) {
-                    //self.response.writeHead(200, {'Content-Type': 'text/html'});
-                    //self.response.write(html);
-                    //self.response.end();
+                if (subTemplate.length == 0) {
                     self.end(html);
+                } else {
+                    // 连续异步回调
+                    self.asyncSeries(subTemplate, function(item, callback) {
+                        Fs.readFile('./template/' + item[1], 'utf-8', callback(item[0]));
+                    }, function(data) {
+                        // 遍历include数据，将include标识替换为对应文件的内容
+                        for(var key in data) {
+                            html = html.replace(key, data[key]);
+                        }
+
+                        // 替换数据
+                        if(out_data){
+                            var patt = /\{\{ (.+?) \}\}/ig;
+                            while(item = patt.exec(html)){
+                                var items = item;
+                                html = html .replace(items[0], out_data[items[1]]);
+                            }
+                        }
+
+                        self.end(html);
+                    });
                 }
             })
         }
@@ -286,17 +282,17 @@ var UnJs = function(){
     }
 
     /**
-     *
+     * 异步回调时的计数处理
      */
     self.pending = (function(callback) {
         var count = 0;
         var returns = {};
-        return function(sub) {
+        return function(task) {
             count++;
             return function(error, data) {
                 count--;
                 if (!error) {
-                    returns[sub] = data; 
+                    returns[task] = data; 
                     if (count == 0) {
                         callback(returns);
                     }
@@ -304,6 +300,21 @@ var UnJs = function(){
             }
         }
     });
+
+    /**
+     * 连续异步时的回调处理
+     */
+    self.asyncSeries = function(task, func, callback) {
+        var taskLen = task.length;
+        if (taskLen <= 0) {
+            console.log(taskLen);
+            return;
+        }
+        var done = self.pending(callback);
+        for(var i = 0; i < taskLen; i++) {
+            func(task[i], done);
+        }
+    }
     
     /**
      * 静态文件类型对应的Content-Type

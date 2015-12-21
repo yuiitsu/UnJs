@@ -1,0 +1,124 @@
+
+/**
+ * template.js
+ * 模板处理
+ * 
+ * author: onlyfu
+ * update: 2015-12-21
+ */
+
+ var Template = {
+    /**
+     * 开始解析
+     * @param filePath string 模板文件
+     * @param data object 输出数据
+     * @param unjs object Unjs
+     * @return String
+     */
+    parse: function(filePath, data, unjs) {
+        var self = this;
+        // 读取文件
+        unjs.readFile(filePath, function(error, templateData) {
+            if(error) {
+                console.log('not found file: ' + filePath);
+            }
+
+            // 解析子模板
+            self.subTemplate(templateData, data, unjs);
+        });
+    },
+
+    /**
+     * 解析子模板
+     * @param templateData String 模板内容
+     * @param data String 输出数据
+     */
+    subTemplate: function(templateData, data, unjs) {
+        var self = this;
+        var html = templateData;
+        // 是否有子模板
+        var hasSub = false;
+        var subTemplateList = [];
+
+        // 解析
+        var patt = /\{\% include \'(.+)\' \%\}/ig;
+        while (sub = patt.exec(templateData)) {
+            var subs = sub;
+            subTemplateList.push([subs[0], subs[1]]);
+        }
+
+        if (subTemplateList.length == 0) {
+            unjs.end(html);
+        } else {
+            // 连续异步回调处理所有子模板
+            unjs.asyncSeries(subTemplateList, function(item, callback) {
+                unjs.readFile('./template/' + item[1], callback(item[0]));
+            }, function(returns) {
+                // 替换include文件内容
+                for (var key in returns) {
+                    html = html.replace(key, returns[key]);
+                }
+
+                // 处理循环
+                html = self.loop(html, data);
+
+                // 处理变量
+                html = self.variable(html, data);
+
+                unjs.end(html);
+            });
+        }
+    },
+
+    /**
+     * 解析变量
+     * @param html String 文件内容
+     * @param data object 输出数据
+     */
+    variable: function(html, data) {
+        if (data) {
+            var patt = /\{\{ (.+?) \}\}/ig;
+            while (item = patt.exec(html)) {
+                var items = item;
+                html = html.replace(items[0], data[items[1]]);
+            }
+        }
+
+        return html;
+    },
+
+    /**
+     * 解析循环
+     * @param html String 文件内容
+     * @param data object 输出数据
+     */
+    loop: function(html, data) {
+        var self = this;
+        if (data) {
+            var patt = /<\!-- loop (.+?) -->([\s\S]+?)<\!-- end -->/ig;      
+            while (item = patt.exec(html)) {
+                var loopTemp = item[0];
+                var key = item[1];
+                var temp = item[2];
+                var loopTempList = [];
+                if (data[key] != undefined) {
+                    var listLen = data[key].length;
+                    for(var i = 0; i < listLen; i++) {
+                        var outData = {};
+                        outData[key] = data[key][i];
+                        var subHtml = self.variable(temp, outData);
+                        loopTempList.push(subHtml);
+                    }
+
+                    var loopTempString = loopTempList.join('');
+                    html = html.replace(loopTemp, loopTempString);
+                }
+            }
+        }
+        return html;
+    }
+ }
+
+ module.exports = Template;
+
+

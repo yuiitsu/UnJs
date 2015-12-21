@@ -10,6 +10,7 @@ var Url = require('url');
 var Fs = require('fs');
 var Path = require('path');
 
+var Template = require('./template');
 var Config = require('./config');
 
 var UnJs = function(){
@@ -65,7 +66,7 @@ var UnJs = function(){
     self.route = function(){
         params = Url.parse(self.request.url, true);
         // check static
-        if(params.pathname.indexOf(Config.static_dir) != -1){
+        if(params.pathname.indexOf(Config.static_dir) != -1 || params.pathname.indexOf('favicon.ico') != -1){
             self.setCache(params.path);
         }else{
             var controllerName = '';
@@ -212,63 +213,20 @@ var UnJs = function(){
     /**
      * 模板输出
      */
-    self.display = function(template_name, data){
-
-        var getTemplate = function(template_file){
-            Fs.readFile(template_file, 'utf-8', function(error, data){
-                var html = data;
-                var subTemplate = [];
-
-                // 解析include，将值存入数组，以便并发异步调用
-                var patt = /\{\% include \'(.+)\' \%\}/ig;
-                while(sub = patt.exec(data)){
-                    var subs = sub;
-                    subTemplate.push([subs[0], subs[1]]);
-                }
-
-                if (subTemplate.length == 0) {
-                    self.end(html);
-                } else {
-                    // 连续异步回调
-                    self.asyncSeries(subTemplate, function(item, callback) {
-                        Fs.readFile('./template/' + item[1], 'utf-8', callback(item[0]));
-                    }, function(data) {
-                        // 遍历include数据，将include标识替换为对应文件的内容
-                        for(var key in data) {
-                            html = html.replace(key, data[key]);
-                        }
-
-                        // 替换数据
-                        if(out_data){
-                            var patt = /\{\{ (.+?) \}\}/ig;
-                            while(item = patt.exec(html)){
-                                var items = item;
-                                html = html .replace(items[0], out_data[items[1]]);
-                            }
-                        }
-
-                        self.end(html);
-                    });
-                }
-            })
-        }
-
-        var out_data = data;
+    self.display = function(templateName, data){
         // 检测文件
-        var template_file = './'+ self.config.template_dir +'/' + template_name +'.html';
-        Fs.exists(template_file, function(exists){
+        var templateFile = './'+ self.config.template_dir +'/' + templateName +'.html';
+        Fs.exists(templateFile, function(exists){
             if(!exists){
-                template_file = './unjs/'+ self.config.template_dir +'/'+ template_name +'.html';
-                if(Fs.existsSync(template_file)){
-                    getTemplate(template_file);           
-                }else{
+                templateFile = './unjs/'+ self.config.template_dir +'/'+ templateName +'.html';
+                if(!Fs.existsSync(templateFile)){
                     self.response.writeHead(200, {'Content-Type': 'text/html'});
                     self.response.write('Not Found Tempate File');
                     self.response.end();
                 }
-            }else{
-                getTemplate(template_file);           
             }
+
+            Template.parse(templateFile, data, self);
         });
     }
 

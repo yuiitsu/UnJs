@@ -1,4 +1,3 @@
-
 /**
  * template.js
  * 模板处理
@@ -77,10 +76,18 @@
      */
     variable: function(html, data) {
         if (data) {
+            var item;
             var patt = /\{\{ (.+?) \}\}/ig;
             while (item = patt.exec(html)) {
-                var items = item;
-                html = html.replace(items[0], data[items[1]]);
+                var vs = item[1].split('.');
+                var vsLen = vs.length;
+                var r = data[vs[0]];
+                if (vsLen > 1) {
+                    for (var i = 1; i < vsLen; i++) {
+                        r = r[vs[i]];
+                    }
+                }
+                html = html.replace(item[0], r);
             }
         }
 
@@ -100,15 +107,22 @@
             var inPatt = patt;
             var item;
             while (item = inPatt.exec(_html)) {
+                var dataKey = item[1];
+                var key = '';
+                var variable = item[4];
+                if (variable == undefined) {
+                    variable = item[2];
+                } else {
+                    key = item[2];
+                }
                 var loopTemp = item[0];
-                var key = item[1];
-                var temp = item[2];
+                var temp = item[5];
                 var loopTempList = [];
-                if (data[key] != undefined) {
-                    var listLen = data[key].length;
+                if (data[dataKey] != undefined) {
+                    var listLen = data[dataKey].length;
                     for (var i = 0; i < listLen; i++) {
                         var outData = {};
-                        outData[key] = data[key][i];
+                        outData[variable] = data[dataKey][i];
                         var subHtml = self.variable(temp, outData);
                         loopTempList.push(subHtml);
                     }
@@ -124,13 +138,15 @@
         }
 
         if (data) {
-            var patt = /<\!-- loop (.+?) -->(((?!loop)[\s\S])+?)<\!-- end -->/ig;
+            var patt = /<\!-- loop (.+?) (.+?)( (.*?))* -->(((?!loop)[\s\S])+?)<\!-- end -->/ig;
             exec(patt);
         }
+
         return _html;
     }
  }
 
  module.exports = Template;
+
 
 

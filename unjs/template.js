@@ -94,28 +94,40 @@
      */
     loop: function(html, data) {
         var self = this;
-        if (data) {
-            var patt = /<\!-- loop (.+?) -->([\s\S]+?)<\!-- end -->/ig;      
-            while (item = patt.exec(html)) {
+        var _html = html;
+
+        var exec = function(patt) {
+            var inPatt = patt;
+            var item;
+            while (item = inPatt.exec(_html)) {
                 var loopTemp = item[0];
                 var key = item[1];
                 var temp = item[2];
                 var loopTempList = [];
                 if (data[key] != undefined) {
                     var listLen = data[key].length;
-                    for(var i = 0; i < listLen; i++) {
+                    for (var i = 0; i < listLen; i++) {
                         var outData = {};
                         outData[key] = data[key][i];
                         var subHtml = self.variable(temp, outData);
                         loopTempList.push(subHtml);
                     }
-
                     var loopTempString = loopTempList.join('');
-                    html = html.replace(loopTemp, loopTempString);
+                    _html = _html.replace(loopTemp, loopTempString);
                 }
             }
+
+            var loop = /<\!-- loop/ig;
+            if (loop.test(_html)) {
+                exec(inPatt);
+            }
         }
-        return html;
+
+        if (data) {
+            var patt = /<\!-- loop (.+?) -->(((?!loop)[\s\S])+?)<\!-- end -->/ig;
+            exec(patt);
+        }
+        return _html;
     }
  }
 

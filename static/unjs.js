@@ -19,6 +19,8 @@ var Unjs = function (options) {
     // 控制器目录
     this.controllerDir = options.controller ? options.controller : '/static/controller/';
 
+    this.popstate = false;
+
     /**
      * 呼叫方法
      * 根据method执行对应的方法,method有默认值
@@ -154,7 +156,7 @@ var Unjs = function (options) {
     this.getQueryString = function(name) {
         var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
         var r = window.location.search.substr(1).match(reg);
-        if(r!=null)return  unescape(r[2]); return null;
+        if(r!=null)return  decodeURIComponent(r[2]); return null;
     };
 
     /**
@@ -233,6 +235,7 @@ var Unjs = function (options) {
 
         self.import(moduleName, function(module) {
             var controller = module(self, methodName);
+            self.popstate = true;
             self.callMethod(controller, moduleName, methodName);
         });
     };
@@ -274,19 +277,15 @@ var Unjs = function (options) {
      */
     this.init = function() {
 
-        var self = this;
-        var popstateNum = 0;
-
         window.onload = function() {
 
             self.router();
 
             window.addEventListener('popstate', function() {
 
-                if (popstateNum > 0) {
+                if (self.popstate) {
                     self.router();
                 }
-                popstateNum++;
             });
         };
     };

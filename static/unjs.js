@@ -165,7 +165,6 @@ var Unjs = function (options) {
     this.getParams = function() {
 
         var search = window.location.search.substr(1);
-        console.log(search);
 
         // 如果没有参数，返回null
         if (search == '') {

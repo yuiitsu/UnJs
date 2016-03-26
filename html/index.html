@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title>UnJs-一个基于NodeJs的简易WEB开发框架</title>
+</head>
+<body>
+<h1 class="v3_site_title">
+    <a href="/">UnJs</a>
+    <small>一个基于NodeJs的简易WEB开发框架</small>
+</h1>
+
+<div class="container">
+    <h2>UnJs</h2>
+    <p>下载: <a href="https://github.com/onlyfu/UnJs" target="_blank">https://github.com/onlyfu/UnJs</a></p>
+    <h2>测试</h2>
+    <p id="container"></p>
+    <p>@onlyfu <a href="https://github.com/onlyfu" target="_blank">https://github.com/onlyfu</a></p>
+</div>
+
+<script type="text/javascript" src="lib/jquery.min.js"></script>
+<script type="text/javascript" src="lib/unjs.js"></script>
+<script type="text/javascript">
+    var unjs = new Unjs({
+        'container': 'container',
+        'controller': 'controller/'
+    });
+    unjs.init();
+</script>
+</body>
+</html>

@@ -10,6 +10,9 @@ var Url = require('url');
 var Fs = require('fs');
 var Path = require('path');
 var queryString = require('querystring');
+var watch = require('watch');
+var jsp = require('uglify-js').parser;
+var pro = require('uglify-js').uglify;
 
 var Template = require('./template');
 var Config = require('./config');
@@ -18,18 +21,17 @@ var Cookie = require('./cookie');
 var UnJs = function(){
 
     var self = this;
-
+    // cookie
     self.cookie = Cookie;
-
+    // http request请求对象
     self.request = null;
+    // http response对象
     self.response = null;
-
     // 配置
     self.config = null;
-
     // 路由配置
     self.routeConf = null;
-
+    // 链接地址参数
     self.params = null;
 
     /**
@@ -66,6 +68,9 @@ var UnJs = function(){
         self.routeConf = route;
     };
 
+    /**
+     *
+     */
     self.setReadPool = function(pool) {
         self.readPool = pool;
     };
@@ -74,12 +79,18 @@ var UnJs = function(){
         self.writePool = pool;
     };
 
+    /**
+     * 获取请求的地址
+     */
     self.getUrl = function() {
     
         //var params = Url.parse(self.request.url, true);
         return self.request.url;
     };
 
+    /**
+     * 获取客户端IP
+     */
     self.getClientIp = function() {
         return self.request.headers['x-forwarded-for'] ||
         self.request.connection.remoteAddress ||
@@ -88,15 +99,34 @@ var UnJs = function(){
     };
 
     /**
-     * 路由
+     * 路由,判断静态文件和控制器
      */
     self.route = function(){
+
         var params = Url.parse(self.request.url, true);
+        var notStatic = false;
         // check static
-        if(params.pathname.indexOf(Config.static_dir) != -1 || params.pathname.indexOf('favicon.ico') != -1){
-            self.setCache(params['path']);
-        }else{
-            
+        if (Config.static.type == 'single') {
+            if (params.pathname.indexOf(Config.static.controller) != -1 || 
+                params.pathname.indexOf(Config.static.images) != -1 || 
+                params.pathname.indexOf(Config.static.lib) != -1 || 
+                params.pathname.indexOf(Config.static.css) != -1 || 
+                params.pathname.indexOf('favicon.ico') != -1) {
+                
+                self.setCache(Config.static.baseDir + params['path']);
+            } else {
+                notStatic = true;   
+            }
+        } else {
+            if(params.pathname.indexOf(Config.static_dir) != -1 || 
+                params.pathname.indexOf('favicon.ico') != -1){
+                self.setCache(params['path']);
+            }else{
+                notStatic = true;   
+            }
+        }
+
+        if (notStatic) {
             var controllerName = '';
             for(var k in self.routeConf){
                 if(params.pathname == k){
@@ -398,9 +428,17 @@ var UnJs = function(){
         "xml": "text/xml",
         "ico": "text/html"
     };
+
+    
 };
 
 var Server = {
+
+    // 构建输出html的运行状态
+    buildViewStatus: false,
+    buildImageStatus: false,
+    // 配置文件
+    config: null,
 
     /**
      * 启动服务
@@ -412,6 +450,7 @@ var Server = {
         Http.createServer(function(req, res){
 
             var u = new UnJs();
+
             u.setRequest(req);
             u.setResponse(res);
             u.setConfig(config);
@@ -421,16 +460,234 @@ var Server = {
         }).listen(lisPort);
 
         console.log('HTTP server is listening at port %s', lisPort);
+        // 监听前端文件变化
+        this.watch();
     },
 
     /**
      * 运行
      */
-    run: function(config, route){
+    run: function(paraConfig, route){
         var argv = process.argv;
         var port = argv[2];
+        var buildType = argv[3];
+        this.config = paraConfig;
 
-        this.server(port, config, route);
+        this.server(port, paraConfig, route);
+
+        if (buildType == '-b') {
+            this.build();
+        }
+    },
+
+    /**
+     * 监听前端文件变化，进行解析、合并、复制到html文件夹的操作
+     */
+    watch: function() {
+
+        var self = this;
+        var buildIndexStatus = false;
+        console.log('watching...');
+
+        watch.watchTree('static', function(f, curr, prev) {
+        
+            console.log('f: '+ f +', curr: '+ curr +', prev: ' + prev);
+            if (typeof f == 'object' && curr == null && prev == null) {
+            } else if (curr.nlink === 0) {
+                // 删除一个文件
+                //self.delFile();
+            } else {
+                if (f.indexOf('/'+ self.config.output.view +'/') != -1) {
+                    // 处理模板
+                    self.buildView();
+                } else {
+                    // 修改一个文件
+                    self.copyFile(f);
+                }
+            }
+        });
+    },
+
+    /**
+     * 拷贝目录
+     * @param sourceDir 源目录
+     * @param targetDir 目标目录
+     * @param fileExt 检测文件类型
+     * @param callback 回调
+     */
+    copyDir: function(sourceDir, targetDir, fileExt, callback) {
+
+        var self = this;
+        Fs.readdir(sourceDir, function(error, paths) {
+            paths.forEach(function(path) {
+            
+                var sourcePath = sourceDir + '/' + path;
+                var targetPath = targetDir + '/' + path;
+                Fs.stat(sourcePath, function(error, path) {
+                    if (error) {
+                        console.log(error);
+                        return;
+                    }
+
+                    if (path.isFile()) {
+                        console.log('复制文件：' + sourcePath);
+                        if (Path.extname(sourcePath).slice(1).match(fileExt)) {
+                        
+                            Fs.exists(targetDir, function(exist) {
+                                if (exist) {
+                                    var readable = Fs.createReadStream(sourcePath);
+                                    var writeable = Fs.createWriteStream(targetPath);
+                                    readable.pipe(writeable);
+                                } else {
+                                    Fs.mkdir(targetDir, function(error) {
+                                        if (error) {
+                                            //console.log('mkdir targetDir: ' + targetDir + ', error: ' + error);
+                                        }
+                                        var readable = Fs.createReadStream(sourcePath);
+                                        var writeable = Fs.createWriteStream(targetPath);
+                                        readable.pipe(writeable);
+                                    });
+                                }
+                            });
+                        }
+                    } else if(path.isDirectory()) {
+                        self.copyDir(sourcePath, targetPath, fileExt, callback);
+                    }
+                });
+            });
+
+            callback();
+        });
+    },
+
+    /**
+     * 拷贝单个文件
+     * @param sourceFile 来源文件
+     */
+    copyFile: function(sourceFile) {
+    
+        var self = this;
+        Fs.stat(sourceFile, function(error, path) {
+        
+            if (error) {
+                console.log('copyFile: ' + error);
+            }
+
+            if (path.isFile()) {
+            
+                var items = sourceFile.split('/');
+                var targetPath = [self.config.output.base.target];
+                var sourcePath = [];
+                for (var i in items) {
+                    
+                    sourcePath.push(items[i]);
+                    if (items[i] == self.config.output.base.source) {
+                        continue;
+                    }
+
+                    targetPath.push(items[i]);
+                    var toPath = targetPath.join('/');
+                    var fromPath = sourcePath.join('/');
+
+                    var stat = Fs.lstatSync(fromPath);
+                    if(stat.isDirectory() && !Fs.existsSync(toPath)) {
+                        console.log('创建目录: ' + toPath);
+                        Fs.mkdirSync(toPath);
+                    } else if(stat.isFile()) {
+                        console.log('复制文件: ' + sourceFile + ' => ' + toPath);
+                        var readable = Fs.createReadStream(sourceFile);
+                        var writeable = Fs.createWriteStream(toPath);
+                        readable.pipe(writeable);
+                    }
+                }
+            }
+        });
+    },
+
+    /**
+     * 压缩JS
+     * @params sourceList 来源JS文件
+     * @params target 输出目标JS
+     */
+    jsMini: function(sourceList, target) {
+    
+        var resultCode;
+        for (var i in sourceList) {
+            var orgCode = Fs.readFileSync(sourceList[i], 'utf8');
+            var ast = jsp.parse(orgCode);
+            ast = pro.ast_mangle(ast);
+            ast = pro.ast_squeeze(ast);
+            resultCode += ';' + pro.gen_code(ast);
+        }
+        //this.copyFile();
+    },
+
+    /**
+     * 构建模板
+     */
+    buildView: function() {
+    
+        var self = this;
+        var sourceDir = self.config.output.base.source;
+        var targetDir = self.config.output.base.target;
+        var libDir = self.config.output.lib;
+        var fromSource = sourceDir + '/' + self.config.output.view;
+        var toSource = targetDir + '/' + libDir;
+        var source;
+
+        console.log('fromSource: ' + fromSource);
+
+        var doBuild = function(sourcePath) {
+            Fs.readdir(sourcePath, function(error, paths) {
+            
+                if (error) {
+                    console.log('buildView readdir failed');
+                    return;
+                }
+                console.log(paths.length);
+
+                paths.forEach(function(path) {
+                    
+                    var itemPath = sourcePath + '/' + path;
+                    var stat = Fs.lstatSync(itemPath);
+                    if (stat.isDirectory()) {
+                        //doBuild(sourcePath);
+                    } else if (stat.isFile()) {
+                    
+                        console.log('读取文件: ' + itemPath);
+                        var file = Fs.readFileSync(itemPath, 'utf8');
+                        if (file) {
+                            var lines = file.split('\n');
+                            console.log(lines.length);
+                        }
+                    }
+                });
+            });
+        };
+        
+        doBuild(fromSource);
+    },
+
+    /**
+     * 构建输出html
+     */
+    build: function() {
+    
+        var self = this;
+
+        console.log('build......');
+
+        var fileExt = /^(gif|png|jpg|css|html|js)$/ig;
+        var sourceDir = this.config.output.base.source;
+        var targetDir = this.config.output.base.target;
+        var readable;
+        var writeable;
+        
+        this.copyDir(sourceDir, targetDir, fileExt, function() {
+        
+        });
+
+        this.buildView();
     }
 };
 

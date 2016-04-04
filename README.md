@@ -16,16 +16,16 @@
 <h2>下载</h2>
 <p><a href='https://github.com/onlyfu/UnJs' target='_blank'>https://github.com/onlyfu/UnJs</a></p>
 <h2>启动</h2>
-<div>
-	// 默认端口3000<br/>
-	node app.js<br/>
-	// 指定端口启动<br/>
-	node app.js -p 3100<br/>
-	// 指定请求服务,uat为控制器名，见根目录下controller目录<br/>
-	node app.js -h uat<br/>
-	// 启动同时编译<br/>
-	node app.js -b true<br/>
-</div>
+<pre>
+// 默认端口3000<br/>
+node app.js<br/>
+// 指定端口启动<br/>
+node app.js -p 3100<br/>
+// 指定请求服务,uat为控制器名，见根目录下controller目录<br/>
+node app.js -h uat<br/>
+// 启动同时编译<br/>
+node app.js -b true<br/>
+</pre>
 <h2>使用</h2>
 <h4>1. 控制器（controller）</h4>
 <pre>

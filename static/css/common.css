@@ -35,7 +35,7 @@ a{text-decoration:none;}
     line-height: 4rem; font-size:0.533rem;}
 
 /* dialog */
-.wm_dialog{position:absolute;left:0;top:0;width:100%;height:100%;}
+.wm_dialog{position:fixed;left:0;top:0;width:100%;height:100%;}
 .wm_dialog_box{position:absolute;left:50%;top:50%;background-color:#fff;border-radius: 0.4rem;padding:0.3rem;}
 .wm_dialog_confirm{width:7.2rem;height:3.4rem;margin-left:-3.6rem;margin-top:-1.7rem;
     box-sizing:border-box;}

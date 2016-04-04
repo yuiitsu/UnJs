@@ -5,7 +5,6 @@
 var index = function(unjs) {
 
 	this.index = function() {
-
         // 加载view
         unjs.display(View.index.index());
 
@@ -15,6 +14,10 @@ var index = function(unjs) {
             unjs.importComponent('dialog', 'confirm', null, {
                 msg: '一个提示'
             }, {});
+        });
+
+        $('#link_goods').click(function() {
+            unjs.loadControl('goods', 'index');
         });
 	};
 

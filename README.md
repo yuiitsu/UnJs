@@ -27,7 +27,7 @@
 	node app.js -b true<br/>
 </div>
 <h2>使用</h2>
-<p>1. 控制器（controller）</p>
+<h4>1. 控制器（controller）</h4>
 <pre>
 var index = function(unjs) {<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;this.index = function() {<br/>
@@ -39,11 +39,11 @@ var index = function(unjs) {<br/>
 };<br/>
 Module.index = index;<br/>
 </pre>
-<p>2. 视图（View）</p>
+<h4>2. 视图（View）</h4>
 <pre>
 &lt;div&gt;&#123;&#123; data['msg'] &#125;&#125;&lt;/div&gt;
 </pre>
-<p>3. 组件</p>
+<h4>3. 组件</h4>
 <pre>
 // 定义组件<br/>
 var confirm = function(unjs, object, data) {<br/>

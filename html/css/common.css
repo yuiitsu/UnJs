@@ -10,6 +10,7 @@ ul li{line-height:1.6;}
 a{text-decoration:none;}
 
 .wm_fr{float:right;}
+
 .wmScreen{width:100%;height:100%;}
 .wmCenter{width:15rem;margin: 0 auto;height:100%;}
 .wmContainer{width:100%;height:100%;}
@@ -27,7 +28,7 @@ a{text-decoration:none;}
     border:0.02rem solid #999;}
 
 /* loading */
-#wm_mask{background-color: #000; position: absolute; left: 0; top: 0;
+#wm_mask{background-color: #000; position: fixed; left: 0; top: 0;
     filter: alpha(opacity=50); -moz-opacity: 0.5; opacity : 0.5;width:100%;height:100%;}
 #wm_loading{width: 4rem; height: 4rem; border-radius: 0.222rem;position: absolute; left: 50%; top: 50%;
     margin-left: -2rem; margin-top: -2rem;background-color: #222; color: #fff; text-align: center;

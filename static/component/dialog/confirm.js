@@ -34,6 +34,7 @@ var confirm = function(unjs, object, data) {
 
     this.remove = function() {
         $('#wm_dialog').remove();
+        $('body').css('overflow', 'auto');
     };
 
     return this;

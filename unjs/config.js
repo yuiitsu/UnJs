@@ -10,13 +10,25 @@ var Config = {
     'controller_dir': 'controller',
 
     // 模板相关
-    'template_dir': 'template',
+    'template_dir': 'html',
 
-    // 静态文件目录
-    'static_dir': '/static/',
+    // 静态配置
+    'static': {
+        'type': 'single', // 静态类型，只有single和default，single为single page模式，default为nodejs模式
+        'baseDir': '/html/',
+        'controller': 'controller', // 当type为single时有效
+        'lib': 'lib', // 当type为single时有效
+        'component': 'component', // 组件,当type为single时有效
+        'images': 'images', // 当type为single时有效
+        'css': 'css', // 当type为single时有效
+        'loadScript': [
+            'unjs',
+            'jquery.min'
+        ]
+    },
 
     // 404
     '404': ''
-}
+};
 
 module.exports = Config;

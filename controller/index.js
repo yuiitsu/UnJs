@@ -5,9 +5,8 @@
 var Index = function(unjs){
 
     unjs.display('index', {
-        'title': 'Unjs 一个基于NodeJs的简易Web开发框架',
-        'list': ''
+        'title': 'UnJs 一个Single page开发框架'
     });
-}
+};
 
 module.exports = Index;

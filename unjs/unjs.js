@@ -7,9 +7,13 @@
 
 var Http = require('http');
 var Url = require('url');
+var Os = require('os');
 var Fs = require('fs');
 var Path = require('path');
 var queryString = require('querystring');
+var watch = require('watch');
+var jsp = require('uglify-js').parser;
+var pro = require('uglify-js').uglify;
 
 var Template = require('./template');
 var Config = require('./config');
@@ -18,19 +22,20 @@ var Cookie = require('./cookie');
 var UnJs = function(){
 
     var self = this;
-
+    // cookie
     self.cookie = Cookie;
-
+    // http request请求对象
     self.request = null;
+    // http response对象
     self.response = null;
-
     // 配置
     self.config = null;
-
     // 路由配置
     self.routeConf = null;
-
+    // 链接地址参数
     self.params = null;
+    // api host
+    self.apiHost = null;
 
     /**
      * 设置request
@@ -66,6 +71,9 @@ var UnJs = function(){
         self.routeConf = route;
     };
 
+    /**
+     *
+     */
     self.setReadPool = function(pool) {
         self.readPool = pool;
     };
@@ -74,12 +82,22 @@ var UnJs = function(){
         self.writePool = pool;
     };
 
+    self.setApiHost = function(apiHost) {
+        self.apiHost = apiHost;
+    };
+
+    /**
+     * 获取请求的地址
+     */
     self.getUrl = function() {
     
         //var params = Url.parse(self.request.url, true);
         return self.request.url;
     };
 
+    /**
+     * 获取客户端IP
+     */
     self.getClientIp = function() {
         return self.request.headers['x-forwarded-for'] ||
         self.request.connection.remoteAddress ||
@@ -88,15 +106,37 @@ var UnJs = function(){
     };
 
     /**
-     * 路由
+     * 路由,判断静态文件和控制器
      */
     self.route = function(){
+
         var params = Url.parse(self.request.url, true);
+        var notStatic = false;
         // check static
-        if(params.pathname.indexOf(Config.static_dir) != -1 || params.pathname.indexOf('favicon.ico') != -1){
-            self.setCache(params['path']);
-        }else{
-            
+        if (Config.static.type == 'single') {
+            if (params.pathname.indexOf(Config.static.controller) != -1 || 
+                params.pathname.indexOf(Config.static.images) != -1 || 
+                params.pathname.indexOf(Config.static.lib) != -1 || 
+                params.pathname.indexOf(Config.static.css) != -1 ||
+                params.pathname.indexOf(Config.static.component) != -1 ||
+                params.pathname.indexOf('favicon.ico') != -1) {
+                
+                self.setCache(Config.static.baseDir + params['path']);
+                //self.setCache(params['path']);
+            } else {
+                notStatic = true;   
+            }
+        } else {
+            if(params.pathname.indexOf(Config.static_dir) != -1 || 
+                params.pathname.indexOf('favicon.ico') != -1){
+                self.setCache(params['path']);
+            }else{
+                notStatic = true;   
+            }
+        }
+
+        if (notStatic) {
+
             var controllerName = '';
             for(var k in self.routeConf){
                 if(params.pathname == k){
@@ -105,12 +145,15 @@ var UnJs = function(){
                     }
                     break;
                 }
-            } 
-            if(!controllerName){
-                self.response.writeHead(404, {'Content-Type': 'text/plain'});
-                self.display('404', {});
-                return;
             }
+            if(!controllerName){
+                //self.response.writeHead(404, {'Content-Type': 'text/plain'});
+                //self.display('404', {});
+                //return;
+
+                controllerName = self.apiHost;
+            }
+
             self.import(controllerName, params);
         }
     };
@@ -398,39 +441,426 @@ var UnJs = function(){
         "xml": "text/xml",
         "ico": "text/html"
     };
+
+    
 };
 
 var Server = {
 
+    // 构建输出html的运行状态
+    buildViewStatus: false,
+    buildImageStatus: false,
+    // 配置文件
+    config: null,
+    // 系统
+    os: Os.platform(),
+
     /**
      * 启动服务
      */
-    server: function(port, config, route){
+    server: function(port, config, route, apiHost){
 
         var lisPort = !port ? 3000 : port;
 
         Http.createServer(function(req, res){
 
             var u = new UnJs();
+
             u.setRequest(req);
             u.setResponse(res);
             u.setConfig(config);
             u.setRoute(route);
+            u.setApiHost(apiHost);
             u.route();
 
         }).listen(lisPort);
 
         console.log('HTTP server is listening at port %s', lisPort);
+        // 监听前端文件变化
+        this.watch();
     },
 
     /**
      * 运行
      */
-    run: function(config, route){
-        var argv = process.argv;
-        var port = argv[2];
+    run: function(paraConfig, route){
 
-        this.server(port, config, route);
+        var argv = process.argv;
+        var argvLen = argv.length;
+
+        if (argvLen < 2) {
+            console.error('create server failed, params error');
+            return false;
+        }
+
+        var port = 3000;
+        var buildType = false;
+        var apiHost = '';
+
+        for (var i = 0; i < argvLen; i++) {
+
+            switch (argv[i]) {
+
+                case '-p':
+                    port = argv[i + 1];
+                    break;
+                case '-b':
+                    buildType = argv[i + 1];
+                    break;
+                case '-h':
+                    apiHost = argv[i + 1];
+                    break;
+            }
+        }
+
+        this.config = paraConfig;
+
+        this.server(port, paraConfig, route, apiHost);
+
+        if (buildType) {
+            this.build();
+        }
+    },
+
+    /**
+     * 监听前端文件变化，进行解析、合并、复制到html文件夹的操作
+     */
+    watch: function() {
+
+        var self = this;
+        var buildIndexStatus = false;
+        console.log('watching...');
+
+        watch.watchTree('static', function(f, curr, prev) {
+        
+            console.log('f: '+ f +', curr: '+ curr +', prev: ' + prev);
+            if (typeof f == 'object' && curr == null && prev == null) {
+            } else if (curr.nlink === 0) {
+                // 删除一个文件
+                //self.delFile();
+            } else {
+                if (f.indexOf('/'+ self.config.output.view +'/') != -1 || f.indexOf('\\'+ self.config.output.view +'\\') != -1) {
+                    // 处理模板
+                    self.buildView();
+                } else {
+                    // 修改一个文件
+                    self.copyFile(f);
+                }
+            }
+        });
+    },
+
+    /**
+     * 拷贝目录
+     * @param sourceDir 源目录
+     * @param targetDir 目标目录
+     * @param fileExt 检测文件类型
+     * @param callback 回调
+     */
+    copyDir: function(sourceDir, targetDir, fileExt, callback) {
+
+        var self = this;
+        Fs.readdir(sourceDir, function(error, paths) {
+            paths.forEach(function(path) {
+            
+                var sourcePath = sourceDir + '/' + path;
+                var targetPath = targetDir + '/' + path;
+                Fs.stat(sourcePath, function(error, path) {
+                    if (error) {
+                        console.log(error);
+                        return;
+                    }
+
+                    if (path.isFile()) {
+                        console.log('复制文件：' + sourcePath);
+                        if (Path.extname(sourcePath).slice(1).match(fileExt)) {
+                        
+                            Fs.exists(targetDir, function(exist) {
+                                if (exist) {
+                                    var readable = Fs.createReadStream(sourcePath);
+                                    var writeable = Fs.createWriteStream(targetPath);
+                                    readable.pipe(writeable);
+                                } else {
+                                    Fs.mkdir(targetDir, function(error) {
+                                        if (error) {
+                                            //console.log('mkdir targetDir: ' + targetDir + ', error: ' + error);
+                                        }
+                                        var readable = Fs.createReadStream(sourcePath);
+                                        var writeable = Fs.createWriteStream(targetPath);
+                                        readable.pipe(writeable);
+                                    });
+                                }
+                            });
+                        }
+                    } else if(path.isDirectory()) {
+                        self.copyDir(sourcePath, targetPath, fileExt, callback);
+                    }
+                });
+            });
+
+            callback();
+        });
+    },
+
+    /**
+     * 拷贝单个文件
+     * @param sourceFile 来源文件
+     */
+    copyFile: function(sourceFile) {
+    
+        var self = this;
+        Fs.stat(sourceFile, function(error, path) {
+        
+            if (error) {
+                console.log('copyFile: ' + error);
+            }
+
+            if (path.isFile()) {
+
+                var itmes;
+                if (self.os == 'win32') {
+                    items = sourceFile.split('\\');
+                } else {
+                    items = sourceFile.split('/');
+                }
+                var targetPath = [self.config.output.base.target];
+                var sourcePath = [];
+                for (var i in items) {
+                    
+                    sourcePath.push(items[i]);
+                    if (items[i] == self.config.output.base.source) {
+                        continue;
+                    }
+
+                    targetPath.push(items[i]);
+                    var toPath = self.os == 'win32' ? targetPath.join('\\') : targetPath.join('/');
+                    var fromPath = self.os == 'win32' ? sourcePath.join('\\') : sourcePath.join('/');
+
+                    var stat = Fs.lstatSync(fromPath);
+                    if(stat.isDirectory() && !Fs.existsSync(toPath)) {
+                        console.log('创建目录: ' + toPath);
+                        Fs.mkdirSync(toPath);
+                    } else if(stat.isFile()) {
+                        console.log('复制文件: ' + sourceFile + ' => ' + toPath);
+                        var readable = Fs.createReadStream(sourceFile);
+                        var writeable = Fs.createWriteStream(toPath);
+                        readable.pipe(writeable);
+                    }
+                }
+            }
+        });
+    },
+
+    /**
+     * 压缩JS
+     * @params sourceList 来源JS文件
+     * @params target 输出目标JS
+     */
+    jsMini: function(sourceList, target) {
+    
+        var resultCode;
+        for (var i in sourceList) {
+            var orgCode = Fs.readFileSync(sourceList[i], 'utf8');
+            var ast = jsp.parse(orgCode);
+            ast = pro.ast_mangle(ast);
+            ast = pro.ast_squeeze(ast);
+            resultCode += ';' + pro.gen_code(ast);
+        }
+        //this.copyFile();
+    },
+
+    /**
+     * 构建模板
+     */
+    buildView: function() {
+    
+        var self = this;
+        var sourceDir = self.config.output.base.source;
+        var targetDir = self.config.output.base.target;
+        var libDir = self.config.output.lib;
+        var fromSource = sourceDir + '/' + self.config.output.view;
+        var toSource = targetDir + '/' + libDir;
+        var source;
+
+        console.log('fromSource: ' + fromSource);
+
+        var viewScript = [];
+        var viewNodeObject = {};
+        var doBuild = function(sourcePath) {
+            var paths = Fs.readdirSync(sourcePath);
+
+            paths.forEach(function(path) {
+
+                var itemPath = sourcePath + '/' + path;
+                var stat = Fs.lstatSync(itemPath);
+                if (stat.isDirectory()) {
+                    doBuild(itemPath);
+                } else if (stat.isFile()) {
+
+                    console.log('读取文件: ' + itemPath);
+                    // 获取node做为子对象
+                    var nodes = itemPath.split('/');
+                    if (nodes.length != 4) {
+                        console.log('构建View对象失败,模板目录深度错误');
+                        return;
+                    }
+                    var nodePath = nodes[2];
+                    var childs = path.split('.');
+                    var viewScriptString = '';
+                    if (!viewNodeObject.hasOwnProperty(nodePath)) {
+                        viewScriptString = "View." + nodePath + " = {};";
+                        viewNodeObject[nodePath] = true;
+                    }
+                    var file = Fs.readFileSync(itemPath, 'utf8');
+                    if (file) {
+                        var lines = file.split('\n');
+                        var result = ['var html = "";'];
+                        for (var index in lines) {
+                            var line = self.templateParse(lines[index]);
+                            if (line) {
+                                result.push(line);
+                            }
+                        }
+
+                        viewScript.push(viewScriptString + self.createViewObject(nodePath + '.' + childs[0], result.join('')) + ';');
+                    }
+                }
+            });
+        };
+
+        doBuild(fromSource);
+
+        // 生成view.js
+        Fs.writeFileSync(toSource + '/view.js', viewScript.join(''), 'utf8');
+    },
+
+    /**
+     * 构建输出html
+     */
+    build: function() {
+    
+        var self = this;
+
+        console.log('build......');
+
+        var fileExt = /^(gif|png|jpg|css|html|js)$/ig;
+        var sourceDir = this.config.output.base.source;
+        var targetDir = this.config.output.base.target;
+
+        this.copyDir(sourceDir, targetDir, fileExt, function() {
+        
+        });
+
+        this.buildView();
+    },
+
+    /**
+     * 解析模板
+     * @param line 行代码
+     */
+    templateParse: function(line) {
+
+        if (!line || line == '') {
+            return null;
+        }
+
+        var result = line.trim();
+        var parseStatus = false;
+
+        /**
+         * 解析变量
+         */
+        var parseVer = function() {
+
+            var item;
+            // 检查变量
+            var patt = /\{\{ (.+?) \}\}/ig;
+            while (item = patt.exec(result)) {
+
+                result = result.replace(item[0], "\"+" + item[1] + "+\"");
+            }
+        };
+
+        /**
+         * 解析条件
+         */
+        var parseCondition = function() {
+
+            var item;
+            var patt = /\{\{ if (.+?) \}\}/ig;
+            while (item = patt.exec(result)) {
+                parseStatus = true;
+                result = result.replace(item[0], "if("+ item[1] +"){");
+            }
+
+            patt = /\{\{ else if (.+?) \}\}/ig;
+            while (item = patt.exec(result)) {
+                parseStatus = true;
+                result = result.replace(item[0], "} else if("+ item[1] +"){");
+            }
+
+            patt = /\{\{ else \}\}/ig;
+            while (item = patt.exec(result)) {
+                parseStatus = true;
+                result = result.replace(item[0], "} else {");
+            }
+        };
+
+        /**
+         * 解析循环
+         */
+        var parseLoop = function() {
+
+            var item;
+            var patt = /\{\{ loop (.+?) \}\}/ig;
+            while (item = patt.exec(result)) {
+
+                parseStatus = true;
+                result = result.replace(item[0], "for("+ item[1] +"){");
+            }
+        };
+
+        /**
+         * 解析结束
+         */
+        var parseEnd = function() {
+
+            var item;
+            var patt = /\{\{ end \}\}/ig;
+            while (item = patt.exec(result)) {
+
+                parseStatus = true;
+                result = result.replace(item[0], "}");
+            }
+        };
+
+
+        parseLoop();
+        parseCondition();
+        parseEnd();
+        parseVer();
+
+        if (!parseStatus) {
+            result = 'html += "' + result + '";';
+        }
+
+        return result;
+    },
+
+    /**
+     * 构建view对象
+     * @param node 子对象
+     * @param scriptText 脚本文本
+     */
+    createViewObject: function(node, scriptText) {
+
+        var txt = ['View.'+ node +'= function(data){'];
+        txt.push(scriptText);
+        txt.push('return html;');
+        txt.push('}');
+
+        console.log(txt.join(''));
+        return txt.join('');
     }
 };
 

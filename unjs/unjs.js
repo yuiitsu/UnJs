@@ -82,10 +82,6 @@ var UnJs = function(){
         self.writePool = pool;
     };
 
-    self.setApiHost = function(apiHost) {
-        self.apiHost = apiHost;
-    };
-
     /**
      * 获取请求的地址
      */
@@ -136,7 +132,6 @@ var UnJs = function(){
         }
 
         if (notStatic) {
-
             var controllerName = '';
             for(var k in self.routeConf){
                 if(params.pathname == k){
@@ -470,7 +465,6 @@ var Server = {
             u.setResponse(res);
             u.setConfig(config);
             u.setRoute(route);
-            u.setApiHost(apiHost);
             u.route();
 
         }).listen(lisPort);

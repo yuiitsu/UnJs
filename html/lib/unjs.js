@@ -345,7 +345,6 @@ var Unjs = function (options) {
         window.onload = function() {
 
             self.router();
-
             window.addEventListener('popstate', function(e) {
 
                 if (self.popstate) {

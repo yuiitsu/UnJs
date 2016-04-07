@@ -166,7 +166,7 @@ var WmCommon = function() {
 
     /**
      * 蒙板
-     * @type {{maskName: string, show: WmCommon.mask.show, hide: WmCommon.mask.hide}}
+
      */
     self.mask = {
 
@@ -183,7 +183,7 @@ var WmCommon = function() {
                 $('body').append(_html).css('overflow', 'hidden');
                 // 获取屏幕高宽
                 var clientWidth = self.clientSize('clientWidth');
-                var clientHeight = self.clientSize('clientHeight');
+
                 // 设置蒙板高宽
                 $('#' + this.maskName).css({'width': clientWidth, 'height': clientHeight});
             } else {

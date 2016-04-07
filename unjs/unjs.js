@@ -82,6 +82,10 @@ var UnJs = function(){
         self.writePool = pool;
     };
 
+    self.setApiHost = function(apiHost) {
+        self.apiHost = apiHost;
+    };
+
     /**
      * 获取请求的地址
      */
@@ -132,6 +136,7 @@ var UnJs = function(){
         }
 
         if (notStatic) {
+
             var controllerName = '';
             for(var k in self.routeConf){
                 if(params.pathname == k){
@@ -465,6 +470,7 @@ var Server = {
             u.setResponse(res);
             u.setConfig(config);
             u.setRoute(route);
+            u.setApiHost(apiHost);
             u.route();
 
         }).listen(lisPort);
@@ -509,7 +515,9 @@ var Server = {
 
         this.config = paraConfig;
 
-        this.server(port, paraConfig, route, apiHost);
+        if (apiHost) {
+            this.server(port, paraConfig, route, apiHost);
+        }
 
         if (buildType) {
             this.build();
@@ -527,7 +535,6 @@ var Server = {
 
         watch.watchTree('static', function(f, curr, prev) {
         
-            console.log('f: '+ f +', curr: '+ curr +', prev: ' + prev);
             if (typeof f == 'object' && curr == null && prev == null) {
             } else if (curr.nlink === 0) {
                 // 删除一个文件
@@ -556,40 +563,41 @@ var Server = {
         var self = this;
         Fs.readdir(sourceDir, function(error, paths) {
             paths.forEach(function(path) {
-            
+
                 var sourcePath = sourceDir + '/' + path;
                 var targetPath = targetDir + '/' + path;
-                Fs.stat(sourcePath, function(error, path) {
-                    if (error) {
-                        console.log(error);
-                        return;
-                    }
 
-                    if (path.isFile()) {
-                        console.log('复制文件：' + sourcePath);
+                if (sourcePath.indexOf('/'+ self.config.output.view +'/') == -1 &&
+                        sourcePath.indexOf('\\'+ self.config.output.view +'\\') == -1) {
+
+                    var stat = Fs.lstatSync(sourcePath);
+                    if (stat.isFile()) {
                         if (Path.extname(sourcePath).slice(1).match(fileExt)) {
-                        
-                            Fs.exists(targetDir, function(exist) {
-                                if (exist) {
-                                    var readable = Fs.createReadStream(sourcePath);
-                                    var writeable = Fs.createWriteStream(targetPath);
-                                    readable.pipe(writeable);
-                                } else {
-                                    Fs.mkdir(targetDir, function(error) {
-                                        if (error) {
-                                            //console.log('mkdir targetDir: ' + targetDir + ', error: ' + error);
-                                        }
-                                        var readable = Fs.createReadStream(sourcePath);
-                                        var writeable = Fs.createWriteStream(targetPath);
-                                        readable.pipe(writeable);
-                                    });
-                                }
-                            });
+                            if (Fs.existsSync(targetDir)) {
+                                console.log('复制文件: ' + sourcePath + ' => ' + targetPath);
+                                var readable = Fs.createReadStream(sourcePath);
+                                var writeable = Fs.createWriteStream(targetPath);
+                                readable.pipe(writeable);
+                            } else {
+                                console.log('创建目录: ' + targetDir);
+                                Fs.mkdirSync(targetDir);
+                                var readable = Fs.createReadStream(sourcePath);
+                                var writeable = Fs.createWriteStream(targetPath);
+                                readable.pipe(writeable);
+                            }
                         }
-                    } else if(path.isDirectory()) {
+                    } else if (stat.isDirectory()) {
+
+                        //console.log('targetDir: ' + targetDir);
+                        if (!Fs.existsSync(targetPath)) {
+                            console.log('创建目录: ' + targetPath);
+                            Fs.mkdirSync(targetPath);
+                        } else {
+                            console.log('目录存在: ' + targetPath);
+                        }
                         self.copyDir(sourcePath, targetPath, fileExt, callback);
                     }
-                });
+                }
             });
 
             callback();
@@ -667,6 +675,8 @@ var Server = {
      * 构建模板
      */
     buildView: function() {
+
+        console.log('buildView...');
     
         var self = this;
         var sourceDir = self.config.output.base.source;
@@ -675,8 +685,6 @@ var Server = {
         var fromSource = sourceDir + '/' + self.config.output.view;
         var toSource = targetDir + '/' + libDir;
         var source;
-
-        console.log('fromSource: ' + fromSource);
 
         var viewScript = [];
         var viewNodeObject = {};
@@ -726,6 +734,7 @@ var Server = {
 
         // 生成view.js
         Fs.writeFileSync(toSource + '/view.js', viewScript.join(''), 'utf8');
+        console.log('buildView succ');
     },
 
     /**
@@ -742,10 +751,10 @@ var Server = {
         var targetDir = this.config.output.base.target;
 
         this.copyDir(sourceDir, targetDir, fileExt, function() {
-        
+
+            self.buildView();
         });
 
-        this.buildView();
     },
 
     /**
@@ -758,7 +767,7 @@ var Server = {
             return null;
         }
 
-        var result = line.trim();
+        var result = line.trim().replace(new RegExp(/'/g), "\\'");
         var parseStatus = false;
 
         /**
@@ -768,10 +777,10 @@ var Server = {
 
             var item;
             // 检查变量
-            var patt = /\{\{ (.+?) \}\}/ig;
+            var patt = /\{\{ (.+?) \}\}/i;
             while (item = patt.exec(result)) {
 
-                result = result.replace(item[0], "\"+" + item[1] + "+\"");
+                result = result.replace(item[0], "'+" + item[1].replace(new RegExp(/\\/g), "") + "+'");
             }
         };
 
@@ -781,19 +790,19 @@ var Server = {
         var parseCondition = function() {
 
             var item;
-            var patt = /\{\{ if (.+?) \}\}/ig;
+            var patt = /\{\{ if (.+?) \}\}/i;
             while (item = patt.exec(result)) {
                 parseStatus = true;
-                result = result.replace(item[0], "if("+ item[1] +"){");
+                result = result.replace(item[0], "if("+ item[1].replace(new RegExp(/\\/g), "") +"){");
             }
 
-            patt = /\{\{ else if (.+?) \}\}/ig;
+            patt = /\{\{ else if (.+?) \}\}/i;
             while (item = patt.exec(result)) {
                 parseStatus = true;
-                result = result.replace(item[0], "} else if("+ item[1] +"){");
+                result = result.replace(item[0], "} else if("+ item[1].replace(new RegExp(/\\/g), "") +"){");
             }
 
-            patt = /\{\{ else \}\}/ig;
+            patt = /\{\{ else \}\}/i;
             while (item = patt.exec(result)) {
                 parseStatus = true;
                 result = result.replace(item[0], "} else {");
@@ -806,11 +815,11 @@ var Server = {
         var parseLoop = function() {
 
             var item;
-            var patt = /\{\{ loop (.+?) \}\}/ig;
+            var patt = /\{\{ loop (.+?) \}\}/i;
             while (item = patt.exec(result)) {
 
                 parseStatus = true;
-                result = result.replace(item[0], "for("+ item[1] +"){");
+                result = result.replace(item[0], "for("+ item[1].replace(new RegExp(/\\/g), "") +"){");
             }
         };
 
@@ -820,7 +829,7 @@ var Server = {
         var parseEnd = function() {
 
             var item;
-            var patt = /\{\{ end \}\}/ig;
+            var patt = /\{\{ end \}\}/i;
             while (item = patt.exec(result)) {
 
                 parseStatus = true;
@@ -835,7 +844,7 @@ var Server = {
         parseVer();
 
         if (!parseStatus) {
-            result = 'html += "' + result + '";';
+            result = "html += '" + result + "';";
         }
 
         return result;
@@ -853,7 +862,7 @@ var Server = {
         txt.push('return html;');
         txt.push('}');
 
-        console.log(txt.join(''));
+        //console.log(txt.join(''));
         return txt.join('');
     }
 };

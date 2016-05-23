@@ -4,7 +4,7 @@
  */
 
 var config = {
-    
+    'version': '1.0.0',
     // static
     'static_dir': '/static/',
 

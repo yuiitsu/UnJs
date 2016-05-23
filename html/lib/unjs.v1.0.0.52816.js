@@ -27,6 +27,8 @@ var Unjs = function (options) {
 
     this.popstate = false;
 
+    this.version = options.version;
+
     /**
      * 呼叫方法
      * 根据method执行对应的方法,method有默认值
@@ -81,12 +83,36 @@ var Unjs = function (options) {
             callback(Module[moduleName]);
         } else {
 
-            var element = this.createScript(this.controllerDir + moduleName + '.js');
+            var importLoadingId = Math.ceil(Math.random() * 10000 + 1000);
+            self.importLoading.show(importLoadingId);
+
+            var element = this.createScript(this.controllerDir + moduleName + '.' + self.version + '.js');
             this.appendToDom(element);
             element.addEventListener('load', function() {
 
+                self.importLoading.hide(importLoadingId);
                 callback(Module[moduleName]);
             });
+        }
+    };
+
+    this.importLoading = {
+
+        show: function(id) {
+
+            var loading = document.getElementById('unjs_controller_loading');
+            var loadingDom = document.createElement('div');
+            loadingDom.id = 'unjs_controller_loading_' + id;
+            loadingDom.className = 'unjs_controller_loading';
+            var loadingImg = document.createElement('img');
+            loadingImg.src = 'images/loading/loading_g.gif';
+            loadingDom.appendChild(loadingImg);
+            document.body.appendChild(loadingDom);
+        },
+        hide: function(id) {
+
+            var loading = document.getElementById('unjs_controller_loading_' + id);
+            document.body.removeChild(loading);
         }
     };
 
@@ -126,20 +152,28 @@ var Unjs = function (options) {
      * filePath 文件列表
      * callback 回调
      */
-    this.asyncLoadScript = function(task, callback) {
+    this.asyncLoadScript = function(scriptList, libNameList, callback) {
 
-        var taskLen = task.length;
+        var taskLen = scriptList.length;
         if (taskLen <= 0) {
             return;
         }
+        var existNum = 0;
         var done = self.pending(callback);
         for (var i = 0; i < taskLen; i++) {
 
-            if (!Lib.hasOwnProperty(task[i])) {
-                var element = this.createScript(task[i]);
+            if (!Lib.hasOwnProperty(libNameList[i])) {
+                var element = this.createScript(scriptList[i]);
                 this.appendToDom(element);
+                Lib[libNameList[i]] = scriptList[i];
                 element.addEventListener('load', done());
+            } else {
+                existNum++;
             }
+        }
+
+        if (existNum == taskLen) {
+            callback();
         }
     };
 
@@ -199,11 +233,13 @@ var Unjs = function (options) {
 
         if (!Component.hasOwnProperty(componentName)) {
 
+            var importLoadingId = Math.ceil(Math.random() * 10000 + 1000);
+            self.importLoading.show(importLoadingId);
             var componentPath = componentNode ? componentNode + '/' + componentName : componentName;
-            var element = this.createScript(this.componentDir + componentPath + '.js');
+            var element = this.createScript(this.componentDir + componentPath + '.' + self.version + '.js');
             this.appendToDom(element);
             element.addEventListener('load', function() {
-
+                self.importLoading.hide(importLoadingId);
                 callMethod();
             });
         } else {
@@ -267,7 +303,6 @@ var Unjs = function (options) {
         }
 
         history.pushState({'params': url.join('&')}, '', this.pathName +'?' + url.join('&'));
-        console.log(window.history);
     };
 
     /**
@@ -283,14 +318,30 @@ var Unjs = function (options) {
      * @param moduleName 控制器名称
      * @param methodName 方法名称
      * @param para 参数
+     * @param inPara 内部对象传递,不会显示在链接地址上
+     * @param noPushState 执行pushState
      */
-    this.loadControl = function(moduleName, methodName, para) {
+    this.loadControl = function(moduleName, methodName, para, inPara, noPushState) {
+
+
 
         var params = para && (typeof para == 'object') ? para : {};
         params['a'] = moduleName;
         params['m'] = methodName;
-        // 设置链接
-        this.pushState(moduleName, methodName, params);
+
+        if (!noPushState) {
+            // 设置链接
+            this.pushState(moduleName, methodName, params);
+            // 记录已调用
+            localStorage.setItem('pushState', moduleName + '_' + methodName);
+        }
+
+        if (inPara && typeof inPara == 'object') {
+
+            for (var i in inPara) {
+                params[i] = inPara[i];
+            }
+        }
 
         self.import(moduleName, function(module) {
             var controller = module(self, methodName, params);
@@ -300,11 +351,18 @@ var Unjs = function (options) {
     };
 
     /**
-     * 输出
+     * 输出HTML
+     * @param _html html
+     * @param cssObject css对象
      */
-    this.display = function(_html) {
+    this.display = function(_html, cssObject) {
 
         this.displayObject.innerHTML = _html;
+        if (cssObject) {
+            if (cssObject.hasOwnProperty('body')) {
+                $('body').css('background-color', cssObject.body);
+            }
+        }
     };
 
     /**
@@ -328,8 +386,18 @@ var Unjs = function (options) {
 
         // 设置链接
         if (!popStatus) {
-            this.pushState(moduleName, methodName, params);
+            //var pushState = localStorage.getItem('pushState');
+            //if (pushState != moduleName + '_' + methodName) {
+            //    //this.pushState(moduleName, methodName, params);
+            //    // 记录已调用
+            //    //localStorage.setItem('pushState', moduleName + '_' + methodName);
+            //} else {
+                self.popstate = true;
+            //}
         }
+
+        // 清空容器
+        this.displayObject.innerHTML = '';
 
         self.import(moduleName, function(module) {
             var controller = module(self, methodName, params);
@@ -345,6 +413,7 @@ var Unjs = function (options) {
         window.onload = function() {
 
             self.router();
+
             window.addEventListener('popstate', function(e) {
 
                 if (self.popstate) {

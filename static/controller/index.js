@@ -6,7 +6,7 @@ var index = function(unjs) {
 
 	this.index = function() {
         // 加载view
-        unjs.display(View.index.index());
+        unjs.display('index', 'index');
 
 		// 加载组件
         $('#open_dialog').click(function() {

@@ -40,4 +40,4 @@ var confirm = function(unjs, object, data) {
     return this;
 };
 
-Component.confirm = confirm;
+unjs.Component.confirm = confirm;

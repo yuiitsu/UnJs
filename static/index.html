@@ -2,12 +2,10 @@
 <html>
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-	<title>UnJs 一个Single Page开发框架</title>
+	<title>App开店，找微猫！</title>
     <meta content="yes" name="apple-mobile-web-app-capable"/>
-    <meta content="yes" name="apple-touch-fullscreen"/>
     <meta content="telephone=no,email=no" name="format-detection"/>
-    <meta content="fullscreen=yes,preventMove=no" name="ML-Config"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
     <link rel="stylesheet" type="text/css" href="css/common.css" />
 </head>
 <body>
@@ -16,15 +14,16 @@
         <div class="wmContainer" id="wmContainer"></div>
     </div>
 </div>
-<script type="text/javascript" src="lib/jquery.min.js"></script>
-<script type="text/javascript" src="lib/unjs.js"></script>
-<script type="text/javascript" src="lib/common.js"></script>
-<script type="text/javascript" src="lib/view.js"></script>
+<script type="text/javascript" src="lib/jquery.min.{{ version }}.js"></script>
+<script type="text/javascript" src="lib/unjs.{{ version }}.js"></script>
+<script type="text/javascript" src="lib/common.{{ version }}.js"></script>
+<script type="text/javascript" src="lib/view.{{ version }}.js"></script>
 <script type="text/javascript">
     var unjs = new Unjs({
         'container': 'wmContainer',
         'controller': 'controller/',
-        'component': 'component/'
+        'component': 'component/',
+        'version': '{{ version }}'
     });
     unjs.init();
 </script>

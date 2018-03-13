@@ -1,0 +1,15 @@
+{
+  "is_use_second_domain": false,
+  "host": "localhost:9000",
+  "not_check_domain_page": [
+    "pay"
+  ],
+  "st": {
+    "token": "fbd49e04998b2808b6955523bdc8bdc9548dbf128d510c3fc19bcc3f3aa285b0",
+    "project": "default",
+    "funnel_id": {
+      "shop": 2,
+      "rain_card": 5
+    }
+  }
+}

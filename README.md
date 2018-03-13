@@ -1,75 +1,53 @@
-<h1>UnJs 一个Single Page开发框架</h1>
+# UnJS
+## 版本
+v3.0.0
+## 新增功能
+- 更改核心结构，让其变得更清晰合理
+- 增加子控制器和model，减少单个文件的代码量
+- 增加数据对象存储，方便使用
+- 运行时，不再使用动态加载JS文件，采用整合方式，让JS执行变得顺畅
+- 开发时，不再使用watch方式监听文件变化，使用直接加载读取的方式，让调试不用等待
 
-<h2>特点</h2>
-<ul>
-	<li><strong>1. 轻封装</strong> 简单易用</li>
-	<li><strong>2. 基于NodeJs的构建服务</strong> 自动模板解释，合并，压缩</li>
-	<li><strong>3. 跨域调试</strong> 可根据API情况自定义测试AJAX请求服务</li>
-	<li><strong>4. 组件模块</strong> UI功能组件化，方便重用与维护</li>
-	<li><strong>5. 动态加载</strong> 减少基础文件大小，按需加载文件</li>
-</ul>
+## 目录结构
 
-<h2>组件示例</h2>
-<p>
-	<a href='javascript:;' id='open_dialog'>打开确认对话框</a>
-</p>
-<h2>下载</h2>
-<p><a href='https://github.com/onlyfu/UnJs' target='_blank'>https://github.com/onlyfu/UnJs</a></p>
-<h2>启动</h2>
-<pre>
-// 默认端口3000<br/>
-node app.js<br/>
-// 指定端口启动<br/>
-node app.js -p 3100<br/>
-// 指定请求服务,uat为控制器名，见根目录下controller目录<br/>
-node app.js -h uat<br/>
-// 启动同时编译<br/>
-node app.js -b true<br/>
-</pre>
-<h2>使用</h2>
-<h4>1. 控制器（controller）</h4>
-<pre>
-var index = function(unjs) {<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;this.index = function() {<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var data = {'msg': 'Hi UnJs'};<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// 加载view<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unjs.display(View.index.index(data));<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;};<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;return this;<br/>
-};<br/>
-Module.index = index;<br/>
-</pre>
-<h4>2. 视图（View）</h4>
-<pre>
-// 变量<br/>
-&lt;div&gt;&#123;&#123; data['msg'] &#125;&#125;&lt;/div&gt;<br/>
-// 条件<br/>
-&#123;&#123; if data['name'] == 'UnJs' &#125;&#125;<br/>
-&lt;p&gt;Hello UnJs&lt;/p&gt;<br/>
-&#123;&#123; else if data['name'] == 'girl' &#125;&#125;<br/>
-&lt;p&gt;口水&lt;/p&gt;<br/>
-&#123;&#123; else &#125;&#125;<br/>
-&lt;p&gt;什么都是&lt;/p&gt;<br/>
-&#123;&#123; end &#125;&#125;<br/>
-// 循环<br/>
-&#123;&#123; loop var i in data['list'] &#125;&#125;<br/>
-&lt;p&gt;&#123;&#123; data['list'][i] &#125;&#125;&lt;/p&gt;<br/>
-&#123;&#123; end &#125;&#125;<br/>
-</pre>
-<h4>3. 组件</h4>
-<pre>
-// 定义组件<br/>
-var confirm = function(unjs, object, data) {<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;this.init = function(callback) {<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var _html = View.dialog.confirm(data);<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$('body').append(_html).css('overflow', 'hidden');<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;};<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;return this;<br/>
-};<br/>
-Component.confirm = confirm;<br/>
-// 组件视图，同2<br/>
-// 调用组件<br/>
-unjs.importComponent('dialog', 'confirm', null, {<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;msg: '一个提示'<br/>
-}, {});<br/>
-</pre>
+ root
+
+     - dev(开发目录)
+         - component(组件)
+             - dialog
+                 alert.js
+         - controller(控制器)
+             - index (模块)
+                 - sub(子控制器)
+                 - model (数据)
+                     modelname.js (数据类)
+                 index.js
+         - core (核心文件)
+             base.js (父类)
+             core.js (核心文件)
+         - common (公共文件，自定义父类和三方库文件)
+             custombase.js (自定义父类)
+             common.js (公共方法文件)
+         - view (视图)
+             - index
+                 index.html
+             - goods
+                 detail.html
+         - static (静态文件)
+             - font (字体)
+             - images (图片)
+         - style (样式文件)
+             common.css
+         - temp (调试时缓存文件输出目录)
+         index.html (首页模板)
+     - dist(编译输出目录)
+     - wmjs(node服务)
+     config.js (配置文件)
+     app.js (运行入口文件)
+
+## 运行
+
+    - node app.js -h dev/uat/prod -p 端口号
+
+
+访问‘http://localhost:3000?’ + 参数

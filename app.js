@@ -1,17 +1,10 @@
 /**
- * WmJs
- * 
+ * UnJs
  * author: onlyfu
  * update: 2015-08-24
  */
-
-// WmJs
-var Server = require('./wmjs/server');
-
-// Config
-var Config = require('./config');
-
-// route
-var Route = require('./wmjs/route');
+const Server = require('./server/server'),
+    Config = require('./config'),
+    Route = require('./server/route');
 
 Server.run(Config, Route);

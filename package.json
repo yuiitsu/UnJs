@@ -1,23 +1,21 @@
 {
-  "name": "management",
+  "name": "unjs",
   "version": "1.0.0",
-  "description": "v3.0.0\r ## 新增功能\r - 更改核心结构，让其变得更清晰合理\r - 增加子控制器和model，减少单个文件的代码量\r - 增加数据对象存储，方便使用\r - 运行时，不再使用动态加载JS文件，采用整合方式，让JS执行变得顺畅\r - 开发时，不再使用watch方式监听文件变化，使用直接加载读取的方式，让调试不用等待",
+  "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "node app.js -h dev",
-    "uat": "node app.js -h uat",
+    "dev": "node app.js -h dev -p 4000 -d",
+    "uat": "node app.js -h uat -p 4000",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@stash.chinacloudapp.cn:1024/wmbc/management.git"
+    "url": ""
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "clean-css": "^4.1.2",
-    "iconv-lite": "^0.4.18",
     "uglify-js": "^3.0.4"
-  },
-  "devDependencies": {}
+  }
 }

@@ -1,4 +1,4 @@
-# UnJS
+# Wemart Mobile
 ## 版本
 v3.0.0
 ## 新增功能
@@ -15,19 +15,20 @@ v3.0.0
      - dev(开发目录)
          - component(组件)
              - dialog
-                 alert.js
+                 toast.js
          - controller(控制器)
              - index (模块)
                  - sub(子控制器)
                  - model (数据)
                      modelname.js (数据类)
-                 index.js
+                 flash.js
          - core (核心文件)
              base.js (父类)
-             core.js (核心文件)
+             _core.js (核心文件)
          - common (公共文件，自定义父类和三方库文件)
+             jquery.min.js
              custombase.js (自定义父类)
-             common.js (公共方法文件)
+             helpMethod.js (公共方法文件)
          - view (视图)
              - index
                  index.html

@@ -1,12 +1,12 @@
 /**
- * Created by zdw on 2017/11/15.
+ * Created by Administrator on 2017/11/15.
  */
 var Component = function () {
     var Component_temp = function () {
-        this._super = Core;
+        this._super = _core;
         this.type = 'component';
     };
-    Component_temp.prototype = Core;
+    Component_temp.prototype = _core;
     var Component_func = function () {
         /**
          * 继承Base类

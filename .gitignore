@@ -8,9 +8,8 @@ npm-debug.log
 *.css.map
 .project
 /.settings
-node_modules/*
+/node_modules
 /dist
 /shop
 /site
 /dev/temp
-/dev/static/cleanui

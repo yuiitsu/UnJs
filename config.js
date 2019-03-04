@@ -3,7 +3,7 @@
  */
 const Config = {
     'siteTitle': 'UnJs',
-    'version': '3.0.0', // 版本号
+    'version': '4.0.0', // 版本号
     'devDir': 'dev', // 开发目录
     'configFile': '/apps/conf/wmb2c/shop.json', // 配置文件
     // 指定编译相关配置

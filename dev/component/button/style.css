@@ -1,0 +1,14 @@
+.component-button{width:100%;height:100%;display:inline-block;}
+.component-button button{border:1px solid #ccc;width:100%;height:100%;cursor:pointer;color:#222;}
+.component-button button.primary{background-color:#007bff;color:#fff;border:1px solid #007bff;}
+.component-button button.primary:hover{background-color:#0051F9;border:1px solid #0051F9;}
+.component-button button.success{background-color:#28a745;color:#fff;border:1px solid #28a745;}
+.component-button button.success:hover{background-color:#289444;border:1px solid #289444;}
+.component-button button.warning{background-color:#ffc107;color:#fff;border:1px solid #ffc107;}
+.component-button button.warning:hover{background-color:#F4B607;border:1px solid #F4B607;}
+.component-button button.info{background-color:#17a2b8;color:#fff;border:1px solid #17a2b8;}
+.component-button button.info:hover{background-color:#1793A9;border:1px solid #1793A9;}
+.component-button button.disabled{background-color:#ccc;color:#fff;border:1px solid #ccc;}
+.component-button button.disabled:hover{background-color:#C0C0C0;border:1px solid #C0C0C0;}
+.component-button button.danger{background-color:#c82333;color:#fff;border:1px solid #c82333;}
+.component-button button.danger:hover{background-color:#B52332;border:1px solid #B52332;}

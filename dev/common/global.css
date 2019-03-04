@@ -1,1 +1,14 @@
-*{margin:0;padding:0;box-sizing: border-box;}
+/* global */
+*{margin:0;padding:0;box-sizing: content-box;outline: none;font-size:16px;}
+html,body{}
+
+/* display */
+.display-inline-block{display: inline-block;}
+
+/* margin */
+.margin-right-small{margin-right:10px;}
+
+/* radius */
+.radius-small{border-radius: 3px;}
+.radius-middle{border-radius: 5px;}
+.radius-big{border-radius: 10px;}

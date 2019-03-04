@@ -1,1 +1,3 @@
-.component-input input{border:1px solid #ccc;}
+.component-input{width:100%;height:100%;}
+.component-input input{border:1px solid #ccc;width:100%;height:100%;padding: 0 10px;}
+.component-input input.error{border:1px solid #c82333;}

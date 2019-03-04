@@ -30,8 +30,7 @@ var Cookie = {
     get: function(unjs, key) {
 
         var cookie = unjs.request.headers.cookie;
-        if (cookie == undefined) {
-        
+        if (cookie === undefined) {
             return null;
         }
 

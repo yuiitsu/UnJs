@@ -624,7 +624,7 @@ const UnJs = function () {
      */
     self.templateParse = function (line) {
 
-        if (!line || line == '') {
+        if (!line || line === '') {
             return null;
         }
 

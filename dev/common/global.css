@@ -1,5 +1,5 @@
 /* global */
-*{margin:0;padding:0;box-sizing: content-box;outline: none;font-size:16px;}
+*{margin:0;padding:0;box-sizing: border-box;outline: none;font-size:16px;}
 html,body{}
 
 /* display */
@@ -12,3 +12,5 @@ html,body{}
 .radius-small{border-radius: 3px;}
 .radius-middle{border-radius: 5px;}
 .radius-big{border-radius: 10px;}
+
+.radius-small input, .radius-small button, .radius-small textarea{border-radius: 3px;}

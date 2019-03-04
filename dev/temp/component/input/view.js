@@ -1,1 +1,0 @@
-View.extend('component.input', function() {this.init = function(data) {var html = '';html += '<!DOCTYPE html>';html += '<html lang="en">';html += '<head>';html += '<meta charset="UTF-8">';html += '<title>Title</title>';html += '</head>';html += '<body>';html += '</body>';html += '</html>';return html;}});

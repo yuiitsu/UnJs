@@ -790,6 +790,28 @@ const UnJs = function () {
         data['search'] = 'a=error' + m;
         self.display('index', data)
     };
+
+    /**
+     * 清空目录
+     * @param targetDir
+     */
+    this.delDir = function (targetDir) {
+        var self = this;
+        var paths = Fs.readdirSync(targetDir);
+        if (paths) {
+            paths.forEach(function (path) {
+                var targetPath = targetDir + '/' + path;
+                var stat = Fs.lstatSync(targetPath);
+                if (stat.isFile()) {
+                    // 如果是文件，直接删除
+                    console.log('删除文件: ' + targetPath);
+                    Fs.unlinkSync(targetPath);
+                } else if (stat.isDirectory()) {
+                    self.delDir(targetPath);
+                }
+            });
+        }
+    }
 };
 
 module.exports = UnJs;

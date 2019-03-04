@@ -2,7 +2,7 @@
  * 自定义父类
  * @constructor
  */
-var Core = _core.extends(function () {
+var _core = _core.extends(function () {
     //
     this.displayObject = document.getElementById('container');
 
@@ -54,6 +54,7 @@ var Core = _core.extends(function () {
      * @param object 输出对象
      */
     this.output = function (name, data, object) {
+        name = 'module.' + this._info.name + '.' + name;
         this.display(name, data, object || $('#container'));
     };
 

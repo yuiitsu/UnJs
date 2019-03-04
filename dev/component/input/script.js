@@ -3,11 +3,16 @@
  */
 Component.extend('input', function() {
 
-    this.init = function() {
-        console.log('Component input init.');
+    /**
+     * 事件绑定，被调用时自动执行
+     */
+    this.bindEvent = function() {
+        $('.component-input').find('input').val('Input');
     };
 
-    this.callMethod = function() {
-        console.log('Component input callMethod.');
-    }
+    /**
+     * 不指定方法，默认执行方法
+     */
+    this.init = function() {
+    };
 });

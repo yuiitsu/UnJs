@@ -99,6 +99,9 @@ const LoadDevelop = function(UnJs) {
             UnJs.fs.mkdirSync(tempDir);
         }
 
+        // 取出最后一个节点，做为文件名
+        let fileName = nodes.pop();
+
         // 检查文件夹
         nodes.forEach(function(node) {
             tempDir += node + '/';
@@ -107,7 +110,7 @@ const LoadDevelop = function(UnJs) {
             }
         });
 
-        let viewFile = tempDir + '/view.js';
+        let viewFile = tempDir + '/'+ fileName +'.js';
         UnJs.fs.writeFileSync(viewFile, txt.join(''), 'utf8');
     };
 
@@ -118,16 +121,23 @@ const LoadDevelop = function(UnJs) {
      * @returns {Array}
      */
     this.buildView = function(fileList) {
+        let tempDir = UnJs.config.devDir + '/temp/';
+        // 删除temp
+        UnJs.delDir(tempDir);
+        //
         let scriptList = [];
-
         fileList.forEach(function(file) {
             let filePath = file.path,
                 nodes = filePath.split('/');
 
-            // 移除最后一个元素
-            nodes.pop();
             // 移除第一个元素
             nodes.shift();
+            // 移除最后一个元素，并获取文件名
+            let fileFullName = nodes.pop();
+            let fileNames = fileFullName.split('.');
+            fileNames.pop();
+            let fileName = fileNames.join('.');
+            nodes.push(fileName);
             //
             let fileData = UnJs.fs.readFileSync(filePath, 'utf8');
             if (fileData) {
@@ -142,7 +152,7 @@ const LoadDevelop = function(UnJs) {
                 });
 
                 self.createViewContent(nodes, result.join(''));
-                scriptList.push(UnJs.config.devDir + '/temp/' + nodes.join('/') +'/view.js');
+                scriptList.push(tempDir + nodes.join('/') + '/'+ fileName +'.js');
             }
         });
 

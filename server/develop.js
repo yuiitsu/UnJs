@@ -4,7 +4,7 @@
  */
 const Path = require('path');
 
-const LoadDevelop = function(UnJs) {
+const Develop = function(UnJs) {
 
     let self = this;
     //
@@ -204,4 +204,4 @@ const LoadDevelop = function(UnJs) {
     }
 };
 
-module.exports = LoadDevelop;
+module.exports = Develop;

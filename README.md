@@ -32,6 +32,14 @@ v4.0.0
          index.html (首页模板)
      - dist(编译输出目录)
      - server(node服务)
+        - controller
+            index.js
+        config.js
+        develop.js
+        route.js
+        server.js
+        template.js
+        unjs.js
      config.js (配置文件)
      app.js (运行入口文件)
 

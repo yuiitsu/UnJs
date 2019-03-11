@@ -1,0 +1,24 @@
+<div class="menu">
+    <ul>
+        {{ for var i in data['list'] }}
+        {{ var focusModule = data['openModule'] ? data['openModule'] : 'index' }}
+        {{ var focus = data['list'][i]['module'] === focusModule ? 'focus' : '' }}
+        <li class="menu-level-1 {{ focus }}"
+            data-module="{{ data['list'][i]['module'] }}"
+            data-method="{{ data['list'][i]['method'] }}">{{ data['list'][i]['name'] }}</li>
+        {{ if data['list'][i]['children'] }}
+        {{ var hide = data['list'][i]['module'] === data['openChild'] ? '' : 'hide' }}
+        <li class="menu-child {{ hide }}">
+            <ul>
+                {{ for var j in data['list'][i]['children'] }}
+                <li class="menu-level-2" data-module="{{ data['list'][i]['children'][j]['module'] }}"
+                    data-method="{{ data['list'][i]['children'][j]['method'] }}">
+                    {{ data['list'][i]['children'][j]['name'] }}
+                </li>
+                {{ end }}
+            </ul>
+        </li>
+        {{ end }}
+        {{ end }}
+    </ul>
+</div>

@@ -1,13 +1,15 @@
 /**
- *  Input Component
+ *  Modal Component
  */
-Component.extend('input', function() {
+Component.extend('modal', function() {
+
+    let self = this;
 
     /**
      * 事件绑定，被调用时自动执行
      */
-    this.bindEvent = function() {
-        // $('.component-input').find('input').val('Input');
+    this.bindEvent = function(target) {
+        $(target).show();
     };
 
     /**

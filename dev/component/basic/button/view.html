@@ -1,7 +1,7 @@
-{{ var text = data['text'] ? data['text'] : 'Button' }}
 
 <div class="component-button">
-    <button class="{{ data['className'] }}">{{ text }}</button>
+    <button class="{{ data['class'] }}"
+            {{ data['disabled'] }}>{{ data['text'] }}</button>
 </div>
 
 {{ var component = this.callComponent({name: 'button'}) }}

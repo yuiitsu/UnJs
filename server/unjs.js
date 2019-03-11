@@ -6,7 +6,6 @@
  */
 const Http = require('http');
 const Url = require('url');
-const Os = require('os');
 const Fs = require('fs');
 const Path = require('path');
 const queryString = require('querystring');
@@ -14,7 +13,7 @@ const queryString = require('querystring');
 const Config = require('./config');
 const Cookie = require('./cookie');
 const Template = require('./template');
-const LoadDevelop = require('./develop');
+const Develop = require('./develop');
 
 const UnJs = function () {
 
@@ -96,10 +95,6 @@ const UnJs = function () {
 
     self.setTemplateDir = function (templateDir) {
         self.templateDir = templateDir;
-    };
-
-    self.loadDevelop = function () {
-        return LoadDevelop;
     };
 
     /**
@@ -225,7 +220,7 @@ const UnJs = function () {
             }
 
             if (self.develop) {
-                let loadDevelop = new LoadDevelop(self),
+                let loadDevelop = new Develop(self),
                     developData = loadDevelop.run();
                 data['scripts'] = developData['scriptFileList'].join("");
                 data['styles'] = developData['styleFileList'].join("");
@@ -640,8 +635,9 @@ const UnJs = function () {
             // 检查变量
             var patt = /\{\{ (.+?) \}\}/i;
             while (item = patt.exec(result)) {
-
-                result = result.replace(item[0], "'+" + item[1].replace(new RegExp(/\\/g), "") + "+'");
+                var varchar = item[1].replace(new RegExp(/\\/g), "");
+                // result = result.replace(item[0], "'+" + varchar +"+'");
+                result = result.replace(item[0], "'+(" + varchar + " ? "+ varchar +" : '')+'");
             }
         };
 
@@ -689,7 +685,7 @@ const UnJs = function () {
         var parseLoop = function () {
 
             var item;
-            var patt = /\{\{ loop (.+?) \}\}/i;
+            var patt = /\{\{ for (.+?) \}\}/i;
             while (item = patt.exec(result)) {
 
                 parseStatus = true;

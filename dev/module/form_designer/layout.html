@@ -1,0 +1,58 @@
+<div class="form-designer-container flex-row">
+    <div class="form-designer-component">
+        {{ this.getView('module.form_designer.component') }}
+    </div>
+    <div class="form-designer-layout flex-auto flex-column">
+        <div class="form-designer-form flex-auto">
+            <div class="form-designer-form-tips">请先拖一个布局到这里</div>
+        </div>
+        <div class="form-designer-action">
+            <component.basic.button.view class="primary" text="测试验证"></component.basic.button.view>
+        </div>
+    </div>
+    <div class="form-designer-component-setting">
+        <h2>文本框</h2>
+        <h3>属性</h3>
+        <div class="form-designer-component-setting-item">
+            <div class="form-designer-form-label">名称:</div>
+            <div class="form-designer-form-control-box flex-auto">
+                <component.basic.input.view></component.basic.input.view>
+            </div>
+        </div>
+        <h3>验证规则</h3>
+        <div class="form-designer-component-setting-item">
+            <div class="flex-row">
+                <div class="form-designer-form-label">必要:</div>
+                <div class="form-designer-form-control-box flex-auto">
+                    {{ var list = [{label: '是', value: 1}, {label: '否', value: 0}] }}
+                    <component.basic.radio.view list="{{ list }}" default="1" name="isRequired"></component.basic.radio.view>
+                </div>
+            </div>
+        </div>
+        <div class="form-designer-component-setting-item">
+            <div class="form-designer-form-label">最小长度:</div>
+            <div class="form-designer-form-control-box flex-auto">
+                <component.basic.input.view value="0"></component.basic.input.view>
+            </div>
+        </div>
+        <div class="form-designer-component-setting-item">
+            <div class="form-designer-form-label">最大长度:</div>
+            <div class="form-designer-form-control-box flex-auto">
+                <component.basic.input.view value="0"></component.basic.input.view>
+            </div>
+        </div>
+        <div class="form-designer-component-setting-item">
+            <div class="form-designer-form-label">数据类型:</div>
+            <div class="form-designer-form-control-box flex-auto">
+                {{ var list = ['A', 'B', 'C'] }}
+                <component.basic.select.view list="{{ list }}"></component.basic.select.view>
+            </div>
+        </div>
+        <h3>高级规则</h3>
+        <div class="form-designer-component-setting-item">
+            <div class="">
+                <component.basic.button.view class="" text="添加规则"></component.basic.button.view>
+            </div>
+        </div>
+    </div>
+</div>

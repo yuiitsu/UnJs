@@ -1,0 +1,13 @@
+{{ var list = data['list'] }}
+
+<div class="component-radio">
+    {{ for var i in list }}
+    {{ var checked = i == data['default'] ? 'checked' : '' }}
+    <label>
+        <input type="radio"
+               name="{{ data['name'] }}"
+               value="{{ list[i]['value'] }}"
+               {{ checked }} /> {{ list[i]['label'] }}
+    </label>
+    {{ end }}
+</div>

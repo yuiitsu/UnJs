@@ -1,0 +1,9 @@
+{{ var type = data['type'] ? data['type'] : 'text' }}
+
+<div class="component-input">
+    <input type="{{ type }}"
+           class="{{ data['className'] }}"
+           placeholder="{{ data['placeholder'] }}"
+           value="{{ data['value'] }}" />
+</div>
+{{ var component = this.callComponent({name: 'input'}) }}

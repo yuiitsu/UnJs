@@ -1,7 +1,7 @@
 /**
- *  Input Component
+ *  Select Component
  */
-Component.extend('input', function() {
+Component.extend('select', function() {
 
     /**
      * 事件绑定，被调用时自动执行

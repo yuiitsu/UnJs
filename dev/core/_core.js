@@ -8,8 +8,6 @@
  */
 var _core = {
 
-    // 版本号
-    version: '',
     // 控制器默认目录
     controllerDir: 'controller/',
     // 控制器对象
@@ -77,16 +75,19 @@ var _core = {
         //Controller.pageView.putModelIdToNextView();
         if (!this.controller) {
             this.log('未找到控制器对象', 'err');
+            this.err('未找到控制器对象');
             return;
         }
 
         if (!this.controller[name]) {
             this.log('未找到控制器[' + name + ']', 'err');
+            this.err('未找到控制器[' + name + ']');
             return;
         }
 
         if (!this.controller[name][method]) {
             this.log('未找到控制器方法[' + method + ']', 'err');
+            this.err('未找到控制器方法[' + method + ']');
             return;
         }
 
@@ -155,6 +156,30 @@ var _core = {
         } else {
             this.log('组件[' + name + '] 不存在', 'err');
         }
+    },
+
+    /**
+     * 渲染组件
+     * @param name
+     * @param data
+     */
+    renderComponent: function(name, data) {
+        var componentViewName = 'component.' + name;
+        if (!this.view.hasOwnProperty(componentViewName)) {
+            this.log('组件[' + name + '] 不存在', 'err');
+        }
+
+        //
+        var html = this.view[componentViewName].init(data);
+
+        return {
+            to: function(target) {
+                target.html(html);
+            },
+            appendTo: function(target) {
+                target.append(html);
+            }
+        };
     },
 
     /**
@@ -261,14 +286,6 @@ var _core = {
      */
     getUrl: function () {
         return window.location.search.substr(1);
-    },
-
-    /**
-     * 设置标题
-     */
-    setTitle: function (title) {
-
-        $('title').text(title);
     },
 
     /**
@@ -544,9 +561,6 @@ var _core = {
         var para = '';
         if(!options.data){
             options.data = {};
-        }
-        if(!options.data.shop_id){
-            options.data.shop_id = wc.getShopId();
         }
         if (options.data) {
             for (var x in options.data) {
@@ -827,7 +841,7 @@ var _core = {
         Dep.prototype = {
             addSub: function (sub) {
                 // 防止重复添加监听
-                var flag = wc.reduce(this.subs, function (acc, current) {
+                var flag = _core.reduce(this.subs, function (acc, current) {
                     return acc && !(current.cb === sub.cb);
                 }, true);
                 if (flag) {
@@ -959,6 +973,29 @@ var _core = {
         }
     },
 
+    // reduce
+    reduce: function (array, action, acc) {
+        // 检查参数合法性
+        if (!this.isArray(array)) {
+            return acc;
+        }
+        // 檢查原生 reduce
+        if (Array.prototype.reduce) {
+            return array.reduce(action, acc);
+        }
+
+        for (var i in array) {
+            if (array.hasOwnProperty(i)) {
+                acc = action(acc, array[i]);
+            }
+        }
+        return acc;
+    },
+
+    isArray: function (value) {
+        return Object.prototype.toString.call(value) === '[object Array]';
+    },
+
     /**
      * 处理model数据，重置model
      * @param module 模块名称，根据模块名称重置model
@@ -976,7 +1013,7 @@ var _core = {
      */
     log: function (text, type) {
         type = type || 'ok';
-        console.log('[WmJs]' + type + ': ' + text);
+        console.log('[UnJs]' + type + ': ' + text);
     },
 
 
@@ -1041,7 +1078,6 @@ var _core = {
      * 获取链接地址参数
      */
     getParams: function (search) {
-
         this.pathName = window.location.pathname;
         search = search || window.location.search.substr(1);
 
@@ -1074,22 +1110,45 @@ var _core = {
     /**
      * 路由,通过解析地址,调用呼叫方法
      */
-    router: function (search, popStatus) {
+    router: function (search, prepare) {
         var params = search && search !== 'undefined' ? this.getParams(search.replace("\?", "")) : (this.getParams() || {});
         var moduleName = params['a'] === undefined ? 'index' : params['a'];
         var methodName = params['m'] === undefined ? 'index' : params['m'];
         //if (this.pageView.router()) {
         var self = this;
-        this.import(moduleName, function (module) {
-            if (module.hasOwnProperty(methodName)) {
-                module.params = params;
-                module[methodName]();
-            } else {
-                //console.log('[UnJs]err: 未找到方法[' + moduleName + ' = > ' + methodName + ']');
-                self.log('未找到方法[' + moduleName + ' = > ' + methodName + ']', 'err');
-                self.err("未找到方法[" + moduleName + " = > " + methodName + "]");
-            }
-        });
+        if (!prepare) {
+            this.import(moduleName, function (module) {
+                if (module.hasOwnProperty(methodName)) {
+                    module.params = params;
+                    module[methodName]();
+                } else {
+                    //console.log('[UnJs]err: 未找到方法[' + moduleName + ' = > ' + methodName + ']');
+                    self.log('未找到方法[' + moduleName + ' = > ' + methodName + ']', 'err');
+                    self.err("未找到方法[" + moduleName + " = > " + methodName + "]");
+                }
+            });
+        } else {
+            this.import(prepare.module, function(module) {
+                var prepareMethod = prepare.method ? prepare.method : 'index';
+                if (module.hasOwnProperty(prepareMethod)) {
+                    module.params = params;
+                    module[prepareMethod] (function() {
+                        self.import(moduleName, function (module) {
+                            if (module.hasOwnProperty(methodName)) {
+                                module.params = params;
+                                module[methodName]();
+                            } else {
+                                //console.log('[UnJs]err: 未找到方法[' + moduleName + ' = > ' + methodName + ']');
+                                self.log('未找到方法[' + moduleName + ' = > ' + methodName + ']', 'err');
+                                self.err("未找到方法[" + moduleName + " = > " + methodName + "]");
+                            }
+                        });
+                    });
+                } else {
+                    self.err("未找到方法[" + moduleName + " = > " + methodName + "]");
+                }
+            });
+        }
         //}
     },
 
@@ -1118,7 +1177,10 @@ var _core = {
         //    '<div style="padding:10px 0;">' + msg + '</div>' +
         //    '<div style="padding:10px 0;text-align:right;color:#ccc;"><i>WmJs v' + this.version + '</i></div>' +
         //    '</div>';
-        this.callControl('error', 'index', null, null, {
+        this.callControl('error', 'index', {
+            message: msg,
+            version: this.version
+        }, null, {
             noPushStatus: true
         });
     },
@@ -1128,12 +1190,12 @@ var _core = {
      */
     init: function (options) {
         var self = this;
-        this.version = options.version;
+        _core.version = options.version;
         window.onload = function () {
-            self.router(options.search, false);
+            self.router(options.search, options.prepare);
             window.setTimeout(function () {
                 window.addEventListener('popstate', function (e) {
-                    self.router(options.search, true);
+                    self.router(null, options.prepare);
                 });
             }, 0);
         };

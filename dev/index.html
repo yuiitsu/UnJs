@@ -10,9 +10,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
     {{ styles }}
 </head>
-<body style="position:relative;">
+<body>
     <!-- main start -->
-    <div class="container" id="container"></div>
+    <div class="app">
+        <div class="layout flex-row">
+            <!-- Sidebar start -->
+            <div class="sidebar">
+                <div id="sidebar-container"></div>
+            </div>
+            <!-- Sidebar end -->
+            <!-- Main start -->
+            <div class="main flex-auto flex-column">
+                <!-- Main header start -->
+                <div class="header" id="header"></div>
+                <!-- Main header end -->
+                <!-- Main container start -->
+                <div class="main-container flex-auto" id="container"></div>
+                <!-- Main container end -->
+            </div>
+            <!-- Main end -->
+        </div>
+    </div>
     <!-- main end -->
     <!-- script file start -->
     {{ scripts }}
@@ -22,7 +40,10 @@
             'version': '{{ version }}',
             'container': '#container',
             'pageView': {},
-            'search': '{{ search }}'
+            'search': '{{ search }}',
+            'prepare': {
+                'module': 'prepare'
+            }
         });
     </script>
 </body>

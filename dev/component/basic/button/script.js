@@ -14,4 +14,6 @@ Component.extend('button', function() {
      */
     this.init = function() {
     };
+
+    this.disabled = function() {};
 });

@@ -1,5 +1,5 @@
 // 路由配置
-var route = {
+const route = {
     '/': 'index',
     '/login': 'login',
 };

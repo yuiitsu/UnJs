@@ -1,39 +1,51 @@
-<div style="padding:10px;" class="radius-small">
+<div class="radius-small">
     <h1 style="margin-bottom:10px;font-size:28px;">Component Example:</h1>
     <div>
         <div style="margin-bottom:10px;width:300px;height:35px;">
-            <component.basic.input.index className=""></component.basic.input.index>
+            <component.basic.input.view className="" placeholder="Placeholder"></component.basic.input.view>
         </div>
         <div style="margin-bottom:10px;width:300px;height:35px;">
-            <component.basic.input.index className="error"></component.basic.input.index>
+            <component.basic.input.view className="error"></component.basic.input.view>
         </div>
-        <div style="margin-bottom:10px;">
+        <div style="margin-bottom:10px;height:100px;">
             <component.basic.textarea.view className="radius-small"></component.basic.textarea.view>
         </div>
     </div>
     <div>
-        <div style="margin-bottom:10px;width:150px;height:35px;" class="display-inline-block margin-right-small">
-            <component.basic.button.view className="primary" text="Primary"></component.basic.button.view>
+        <div style="margin-bottom:10px;width:300px;">
+            {{ var list = ['A', 'B', 'C'] }}
+            <component.basic.select.view list="{{ list }}"></component.basic.select.view>
+        </div>
+    </div>
+    <div>
+        <div style="margin-bottom:10px;width:150px;height:40px;" class="display-inline-block margin-right-small">
+            <component.basic.button.view class="primary" text="Primary" disabled="disabled"></component.basic.button.view>
         </div>
         <div style="margin-bottom:10px;width:150px;height:35px;" class="display-inline-block margin-right-small">
-            <component.basic.button.view className="success" text="Success"></component.basic.button.view>
+            <component.basic.button.view class="success" text="Success"></component.basic.button.view>
         </div>
         <div style="margin-bottom:10px;width:150px;height:35px;" class="display-inline-block margin-right-small">
-            <component.basic.button.view className="warning" text="Warning"></component.basic.button.view>
+            <component.basic.button.view class="warning" text="Warning"></component.basic.button.view>
         </div>
         <div style="margin-bottom:10px;width:150px;height:35px;" class="display-inline-block margin-right-small">
-            <component.basic.button.view className="info" text="Info"></component.basic.button.view>
+            <component.basic.button.view class="info" text="Info"></component.basic.button.view>
         </div>
         <div style="margin-bottom:10px;width:150px;height:35px;" class="display-inline-block margin-right-small">
-            <component.basic.button.view className="danger" text="Danger"></component.basic.button.view>
+            <component.basic.button.view class="danger" text="Danger"></component.basic.button.view>
         </div>
         <div style="margin-bottom:10px;width:150px;height:35px;" class="display-inline-block margin-right-small">
-            <component.basic.button.view className="disabled" text="Disabled"></component.basic.button.view>
+            <component.basic.button.view class="" text="Default"></component.basic.button.view>
         </div>
     </div>
     <div>
         <div>
             <component.date_selector.view></component.date_selector.view>
+        </div>
+    </div>
+    <div>
+        <div>
+            {{ var list = [{label: 'Yes', value: 1}, {label: 'No', value: 0}] }}
+            <component.basic.radio.view name="radio" list="{{ list }}" default="0"></component.basic.radio.view>
         </div>
     </div>
 </div>

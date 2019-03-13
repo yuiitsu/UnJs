@@ -1,9 +1,13 @@
 {{ var type = data['type'] ? data['type'] : 'text' }}
+{{ var dataAttr = '' }}
 
 <div class="component-input">
-    <input type="{{ type }}"
-           class="{{ data['className'] }}"
-           placeholder="{{ data['placeholder'] }}"
-           value="{{ data['value'] }}" />
+    <input
+        {{ for var i in data }}
+            {{ if data.hasOwnProperty(i) }}
+             {{ i }}="{{ data[i] }}"
+            {{ end }}
+        {{ end }}
+        />
 </div>
 {{ var component = this.callComponent({name: 'input'}) }}

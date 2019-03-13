@@ -5,11 +5,10 @@ Component.extend('modal', function() {
 
     let self = this;
 
-    /**
-     * 事件绑定，被调用时自动执行
-     */
-    this.bindEvent = function(target) {
-        $(target).show();
+    this.bind = {
+        show: function(target) {
+            $(target).show();
+        }
     };
 
     /**

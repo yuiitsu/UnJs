@@ -1,0 +1,26 @@
+{{ var row = data['row'] ? data['row'] : 4 }}
+{{ var column = data['column'] ? data['column'] : 4 }}
+<table class="form-designer-layout" cellspacing="0">
+    {{ for var i = 0; i < row; i++ }}
+    <tr>
+        {{ for var j = 0; j < column; j++ }}
+        {{ var focus = i.toString() + j.toString() === data['openProperty'] ? ' focus' : '' }}
+        <td data-row="{{ i.toString() }}"
+            data-column="{{ j.toString() }}"
+            class="form-designer-component-container{{ focus }}">
+            {{ var position = i + '' + j }}
+            {{ if data['formElements'] && data['formElements'][position] }}
+            {{ var item = data['formElements'][i + '' + j] }}
+            {{ var component = item['component'] }}
+            {{ func this.getView('component.'+ component, data['componentData'][position]) }}
+            {{ end }}
+        </td>
+        {{ end }}
+    </tr>
+    {{ end }}
+</table>
+<div class="form-designer-layout-action">
+    <component.basic.button.view class="primary" text="提交"></component.basic.button.view>
+</div>
+
+{{ var component = this.callComponent({name: 'form_designer.layout.default'}) }}

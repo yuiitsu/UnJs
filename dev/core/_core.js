@@ -124,6 +124,30 @@ var _core = {
         }
     },
 
+    callModule: function(name, method, params) {
+        this.log('Module: ' + name + ' => ' + method);
+        //Controller.pageView.putModelIdToNextView();
+        if (!this.controller) {
+            this.log('未找到控制器对象', 'err');
+            this.err('未找到控制器对象');
+            return;
+        }
+
+        if (!this.controller[name]) {
+            this.log('未找到控制器[' + name + ']', 'err');
+            this.err('未找到控制器[' + name + ']');
+            return;
+        }
+
+        if (!this.controller[name][method]) {
+            this.log('未找到控制器方法[' + method + ']', 'err');
+            this.err('未找到控制器方法[' + method + ']');
+            return;
+        }
+        // this.handModel(name);
+        this.controller[name][method](params);
+    },
+
     /**
      * 呼叫组件
      * @param options 配置项
@@ -131,7 +155,8 @@ var _core = {
      * @param func 在new出组件实例的时候执行的函数
      */
     callComponent: function (options, params, func) {
-        let name = options.name,
+        let self = this,
+            name = options.name,
             data = options.data,
             callback = options.callback,
             method = options.method || 'init',
@@ -143,10 +168,22 @@ var _core = {
                 if (Object.prototype.toString.call(func) === '[object Function]') {
                     func.call(this);
                 }
-                if (comp.hasOwnProperty('bindEvent') &&
-                    Object.prototype.toString.call(comp['bindEvent']) === '[object Function]') {
-                    window.setTimeout(function () {
-                        comp['bindEvent'](params, data, callback, domObject);
+
+                if (comp.hasOwnProperty('lazyInit') || comp.hasOwnProperty('bind')) {
+                    window.setTimeout(function() {
+                        //
+                        if (Object.prototype.toString.call(comp.bind) === '[object Object]') {
+                            for (var i in comp.bind) {
+                                if (comp.bind.hasOwnProperty(i) &&
+                                    Object.prototype.toString.call(comp.bind[i]) === '[object Function]') {
+                                    comp.bind[i](params, data, callback, domObject);
+                                }
+                            }
+                        }
+                        //
+                        if (Object.prototype.toString.call(comp['lazyInit']) === '[object Function]') {
+                            comp['lazyInit'](params, data, callback, domObject);
+                        }
                     });
                 }
                 return comp[method](params, data, callback, domObject);
@@ -398,7 +435,7 @@ var _core = {
             this.bindEventDo({
                 'target': tag,
                 'event': event
-            }, i, containerObject);
+            }, i, containerObject, bindList);
         }
     },
 
@@ -407,8 +444,9 @@ var _core = {
      * @param tagObject 目标对象
      * @param i
      * @param containerObject
+     * @param bindList
      */
-    bindEventDo: function (tagObject, i, containerObject) {
+    bindEventDo: function (tagObject, i, containerObject, bindList) {
         var self = this;
         var $target = tagObject.target !== 'window' ? $(tagObject.target) : $(window);
         var event = '';
@@ -416,7 +454,7 @@ var _core = {
         if (eventArr[eventArr.length - 1] === '') {
             event = eventArr.join("_");
         }
-        var eve = self.bind[i];
+        var eve = bindList[i];
         if (event) {
             var match =
                 tagObject.target.match(/([\.\#\>\~\+\*\s]?[\w\-\_\[\]\=\"]*)[\>\~\+\*\s]*([\.\#]?[\w\-\_\[\]\=\"]*)/);
@@ -1111,11 +1149,17 @@ var _core = {
      * 路由,通过解析地址,调用呼叫方法
      */
     router: function (search, prepare) {
+        var self = this;
         var params = search && search !== 'undefined' ? this.getParams(search.replace("\?", "")) : (this.getParams() || {});
         var moduleName = params['a'] === undefined ? 'index' : params['a'];
         var methodName = params['m'] === undefined ? 'index' : params['m'];
+        //保护私有方法
+        if (methodName.indexOf('_') === 0) {
+            self.log('_ 开头的方法不允许访问[' + moduleName + ' = > ' + methodName + ']', 'err');
+            self.err("_ 开头的方法不允许访问[" + moduleName + " = > " + methodName + "]");
+            return false;
+        }
         //if (this.pageView.router()) {
-        var self = this;
         if (!prepare) {
             this.import(moduleName, function (module) {
                 if (module.hasOwnProperty(methodName)) {

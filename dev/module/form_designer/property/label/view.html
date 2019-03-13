@@ -1,0 +1,14 @@
+{{ var property = data['property'] ? data['property'] : {} }}
+
+<h2>标签</h2>
+<div class="form-designer-component-setting-container">
+    <h3>属性</h3>
+    <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">文本:</div>
+        <div class="form-designer-form-control-box flex-auto">
+            <component.basic.input.view value="{{ property['text'] }}" class="js-property-input" name="property.text"></component.basic.input.view>
+        </div>
+    </div>
+</div>
+
+{{ var component = this.callComponent({name: 'form_designer.property.label'}) }}

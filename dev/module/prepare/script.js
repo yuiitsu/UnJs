@@ -7,17 +7,17 @@ Controller.extend('prepare', function () {
     var self = this;
     //
     this.bind = {
-        '#sidebar-container li click.menu_': 'openModule'
+        '#sidebar-container li click.menu_': '_openModule'
     };
 
     this.index = function(callback) {
         // 数据监听
         var model = this.model.get();
         this.model.set('menuOpenModule', this.params.a);
-        this.watch(model, 'menuOpenModule', 'renderMenu');
-        this.watch(model, 'menuOpenChild', 'renderMenu');
+        this.watch(model, 'menuOpenModule', '_renderMenu');
+        this.watch(model, 'menuOpenChild', '_renderMenu');
         //
-        this.checkAuthorization();
+        this._checkAuthorization();
         //
         callback();
     };
@@ -25,28 +25,28 @@ Controller.extend('prepare', function () {
     /**
      * 检查授权
      */
-    this.checkAuthorization = function() {
+    this._checkAuthorization = function() {
         //
         this.output('layout', {}, $('#sidebar-container'));
         //
         this.output('header', {}, $('#header'));
         //
-        this.getMenu();
+        this._getMenu();
     };
 
     /**
      * 获取菜单并渲染
      */
-    this.getMenu = function() {
+    this._getMenu = function() {
         // 向服务器请求数据
         // 渲染菜单到页面
-        this.renderMenu();
+        this._renderMenu();
     };
 
     /**
      * 渲染菜单
      */
-    this.renderMenu = function() {
+    this._renderMenu = function() {
         var module = this.model.get('menuOpenModule'),
             parent = this.model.get('menuOpenChild');
 
@@ -86,7 +86,7 @@ Controller.extend('prepare', function () {
         }, $('.menu-container'));
     };
 
-    this.openModule = function(e) {
+    this._openModule = function(e) {
         var module = this.$(e).attr('data-module'),
             method = this.$(e).attr('data-method');
 

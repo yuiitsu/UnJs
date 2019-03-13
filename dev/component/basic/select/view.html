@@ -11,7 +11,8 @@
             {{ var value = list[i] }}
             {{ var text = list[i] }}
         {{ end }}
-        <option value="{{ value }}">{{ text }}</option>
+        {{ var selected = data['default'] && list[i]['value'] === data['default'] ? 'selected' : '' }}
+        <option value="{{ value }}" {{ selected }}>{{ text }}</option>
         {{ end }}
     </select>
 </div>

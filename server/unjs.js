@@ -654,6 +654,16 @@ const UnJs = function () {
             }
         };
 
+        var parseFunc = function() {
+            var item;
+            // 检查变量
+            var patt = /\{\{ func (.+?) \}\}/i;
+            while (item = patt.exec(result)) {
+                var varchar = item[1].replace(new RegExp(/\\/g), "");
+                result = result.replace(item[0], "'+" + varchar +"+'");
+            }
+        };
+
         /**
          * 解析条件
          */
@@ -719,13 +729,23 @@ const UnJs = function () {
                     var attr = {},
                         attrPatt = /\w+?=\\?\".*?\\?\"/gi,
                         attrStr = item[2].trim(),
-                        attrArr = attrStr.match(attrPatt) || [];
+                        attrArr = attrStr.match(attrPatt) || [],
+                        dataAttrs = [];
+
                     attrArr.forEach(function (currentValue, i, array) {
                         var currentValueArr = currentValue.split('='),
-                            key = currentValueArr[0].trim(),
-                            value = currentValueArr[1].replace(/\\?\"/g, '');
-                        attr[key] = value;
+                            key = currentValueArr[0].trim(), value = currentValueArr[1].replace(/\\?\"/g, '');
+
+                        // 处理data-xxx属性
+                        let keys = key.split('_');
+                        if (keys.length > 1 && keys[0] === 'data') {
+                            // dataAttrs.push('data-' + keys[1] + '=' + value);
+                            attr['data-' + keys[1]] = value;
+                        } else {
+                            attr[key] = value;
+                        }
                     });
+                    // attr._data = dataAttrs.join(" ");
                     parseStatus = true;
                     if (item[3].trim()) {
                         attr['childHtml'] = item[3];
@@ -767,11 +787,12 @@ const UnJs = function () {
         parseCondition();
         parseEnd();
         parseVer();
+        parseFunc();
         parseData();
         parseTag();
 
         if (!parseStatus) {
-            result = "html += '" + result + "';";
+            result = "html += ' " + result + " ';";
         }
 
         return result;

@@ -4,14 +4,14 @@
 Controller.extend('index', function () {
 
     this.bind = {
-        'button click': 'event'
+        'button click': '_event'
     };
 
     this.index = function() {
         this.output('view');
     };
 
-    this.event = function(e) {
+    this._event = function(e) {
         this.$(e).attr('disabled', true);
         this.renderComponent('basic.spinner.view').to(this.$(e));
         this.renderComponent('toast.view', {title: 'Title', body: 'Body'}).appendTo($('body'));

@@ -1,0 +1,7 @@
+{{ var tooltipCode = parseInt(Math.random() * 100000) }}
+
+<div class="component-tooltip" id="component-tooltip-{{ tooltipCode }}">
+    {{ data['content'] }}
+</div>
+
+{{ var component = this.callComponent({name: 'tooltip'}, {target: data['target'], tooltipCode: tooltipCode}) }}

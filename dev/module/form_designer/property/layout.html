@@ -1,0 +1,8 @@
+<div class="form-designer-component-layout flex-column">
+    <div class="form-designer-component-container flex-auto">
+        {{ func this.getView(data['name'], data['data']) }}
+    </div>
+    <div class="form-designer-component-action">
+        <component.basic.button.view text="删除" class="danger js-form-designer-component-del"></component.basic.button.view>
+    </div>
+</div>

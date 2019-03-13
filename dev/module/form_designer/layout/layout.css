@@ -1,0 +1,32 @@
+.form-designer-layout{
+    width:100%;
+    border: 1px solid #e1e1e1;
+    table-layout:fixed;
+}
+
+.form-designer-layout td{
+    height:50px;
+    padding:5px;
+    border: 1px solid #e1e1e1;
+}
+
+.form-designer-layout td:hover{
+    border: 1px solid #999;
+}
+
+.form-designer-layout td.focus{
+    border: 1px solid #666;
+}
+
+.form-designer-layout td label{
+    display: block;
+    text-align: right;
+}
+
+.form-designer-layout-action{
+    margin-top:10px;
+}
+
+.form-designer-layout-action button {
+    width:150px;
+}

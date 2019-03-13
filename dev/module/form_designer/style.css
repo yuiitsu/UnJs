@@ -1,18 +1,25 @@
 .form-designer-container{height:100%;color:#444;}
-.form-designer-component{width:200px;background-color:#efefef;}
-.form-designer-component-box{}
+.form-designer-component-selector{width:200px;background-color:#efefef;user-select: none;}
+.form-designer-component-layout{height:100%;}
 .form-designer-component-box h2{border-bottom:1px solid #e1e1e1;padding:10px;cursor: pointer;font-weight:700;}
 .form-designer-component-content{padding:10px;background-color:#fff;}
-.form-designer-component-content ul li{padding:10px 0;border-bottom:1px solid #f7f7f7;cursor: pointer;}
+.form-designer-component-content ul li{padding:10px;border-bottom:1px solid #f7f7f7;cursor: move;}
+.form-designer-component-content ul li:hover{background-color:#f7f7f7;}
 .form-designer-component-content ul li:last-child{border-bottom:1px solid #fff;}
-.form-designer-layout{padding:0 10px;}
-.form-designer-form{height:100%;border:1px solid #efefef;}
+.form-designer-layout-container{padding:0 10px;user-select: none;}
+.form-designer-form{height:100%;border:1px solid #efefef;padding:10px;}
 .form-designer-form-tips{text-align:center;font-size:28px;font-weight:700;color:#999;padding-top:30px;}
-.form-designer-action{height:50px;padding:10px 0;text-align: right;}
+.form-designer-component-container{height:100%;}
 .form-designer-component-setting{width:250px;background-color:#efefef;}
 .form-designer-component-setting h2{padding:20px;text-align: center;font-size:16px;font-weight:700;color:#222;}
 .form-designer-component-setting h3{font-weight:600;padding:10px;border-bottom:1px solid #e1e1e1;color:#444;}
-.form-designer-component-setting-item{padding:10px;}
+.form-designer-component-setting-container{margin-bottom:20px;}
+.form-designer-component-setting-item{padding:5px 10px;}
+.form-designer-component-action{padding:10px;text-align: center;}
+.form-designer-component-action .component-button{width:100%;}
+.form-designer-component-action button{width:100%;}
 .form-designer-form-label{padding-right:10px;}
 .form-designer-form-label{height:30px;line-height:30px;}
 .form-designer-form-control-box{height:30px;line-height:30px;}
+.form-designer-drag-tip{position: absolute;left:0;top:0;background-color:#000;color:#fff;opacity:.5;padding:5px 10px;
+    min-width: 80px;border-radius: 3px;}

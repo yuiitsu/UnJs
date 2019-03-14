@@ -1,16 +1,27 @@
-<div class="form-designer-container flex-row">
-    <div class="form-designer-component-selector">
-        {{ func this.getView('module.form_designer.component', data['componentSelector']) }}
-    </div>
-    <div class="form-designer-layout-container flex-auto flex-column">
-        <div class="form-designer-form flex-auto">
-            <!--
-            <div class="form-designer-form-tips">请先拖一个布局到这里</div>
-            -->
-            {{ func this.getView('module.form_designer.layout.default', {}) }}
+<div class="form-designer-container flex-column">
+    <div class="form-designer-header flex-row">
+        <div class="flex-auto">
+            <h2>表单设计</h2>
+        </div>
+        <div>
+            <component.basic.button.view class="info" text="测试验证"></component.basic.button.view>
+            <component.basic.button.view class="primary" text="保存"></component.basic.button.view>
         </div>
     </div>
-    <div class="form-designer-component-setting">
-        {{ func this.getView('module.form_designer.property.global.view') }}
+    <div class="flex-row flex-auto">
+        <div class="form-designer-component-selector">
+            {{ func this.getView('module.form_designer.component', data['componentSelector']) }}
+        </div>
+        <div class="form-designer-layout-container flex-auto flex-column">
+            <div class="form-designer-form flex-auto">
+                <!--
+                <div class="form-designer-form-tips">请先拖一个布局到这里</div>
+                -->
+                {{ func this.getView('module.form_designer.layout.default', {}) }}
+            </div>
+        </div>
+        <div class="form-designer-component-setting">
+            {{ func this.getView('module.form_designer.property.global.view', {}) }}
+        </div>
     </div>
 </div>

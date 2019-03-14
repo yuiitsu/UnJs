@@ -22,9 +22,10 @@ Component.extend('form_designer.layout.default', function() {
                 dataRow = dataRow ? dataRow : '0';
                 dataColumn = dataColumn ? dataColumn : '0';
                 var position = dataRow + '' + dataColumn;
-                // if (!formElements.hasOwnProperty(position)) {
-                //     modelKey = 'openEmptyProperty';
-                // }
+                if (!formElements.hasOwnProperty(position)) {
+                    // modelKey = 'openEmptyProperty';
+                    position = 'empty'
+                }
                 self.model.form_designer.set(modelKey, position);
                 //
                 e.stopPropagation();

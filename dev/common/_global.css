@@ -9,6 +9,7 @@ ul{list-style: none;}
 .hide{display: none;}
 /*  */
 .color-danger{color:#c82333;}
+.color-gray{color:#999;}
 /* display */
 .display-inline-block{display: inline-block;}
 

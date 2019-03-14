@@ -119,7 +119,10 @@ Controller.extend('form_designer', function () {
             data = {property: {}, rules: {}};
 
         if (position === 'global') {
-            name = 'global';
+            var rowAndColumn = self.model.get('layout');
+            data['row'] = rowAndColumn.row;
+            data['column'] = rowAndColumn.column;
+            self.output('property.global.view', data, $('.form-designer-component-setting'));
         } else {
             if (!formElements.hasOwnProperty(position)) {
                 this._renderEmptyProperty();
@@ -129,15 +132,13 @@ Controller.extend('form_designer', function () {
                 data = {
                     property: formElements[position].property,
                     rules: formElements[position].rules
-                }
+                };
+                self.output('property.layout', {
+                    name: 'module.form_designer.property.' + name + '.view',
+                    data: data
+                }, $('.form-designer-component-setting'));
             }
         }
-        console.log(formElements);
-
-        self.output('property.layout', {
-            name: 'module.form_designer.property.' + name + '.view',
-            data: data
-        }, $('.form-designer-component-setting'));
     };
 
     /**
@@ -176,7 +177,8 @@ Controller.extend('form_designer', function () {
                 target = $(element);
 
             if (component) {
-                if ((target).attr('class') === 'form-designer-component-container') {
+                if (target.hasClass('form-designer-component-container')) {
+                    console.log(target.hasClass('form-designer-component-container'));
                     if (target.children().length === 0) {
                         // 渲染组件到目标区域
                         // self.renderComponent(component, {}).to(target);

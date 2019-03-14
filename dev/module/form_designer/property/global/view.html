@@ -14,15 +14,17 @@
     </div>
 </div>
 <div class="form-designer-component-setting-container">
-    <h3>属性</h3>
+    <h3>布局</h3>
     <div class="form-designer-component-setting-item">
         <div class="form-designer-form-label">行数:</div>
         <div class="form-designer-form-control-box flex-auto">
-            <component.basic.input.view value="4" class="js-form-designer-layout" data_type="row"></component.basic.input.view>
+            {{ var row = data['row'] ? data['row'] : '4' }}
+            <component.basic.input.view value="{{ row }}" class="js-form-designer-layout" data_type="row"></component.basic.input.view>
         </div>
         <div class="form-designer-form-label">列数:</div>
         <div class="form-designer-form-control-box flex-auto">
-            <component.basic.input.view value="4" class="js-form-designer-layout" data_type="column"></component.basic.input.view>
+            {{ var column = data['column'] ? data['column'] : '4' }}
+            <component.basic.input.view value="{{ column }}" class="js-form-designer-layout" data_type="column"></component.basic.input.view>
         </div>
     </div>
 </div>

@@ -1,0 +1,50 @@
+{{ var property = data['property'] ? data['property'] : {} }}
+{{ var rules = data['rules'] ? data['rules'] : {} }}
+
+<h2>树形菜单</h2>
+<div class="form-designer-component-setting-container">
+    <h3>属性</h3>
+    <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">名称(<span class="color-danger">*</span>):</div>
+        <div class="form-designer-form-control-box flex-auto">
+            <component.basic.input.view name="property.name" class="js-property-input" value="{{ property['name'] }}"></component.basic.input.view>
+        </div>
+    </div>
+    <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">数据源:</div>
+        <div class="form-designer-form-control-box flex-auto">
+            {{ var list = [{text: '自定义', value: 'custom'}] }}
+            {{ var defaultType = property['dataSource'] ? property['dataSource'] : '' }}
+            <component.basic.select.view list="{{ list }}" default="{{ defaultType }}" class="js-property-input" name="property.dataSource"></component.basic.select.view>
+        </div>
+    </div>
+    {{ var hideClass = defaultType === 'custom' ? '' : 'hide' }}
+    <div class="form-designer-component-setting-item form-designer-component-custom-option-container {{ hideClass }}"
+         id="js-property-custom-option-container">
+        <div id="js-property-custom-option" class="form-designer-component-custom-option-box">
+            {{ func this.getView('module.form_designer.property.select.custom_option', property['list']) }}
+        </div>
+        <div class="text-align-right form-designer-component-custom-option-action">
+            点击添加
+            <component.basic.button.view text="+" class="" id="js-add-custom-option"></component.basic.button.view>
+        </div>
+    </div>
+</div>
+<div class="form-designer-component-setting-container">
+    <h3>验证规则</h3>
+    <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">必要:</div>
+        <div class="form-designer-form-control-box flex-auto">
+            {{ var defaultValue = rules['required'] ? rules['required'] : '0' }}
+            <component.basic.radio.view list="" default="{{ defaultValue }}" name="rules.required" class="js-property-control"></component.basic.radio.view>
+        </div>
+    </div>
+</div>
+<div class="form-designer-component-setting-container">
+    <h3>高级规则</h3>
+    <div class="form-designer-component-setting-item">
+        <div class="">
+            <component.basic.button.view class="" text="添加规则"></component.basic.button.view>
+        </div>
+    </div>
+</div>

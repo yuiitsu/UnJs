@@ -21,6 +21,5 @@ Component.extend('form_designer.property.global', function() {
      * 不指定方法，默认执行方法
      */
     this.init = function() {
-        console.log('Form Designer Property Global Component.');
     };
 });

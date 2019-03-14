@@ -13,13 +13,13 @@ Component.extend('tooltip', function() {
             targetPosition = target.offset(),
             targetLeft = targetPosition.left,
             targetTop = targetPosition.top,
-            targetOuterHeight = target.outerHeight();
-        console.log(targetLeft, targetTop, targetOuterHeight);
+            targetOuterHeight = target.outerHeight(),
+            content = params.content ? params.content : '';
         //
-        $('body').append(this.vc('tooltip.view', {
-            content: 'Content'
+        $('body').append(self.getView('component.tooltip.view', {
+            content: content
         }));
         //
-        $('.component-tooltip').css({left: targetLeft, top: targetTop + targetOuterHeight});
+        $('.component-tooltip').css({left: targetLeft, top: targetTop + targetOuterHeight + 8});
     };
 });

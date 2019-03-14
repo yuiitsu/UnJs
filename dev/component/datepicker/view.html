@@ -1,5 +1,5 @@
-{{ var id = 'tree-' + parseInt(Math.random() * 1000000) }}
-<div class="component-tree flex-row">
+{{ var id = 'datepicker-' + parseInt(Math.random() * 1000000) }}
+<div class="component-date-selector flex-row">
     <div class="component-input flex-auto">
         <input id="{{ id }}"
             {{ for var i in data }}
@@ -9,7 +9,7 @@
             {{ end }}
             />
     </div>
-    <div class="component-tree-icon"><i class="mdi mdi-file-tree"></i></div>
+    <div class="component-date-selector-icon"><i class="mdi mdi-calendar"></i></div>
 </div>
 
-{{ var component = this.callComponent({name: 'tree'}, {id: id}) }}
+{{ var component = this.callComponent({name: 'date_selector'}, {id: id}) }}

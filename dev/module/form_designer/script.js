@@ -14,6 +14,7 @@ Controller.extend('form_designer', function () {
         // 组件设置，选择框值变化
         '.form-designer-component-setting select.js-property-input change.setting_change_': '_settingEvent.selectChange',
         '.form-designer-component-setting input[type=radio] click.setting_click_': '_settingEvent.radioClick',
+        '.form-designer-component-setting .js-form-designer-component-datepicker change.setting_change_': '_settingEvent.datepickerChange',
         // 组件设置，删除组件
         '.form-designer-component-setting .js-form-designer-component-del click.component_del_': '_settingEvent.delComponent'
     };
@@ -178,7 +179,6 @@ Controller.extend('form_designer', function () {
 
             if (component) {
                 if (target.hasClass('form-designer-component-container')) {
-                    console.log(target.hasClass('form-designer-component-container'));
                     if (target.children().length === 0) {
                         // 渲染组件到目标区域
                         // self.renderComponent(component, {}).to(target);
@@ -241,6 +241,13 @@ Controller.extend('form_designer', function () {
          * @param e
          */
         radioClick: function(e) {
+            var name = self.$(e).attr('name'),
+                data = {};
+
+            data[name] = self.$(e).val();
+            self.model.setFormElements(data, true);
+        },
+        datepickerChange: function(e) {
             var name = self.$(e).attr('name'),
                 data = {};
 

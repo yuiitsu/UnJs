@@ -1,0 +1,58 @@
+{{ var property = data['property'] ? data['property'] : {} }}
+{{ var rules = data['rules'] ? data['rules'] : {} }}
+
+<h2>时间选择框</h2>
+<div class="form-designer-component-setting-container">
+    <h3>属性</h3>
+    <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">名称:</div>
+        <div class="form-designer-form-control-box flex-auto">
+            <component.basic.input.view name="property.name" class="js-property-input" value="{{ property['name'] }}"></component.basic.input.view>
+        </div>
+    </div>
+    <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">默认值:</div>
+        <div class="form-designer-form-control-box flex-auto">
+            <component.datepicker.view class="js-form-designer-component-datepicker" name="property.value"></component.datepicker.view>
+        </div>
+    </div>
+    <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">只读:</div>
+        <div class="form-designer-form-control-box flex-auto">
+            {{ var list = [{text: '是', value: '1'}, {text: '否', value: '0'}] }}
+            {{ var defaultValue = property['readonly'] ? property['readonly'] : '0' }}
+            <component.basic.radio.view list="{{ list }}" default="{{ defaultValue }}" name="property.readonly" class="js-property-control"></component.basic.radio.view>
+        </div>
+    </div>
+</div>
+<div class="form-designer-component-setting-container">
+    <h3>验证规则</h3>
+    <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">必要:</div>
+        <div class="form-designer-form-control-box">
+            {{ var list = [{text: '是', value: '1'}, {text: '否', value: '0'}] }}
+            {{ var defaultValue = rules['required'] ? rules['required'] : '0' }}
+            <component.basic.radio.view list="{{ list }}" default="{{ defaultValue }}" name="rules.required" class="js-property-control"></component.basic.radio.view>
+        </div>
+    </div>
+    <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">开始日期:</div>
+        <div class="form-designer-form-control-box flex-auto">
+            <component.datepicker.view class="js-form-designer-component-datepicker" name="rules.startDate"></component.datepicker.view>
+        </div>
+    </div>
+    <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">结束日期:</div>
+        <div class="form-designer-form-control-box flex-auto">
+            <component.datepicker.view class="js-form-designer-component-datepicker" name="rules.endDate"></component.datepicker.view>
+        </div>
+    </div>
+</div>
+<div class="form-designer-component-setting-container">
+    <h3>高级规则</h3>
+    <div class="form-designer-component-setting-item">
+        <div class="">
+            <component.basic.button.view class="" text="添加规则"></component.basic.button.view>
+        </div>
+    </div>
+</div>

@@ -24,8 +24,8 @@ Model.extend('form_designer', function () {
                     {component: 'basic.select.view', key: 'select', name: '选择菜单'},
                     {component: 'basic.radio.view', key: 'radio', name: '单选'},
                     {component: 'basic.checkbox.view', key: 'checkbox', name: '多选'},
-                    {component: 'basic.date.view', key: 'date', name: '时间选择'},
-                    {component: 'basic.tree.view', key: 'tree', name: '树形菜单'}
+                    {component: 'datepicker.view', key: 'datepicker', name: '时间选择'},
+                    {component: 'tree.view', key: 'tree', name: '树形菜单'}
                 ]
             },
             {

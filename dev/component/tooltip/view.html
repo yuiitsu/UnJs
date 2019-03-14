@@ -1,9 +1,6 @@
-{{ var tooltipCode = parseInt(Math.random() * 100000) }}
 
-<div class="component-tooltip" id="component-tooltip-{{ tooltipCode }}">
-    <div class="component-tooltip-arrow">
-        <i class="mdi mdi-menu-up"></i>
-    </div>
+<div class="component-tooltip" id="component-tooltip-{{ data['code'] }}">
+    <div class="component-tooltip-arrow"></div>
     <div class="component-tooltip-content">
         {{ data['content'] }}
     </div>

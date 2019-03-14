@@ -1,15 +1,26 @@
 <div class="component-tree-popup">
+    {{ for var i in data }}
     <div class="component-tree-popup-item">
-        <div class="component-tree-popup-title">+ 重庆市</div>
-        <div class="component-tree-popup-children">
+        <div class="component-tree-popup-title">+ {{ data[i]['name'] }}</div>
+        {{ if data[i]['children'] }}
+        <div class="component-tree-popup-children hide">
+            {{ for var j in data[i]['children'] }}
             <div class="component-tree-popup-item">
-                <div class="component-tree-popup-title">+ 渝北区</div>
-                <div class="component-tree-popup-children">
+                <div class="component-tree-popup-title">+ {{ data[i]['children'][j]['name'] }}</div>
+                {{ if data[i]['children'][j]['children'] }}
+                <div class="component-tree-popup-children hide">
+                    {{ for var m in data[i]['children'][j]['children'] }}
                     <div class="component-tree-popup-item">
-                        <div class="component-tree-popup-title">- 两路镇</div>
+                        <div class="component-tree-popup-title"
+                             data-value="{{ data[i]['name'] }}{{ data[i]['children'][j]['name'] }}{{ data[i]['children'][j]['children'][m]['name'] }}">- {{ data[i]['children'][j]['children'][m]['name'] }}</div>
                     </div>
+                    {{ end }}
                 </div>
+                {{ end }}
             </div>
+            {{ end }}
         </div>
+        {{ end }}
     </div>
+    {{ end }}
 </div>

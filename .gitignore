@@ -12,4 +12,6 @@ npm-debug.log
 /dist
 /shop
 /site
+**/temp/
 /dev/temp
+package-lock.json

@@ -20,7 +20,7 @@ const Config = {
         // 功能模块
         'module',
         // 静态文件，fonts，通用的img
-        'static'
+        // 'static'
     ],
     // 请求标记
     'requestFlag': [

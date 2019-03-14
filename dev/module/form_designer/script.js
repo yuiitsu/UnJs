@@ -12,7 +12,7 @@ Controller.extend('form_designer', function () {
         // 组件设置，文本框值变化
         '.form-designer-component-setting input.js-property-input input.setting_change_': '_settingEvent.inputChange',
         // 组件设置，选择框值变化
-        '.form-designer-component-setting select.js-property-input change.setting_change_': '_settingEvent.selectChange',
+        '.form-designer-component-setting select.js-property-input change.setting_select_change_': '_settingEvent.selectChange',
         '.form-designer-component-setting input[type=radio] click.setting_click_': '_settingEvent.radioClick',
         '.form-designer-component-setting .js-form-designer-component-datepicker change.setting_change_': '_settingEvent.datepickerChange',
         // 组件设置，删除组件
@@ -24,7 +24,7 @@ Controller.extend('form_designer', function () {
         this.watch(this.model.get(), 'openComponentId', '_renderComponentSelector');
         // 属性
         this.watch(this.model.get(), 'openProperty', '_renderProperty');
-        this.watch(this.model.get(), 'openProperty', '_renderLayout');
+        //this.watch(this.model.get(), 'openProperty', '_renderLayout');
         // 空Element
         this.watch(this.model.get(), 'openEmptyProperty', '_renderEmptyProperty');
         // 布局
@@ -52,6 +52,7 @@ Controller.extend('form_designer', function () {
             this.model.set('openComponentId', id);
         } else {
             // 打开全局设置
+            this.model.set('openPropertyTemp', 'global');
             this.model.set('openProperty', 'global');
         }
     };
@@ -75,7 +76,7 @@ Controller.extend('form_designer', function () {
         var row = this.model.get('layout.row'),
             column = this.model.get('layout.column'),
             formElements = this.model.get('formElements'),
-            openProperty = this.model.get('openProperty');
+            openProperty = this.model.get('openPropertyTemp');
 
         var data = {
             row: row,
@@ -184,8 +185,10 @@ Controller.extend('form_designer', function () {
                         // self.renderComponent(component, {}).to(target);
                         // 更新数据对象
                         var row = target.attr('data-row'),
-                            column = target.attr('data-column');
+                            column = target.attr('data-column'),
+                            position = row + '' + column;
 
+                        self.model.set('openPropertyTemp', position);
                         //
                         self.model.setFormElements({
                             name: key,
@@ -194,9 +197,9 @@ Controller.extend('form_designer', function () {
                                 class: 'form-designer-component-item js-form-control'
                             },
                             rules: {}
-                        }, false, row, column);
+                        }, true, row, column);
                         // 渲染property setting
-                        self.model.set('openProperty', row + '' + column);
+                        self.model.set('openProperty', position);
                     }
                 }
             }

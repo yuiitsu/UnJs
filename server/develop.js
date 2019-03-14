@@ -23,7 +23,8 @@ const Develop = function(UnJs) {
         // check target data type
         let targetType = Object.prototype.toString.call(target),
             targetPath = '',
-            fileList = [];
+            fileList = [],
+            paths = null;
         switch (targetType) {
             case '[object String]':
                 targetPath += target + '/';
@@ -35,7 +36,12 @@ const Develop = function(UnJs) {
                 break;
         }
 
-        let paths = UnJs.fs.readdirSync(targetPath);
+        try {
+            paths = UnJs.fs.readdirSync(targetPath);
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
         if (!paths) {
             // error
             console.log('read targetPath failed...', targetPath);

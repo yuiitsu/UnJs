@@ -86,20 +86,20 @@ const Server = {
             }
         }
 
-        // 获取配置文件
-        try {
-            let shopConfig = JSON.parse(Fs.readFileSync(paraConfig.configFile).toString());
-            apiHost = shopConfig['host'];
-        } catch (e) {
-            console.log(e);
-        }
+        // // 获取配置文件
+        // try {
+        //     let shopConfig = JSON.parse(Fs.readFileSync(paraConfig.configFile).toString());
+        //     apiHost = shopConfig['host'];
+        // } catch (e) {
+        //     console.log(e);
+        // }
 
         if (buildType) {
             Builder.build(buildHost, paraConfig);
         } else {
             apiHost = !apiHost ? 'localhost:9000' : apiHost;
             this.server(port, paraConfig, route, {
-                'apiHost': apiHost,
+                // 'apiHost': apiHost,
                 'develop': develop,
                 'templateDir': develop ? paraConfig['devDir'] : paraConfig['build']['distDir']
             });

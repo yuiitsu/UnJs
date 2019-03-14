@@ -17,7 +17,8 @@ Component.extend('form_designer.layout.default', function() {
                 var dataRow = $(this).attr('data-row'),
                     dataColumn = $(this).attr('data-column'),
                     formElements = self.model.form_designer.get('formElements'),
-                    modelKey = 'openProperty';
+                    modelKey = 'openProperty',
+                    modelKeyTemp = 'openProperty';
 
                 dataRow = dataRow ? dataRow : '0';
                 dataColumn = dataColumn ? dataColumn : '0';
@@ -26,35 +27,16 @@ Component.extend('form_designer.layout.default', function() {
                     // modelKey = 'openEmptyProperty';
                     position = 'empty'
                 }
+                self.model.form_designer.set(modelKeyTemp, position);
                 self.model.form_designer.set(modelKey, position);
+                //
+                $('.form-designer-layout').find('td').each(function() {
+                    $(this).removeClass('focus');
+                });
+                $(this).addClass('focus');
                 //
                 e.stopPropagation();
             });
-        },
-        /**
-         * 悬停鼠标显示功能按钮
-         * @param e
-         */
-        showActionBar: function(e) {
-            // $('.form-designer-layout').off('mouseenter').on('mouseenter', 'td', function(e) {
-            //     var dataRow = $(this).attr('data-row'),
-            //         dataColumn = $(this).attr('data-column');
-
-            //     dataRow = dataRow ? dataRow : '0';
-            //     dataColumn = dataColumn ? dataColumn : '0';
-            //     console.log(dataRow, dataColumn);
-            //     self.callComponent({
-            //         name: 'tooltip'
-            //     }, {
-            //         target: $(this)
-            //     });
-            //     // self.renderComponent('tooltip.view', {
-            //     //     target: $(this),
-            //     //     content: '内容'
-            //     // }).appendTo($('body'));
-            //     //
-            //     e.stopPropagation();
-            // });
         }
     };
 

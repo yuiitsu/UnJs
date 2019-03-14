@@ -7,10 +7,40 @@ Component.extend('tree', function() {
 
     this.bind = {
         init: function(params) {
+            var target = $('#' + params.id),
+                data = [];
+            // 检查dataSource
+            if (target.attr('datasource')) {
+                // 获取数据
+                data = self.model.form_designer.get('region');
+            }
+
+            $(target).on('focus', function() {
+                if (data.length > 0) {
+                    // 渲染
+                    self.callComponent({name: 'tooltip'}, {
+                        target: target,
+                        content: self.getView('component.tree.popup', data)
+                    });
+                }
+            });
+        },
+        select: function(params) {
             var target = $('#' + params.id);
-            self.callComponent({name: 'tooltip'}, {
-                target: target,
-                content: self.getView('component.tree.popup')
+            $('body').off('click', '.component-tree-popup-title')
+                .on('click', '.component-tree-popup-title', function(e) {
+                var next = $(this).next();
+                if (next.length > 0) {
+                    console.log(next.css('display'));
+                    if (next.css('display') === 'none') {
+                        next.show();
+                    } else {
+                        next.hide();
+                    }
+                } else {
+                    target.val($(this).attr('data-value'));
+                }
+                e.stopPropagation();
             });
         }
     };

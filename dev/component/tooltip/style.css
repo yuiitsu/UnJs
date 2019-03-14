@@ -14,11 +14,13 @@
 
 .component-tooltip-arrow{
     position: absolute;
-    left: 0;
-    top: -20px;
-    height:28px;
-    width:28px;
-    color:#2f2f2f;
+    left: 5px;
+    top: -7px;
+    height:0;
+    width:0;
+    border-style: solid;
+    border-width: 0 5px 7px 5px;
+    border-color: transparent transparent #2f2f2f transparent;
 }
 
 .component-tooltip-arrow i {

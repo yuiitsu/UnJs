@@ -2,6 +2,6 @@
 .component-tree-icon{display: flex;align-items: center;}
 .component-tree-icon i{font-size:28px;color:#666;}
 
-.component-tree-popup{margin-left:-20px;}
+.component-tree-popup{margin-left:-20px;max-height:200px;max-width:300px;overflow-y: auto;}
 .component-tree-popup-item{padding-left:20px;}
 .component-tree-popup-title{padding-bottom:5px;cursor: pointer;}

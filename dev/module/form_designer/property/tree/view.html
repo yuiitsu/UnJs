@@ -13,20 +13,9 @@
     <div class="form-designer-component-setting-item">
         <div class="form-designer-form-label">数据源:</div>
         <div class="form-designer-form-control-box flex-auto">
-            {{ var list = [{text: '自定义', value: 'custom'}] }}
+            {{ var list = [{text: '地区', value: 'region'}] }}
             {{ var defaultType = property['dataSource'] ? property['dataSource'] : '' }}
             <component.basic.select.view list="{{ list }}" default="{{ defaultType }}" class="js-property-input" name="property.dataSource"></component.basic.select.view>
-        </div>
-    </div>
-    {{ var hideClass = defaultType === 'custom' ? '' : 'hide' }}
-    <div class="form-designer-component-setting-item form-designer-component-custom-option-container {{ hideClass }}"
-         id="js-property-custom-option-container">
-        <div id="js-property-custom-option" class="form-designer-component-custom-option-box">
-            {{ func this.getView('module.form_designer.property.select.custom_option', property['list']) }}
-        </div>
-        <div class="text-align-right form-designer-component-custom-option-action">
-            点击添加
-            <component.basic.button.view text="+" class="" id="js-add-custom-option"></component.basic.button.view>
         </div>
     </div>
 </div>

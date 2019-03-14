@@ -1,6 +1,12 @@
 <div class="component-textarea">
     <label>
-        <textarea class="{{ data['className'] }}"></textarea>
+        <textarea
+        {{ for var i in data }}
+            {{ if data.hasOwnProperty(i) }}
+             {{ i }}="{{ data[i] }}"
+            {{ end }}
+        {{ end }}
+        >{{ data['value'] }}</textarea>
     </label>
 </div>
 {{ var component = this.callComponent({name: 'textarea'}) }}

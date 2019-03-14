@@ -3,12 +3,19 @@
  */
 Controller.extend('form_designer', function () {
     var self = this;
-    //
+    // 事件监听
     this.bind = {
+        // 左侧组件菜单开关
         '.form-designer-component-selector h2 click.designer_component_': '_openComponentSelector',
+        // 拖拽组件到指定区域
         '.form-designer-component-selector li mousedown.drag_': '_drag',
+        // 组件设置，文本框值变化
         '.form-designer-component-setting input.js-property-input input.setting_change_': '_settingEvent.inputChange',
-        '.form-designer-component-setting button.js-form-designer-component-del click.component_del_': '_settingEvent.delComponent'
+        // 组件设置，选择框值变化
+        '.form-designer-component-setting select.js-property-input change.setting_change_': '_settingEvent.selectChange',
+        '.form-designer-component-setting input[type=radio] click.setting_click_': '_settingEvent.radioClick',
+        // 组件设置，删除组件
+        '.form-designer-component-setting .js-form-designer-component-del click.component_del_': '_settingEvent.delComponent'
     };
 
     this.index = function() {
@@ -125,6 +132,7 @@ Controller.extend('form_designer', function () {
                 }
             }
         }
+        console.log(formElements);
 
         self.output('property.layout', {
             name: 'module.form_designer.property.' + name + '.view',
@@ -180,7 +188,9 @@ Controller.extend('form_designer', function () {
                         self.model.setFormElements({
                             name: key,
                             component: component,
-                            property: {},
+                            property: {
+                                class: 'form-designer-component-item js-form-control'
+                            },
                             rules: {}
                         }, false, row, column);
                         // 渲染property setting
@@ -211,6 +221,28 @@ Controller.extend('form_designer', function () {
                 data = {};
 
             data[name] = $.trim(self.$(e).val());
+            self.model.setFormElements(data, true);
+        },
+        /**
+         * 选择框
+         * @param e
+         */
+        selectChange: function(e) {
+            var name = self.$(e).attr('name'),
+                data = {};
+
+            data[name] = self.$(e).val();
+            self.model.setFormElements(data, true);
+        },
+        /**
+         * 单选
+         * @param e
+         */
+        radioClick: function(e) {
+            var name = self.$(e).attr('name'),
+                data = {};
+
+            data[name] = self.$(e).val();
             self.model.setFormElements(data, true);
         },
         /**

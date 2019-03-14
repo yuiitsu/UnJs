@@ -1,0 +1,15 @@
+{{ if data }}
+{{ for var i in data }}
+<div class="form-designer-component-custom-option flex-row">
+    <component.basic.input.view value="{{ data[i]['text'] }}" placeholder="文本" name="text" class="js-property-custom-option-input"></component.basic.input.view>
+    <component.basic.input.view value="{{ data[i]['value'] }}" placeholder="值" name="value" class="js-property-custom-option-input"></component.basic.input.view>
+    <div class="form-designer-component-custom-option-del">×</div>
+</div>
+{{ end }}
+{{ else }}
+<div class="form-designer-component-custom-option flex-row">
+    <component.basic.input.view placeholder="文本" name="text" class="js-property-custom-option-input"></component.basic.input.view>
+    <component.basic.input.view placeholder="值" name="value" class="js-property-custom-option-input"></component.basic.input.view>
+    <div class="form-designer-component-custom-option-del">×</div>
+</div>
+{{ end }}

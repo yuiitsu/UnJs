@@ -1,3 +1,12 @@
-.component-input{width:100%;height:100%;}
+.component-input{width:100%;height:35px;}
 .component-input input{border:1px solid #ccc;width:100%;height:100%;padding: 0 10px;border-radius: 3px;}
+.component-input input:read-only{background-color:#eee;}
 .component-input input.error{border:1px solid #c82333;}
+.component-input-unit{flex-direction: row;display: flex;}
+.component-input-unit input{flex: auto;border-top-right-radius: 0;border-bottom-right-radius: 0;}
+.component-input-unit span.component-unit{background-color:#eee;display: flex;align-items:center;padding:0 5px;
+    border-top-right-radius: 3px;border-bottom-right-radius: 3px;}
+.component-input-symbol{flex-direction: row;display: flex;}
+.component-input-symbol input{flex: auto;border-top-left-radius: 0;border-bottom-left-radius: 0;}
+.component-input-symbol span.component-symbol{background-color:#eee;display: flex;align-items:center;padding:0 5px;
+    border-top-left-radius: 3px;border-bottom-left-radius: 3px;}

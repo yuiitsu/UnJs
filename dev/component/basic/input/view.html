@@ -1,7 +1,11 @@
 {{ var type = data['type'] ? data['type'] : 'text' }}
-{{ var dataAttr = '' }}
+{{ var unit = data['unit'] ? 'component-input-unit' : '' }}
+{{ var symbol = data['symbol'] ? 'component-input-symbol' : '' }}
 
-<div class="component-input">
+<div class="component-input {{ unit }} {{ symbol }}">
+    {{ if data['symbol'] }}
+    <span class="component-symbol">{{ data['symbol'] }}</span>
+    {{ end }}
     <input
         {{ for var i in data }}
             {{ if data.hasOwnProperty(i) }}
@@ -9,5 +13,8 @@
             {{ end }}
         {{ end }}
         />
+    {{ if data['unit'] }}
+    <span class="component-unit">{{ data['unit'] }}</span>
+    {{ end }}
 </div>
 {{ var component = this.callComponent({name: 'input'}) }}

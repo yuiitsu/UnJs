@@ -1,2 +1,8 @@
 {{ var text = data['text'] ? data['text'] : '标签' }}
-<label>{{ text }}</label>
+<label
+    {{ for var i in data }}
+        {{ if data.hasOwnProperty(i) }}
+         {{ i }}="{{ data[i] }}"
+        {{ end }}
+    {{ end }}
+>{{ text }}</label>

@@ -1,10 +1,10 @@
-{{ var list = data['list'] ? data['list'] : [{text: '是', value: '1'}, {text: '否', value: '0'}] }}
+{{ var list = data['list'] ? data['list'] : [{text: '选项1', value: '1'}, {text: '选项2', value: '0'}] }}
 
-<div class="component-radio">
+<div class="component-checkbox">
     {{ for var i in list }}
     {{ var checked = data['default'] === list[i]['value'] ? 'checked' : '' }}
     <label>
-        <input type="radio"
+        <input type="checkbox"
                value="{{ list[i]['value'] }}"
                {{ for var d in data }}
                     {{ if d !== 'list' && d !== 'value' }}

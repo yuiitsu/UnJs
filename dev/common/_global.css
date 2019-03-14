@@ -7,11 +7,16 @@ a{text-decoration: none;}
 ul{list-style: none;}
 /**/
 .hide{display: none;}
+/*  */
+.color-danger{color:#c82333;}
 /* display */
 .display-inline-block{display: inline-block;}
 
 /* margin */
 .margin-right-small{margin-right:10px;}
+
+/* text align */
+.text-align-right{text-align: right;}
 
 /* flex */
 .flex-column{

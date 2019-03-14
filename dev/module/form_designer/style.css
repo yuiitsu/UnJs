@@ -9,17 +9,17 @@
 .form-designer-layout-container{padding:0 10px;user-select: none;}
 .form-designer-form{height:100%;border:1px solid #efefef;padding:10px;}
 .form-designer-form-tips{text-align:center;font-size:28px;font-weight:700;color:#999;padding-top:30px;}
-.form-designer-component-container{height:100%;}
+.form-designer-component-container{height:100%;overflow-y: auto;}
 .form-designer-component-setting{width:250px;background-color:#efefef;}
 .form-designer-component-setting h2{padding:20px;text-align: center;font-size:16px;font-weight:700;color:#222;}
-.form-designer-component-setting h3{font-weight:600;padding:10px;border-bottom:1px solid #e1e1e1;color:#444;}
+.form-designer-component-setting h3{font-weight:600;padding:10px;border-bottom:1px solid #ccc;
+    border-top: 1px solid #ccc;color:#444;background-color:#e1e1e1;}
 .form-designer-component-setting-container{margin-bottom:20px;}
 .form-designer-component-setting-item{padding:5px 10px;}
 .form-designer-component-action{padding:10px;text-align: center;}
 .form-designer-component-action .component-button{width:100%;}
 .form-designer-component-action button{width:100%;}
-.form-designer-form-label{padding-right:10px;}
-.form-designer-form-label{height:30px;line-height:30px;}
-.form-designer-form-control-box{height:30px;line-height:30px;}
+.form-designer-form-label{padding-right:10px;height:30px;line-height:30px;font-weight:bold;}
+.form-designer-form-control-box{height:35px;line-height:35px;}
 .form-designer-drag-tip{position: absolute;left:0;top:0;background-color:#000;color:#fff;opacity:.5;padding:5px 10px;
     min-width: 80px;border-radius: 3px;}

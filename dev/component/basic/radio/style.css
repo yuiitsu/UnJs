@@ -1,1 +1,2 @@
-.component-radio label{margin-right:10px;}
+.component-radio{line-height:24px;}
+.component-radio label{margin-right:10px;white-space:nowrap;display: inline-block;}

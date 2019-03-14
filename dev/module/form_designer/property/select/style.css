@@ -1,0 +1,10 @@
+.form-designer-component-custom-option-container{background-color:#f7f7f7;}
+.form-designer-component-custom-option-box{padding:5px;}
+.form-designer-component-custom-option-box div.component-input{margin-right:5px;}
+.form-designer-component-custom-option-box div.component-input:last-child{margin-right:0;}
+.form-designer-component-custom-option{margin-bottom:5px;}
+.form-designer-component-custom-option:last-child{margin-bottom:0;}
+.form-designer-component-custom-option-del{display: flex;align-items:center;cursor: pointer;}
+.form-designer-component-custom-option-del:hover{color:#ff0000;}
+.form-designer-component-custom-option-action{padding:0 5px 5px;}
+.form-designer-component-custom-option-action button{height:30px;}

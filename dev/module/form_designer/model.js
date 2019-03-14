@@ -19,8 +19,8 @@ Model.extend('form_designer', function () {
                 name: '通用组件',
                 children: [
                     {component: 'basic.label.view', key: 'label', name: '标签'},
-                    {component: 'basic.input.view', key: 'input', name: '文本框'},
-                    {component: 'basic.number.view', key: 'number', name: '数值框'},
+                    {component: 'basic.input.view', key: 'input', name: '文本/数值框'},
+                    {component: 'basic.textarea.view', key: 'textarea', name: '内容框'},
                     {component: 'basic.select.view', key: 'select', name: '选择菜单'},
                     {component: 'basic.radio.view', key: 'radio', name: '单选'},
                     {component: 'basic.checkbox.view', key: 'checkbox', name: '多选'},
@@ -98,12 +98,18 @@ Model.extend('form_designer', function () {
                     var keys = i.split('.');
                     if (keys.length > 1) {
                         if (!formElements[keys[0]].hasOwnProperty(keys[1])) {
-                            formElements[keys[0]][keys[1]] = data[i];
+                            if (keys[1] !== 'readonly' || (keys[1] === 'readonly' && data[i] === '1')) {
+                                formElements[keys[0]][keys[1]] = data[i];
+                            }
                         } else {
                             if (Object.prototype.toString.call(data[i]) === '[object Object]') {
                                 setValue(data[i], formElements[keys[0]][keys[1]]);
                             } else {
-                                formElements[keys[0]][keys[1]] = data[i];
+                                if (keys[1] !== 'readonly' || (keys[1] === 'readonly' && data[i] === '1')) {
+                                    formElements[keys[0]][keys[1]] = data[i];
+                                } else {
+                                    delete formElements[keys[0]][keys[1]];
+                                }
                             }
                         }
                     } else {
@@ -123,7 +129,6 @@ Model.extend('form_designer', function () {
 
         formElements[position] = formElements[position] ? formElements[position] : {};
         setValue(data, formElements[position]);
-        console.log(formElements);
         this.set('formElements', formElements);
         if (isSet) {
             this.set('formElementsString', JSON.stringify(formElements));
@@ -134,7 +139,13 @@ Model.extend('form_designer', function () {
         var openProperty = this.get('openProperty'),
             formElements = this.get('formElements');
 
-        if (formElements.hasOwnProperty(openProperty)) {
+        if (!openProperty) {
+            return false;
+        }
+
+        if (openProperty === 'global') {
+            formElements = {};
+        } else if (formElements.hasOwnProperty(openProperty)) {
             delete formElements[openProperty];
         }
 

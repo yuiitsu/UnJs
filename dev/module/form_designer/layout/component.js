@@ -22,9 +22,9 @@ Component.extend('form_designer.layout.default', function() {
                 dataRow = dataRow ? dataRow : '0';
                 dataColumn = dataColumn ? dataColumn : '0';
                 var position = dataRow + '' + dataColumn;
-                if (!formElements.hasOwnProperty(position)) {
-                    modelKey = 'openEmptyProperty';
-                }
+                // if (!formElements.hasOwnProperty(position)) {
+                //     modelKey = 'openEmptyProperty';
+                // }
                 self.model.form_designer.set(modelKey, position);
                 //
                 e.stopPropagation();
@@ -61,10 +61,5 @@ Component.extend('form_designer.layout.default', function() {
      * 不指定方法，默认执行方法
      */
     this.init = function() {
-        console.log('Form Designer Layout Default Component.');
-    };
-
-    this.openProperty = function(e) {
-        console.log('openProperty');
     };
 });

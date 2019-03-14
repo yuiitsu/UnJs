@@ -18,7 +18,7 @@
     border: 1px solid #666;
 }
 
-.form-designer-layout td label{
+.form-designer-layout td label.form-designer-component-item{
     display: block;
     text-align: right;
 }

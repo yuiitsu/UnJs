@@ -1,8 +1,16 @@
 {{ var list = data['list'] }}
 
 <div class="component-select radius-small">
-    <select class="form-control">
-        <option>请选择</option>
+    <select
+        {{ for var i in data }}
+            {{ if i !== 'list' }}
+            {{ if data.hasOwnProperty(i) }}
+             {{ i }}="{{ data[i] }}"
+            {{ end }}
+            {{ end }}
+        {{ end }}
+        >
+        <option value="">请选择</option>
         {{ for var i in list }}
         {{ if Object.prototype.toString.call(list[i]) === '[object Object]' }}
             {{ var value = list[i]['value'] }}

@@ -1,12 +1,10 @@
 {{ var toastCode = parseInt(Math.random() * 100000) }}
 
-<div class="fixed-screen" id="toast-{{ toastCode }}">
+<div class="fixed-screen toast-container" id="toast-{{ toastCode }}">
     <div class="component-toast">
-        <div class="toast-header">
-            {{ data['title'] }}
-            <div class="toast-header-close" data-code="{{ toastCode }}">
-                <component.basic.button.view text="×"></component.basic.button.view>
-            </div>
+        <div class="toast-header flex-row">
+            <div class="flex-auto">{{ data['title'] }}</div>
+            <div class="toast-header-close" data-code="{{ toastCode }}">×</div>
         </div>
         <div class="toast-body">
             {{ data['body'] }}

@@ -1,4 +1,4 @@
-.component-tree{}
+.component-tree{flex-wrap: wrap}
 .component-tree-icon{display: flex;align-items: center;}
 .component-tree-icon i{font-size:28px;color:#666;}
 

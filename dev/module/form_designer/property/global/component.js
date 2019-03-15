@@ -14,6 +14,12 @@ Component.extend('form_designer.property.global', function() {
                     self.model.form_designer.set('layout.' + dataType, parseInt($.trim($(this).val())));
                 }
             });
+        },
+        verifyTipsType: function() {
+            $('.js-property-select-verify-tips-type').on('change', function() {
+                var value = $(this).val();
+                self.model.form_designer.set('verifyTipsType', value);
+            });
         }
     };
 

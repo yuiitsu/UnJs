@@ -1,5 +1,5 @@
-.component-input{width:100%;height:35px;}
-.component-input input{border:1px solid #ccc;width:100%;height:100%;padding: 0 10px;border-radius: 3px;}
+.component-input{width:100%;}
+.component-input input{border:1px solid #ccc;width:100%;padding: 0 10px;border-radius: 3px;height:35px;}
 .component-input input:read-only{background-color:#eee;}
 .component-input input.error{border:1px solid #c82333;}
 .component-input-unit{flex-direction: row;display: flex;}

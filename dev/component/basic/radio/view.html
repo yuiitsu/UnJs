@@ -5,7 +5,7 @@
     {{ var checked = data['default'] === list[i]['value'] ? 'checked' : '' }}
     <label>
         <input type="radio"
-               value="{{ list[i]['value'] }}"
+               value="{{ list[i]['value'] }}" {{ checked }}
                {{ for var d in data }}
                     {{ if d !== 'list' && d !== 'value' }}
                     {{ if data.hasOwnProperty(d) }}

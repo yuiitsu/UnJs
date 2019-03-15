@@ -31,7 +31,6 @@ Component.extend('tree', function() {
                 .on('click', '.component-tree-popup-title', function(e) {
                 var next = $(this).next();
                 if (next.length > 0) {
-                    console.log(next.css('display'));
                     if (next.css('display') === 'none') {
                         next.show();
                     } else {

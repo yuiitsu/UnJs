@@ -21,7 +21,7 @@
         <div class="form-designer-form-control-box flex-auto">
             {{ var list = [{text: '文本', value: 'text'}, {text: '密码', value: 'password'}] }}
             {{ var defaultType = property['type'] ? property['type'] : 'text' }}
-            <component.basic.select.view list="{{ list }}" default="{{ defaultType }}" class="js-property-input" name="property.type"></component.basic.select.view>
+            <component.basic.select.view list="{{ list }}" default="{{ defaultType }}" class="js-property-select" name="property.type"></component.basic.select.view>
         </div>
     </div>
     <div class="form-designer-component-setting-item">
@@ -29,7 +29,7 @@
         <div class="form-designer-form-control-box flex-auto">
             {{ var list = [{text: '字符', value: 'string'}, {text: '数字', value: 'number'}] }}
             {{ var defaultType = property['valueType'] ? property['valueType'] : 'string' }}
-            <component.basic.select.view list="{{ list }}" default="{{ defaultType }}" class="js-property-input" name="property.valueType"></component.basic.select.view>
+            <component.basic.select.view list="{{ list }}" default="{{ defaultType }}" class="js-property-select" name="property.valueType"></component.basic.select.view>
         </div>
     </div>
     <div class="form-designer-component-setting-item">

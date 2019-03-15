@@ -12,11 +12,13 @@ Controller.extend('form_designer', function () {
         // 组件设置，文本框值变化
         '.form-designer-component-setting input.js-property-input input.setting_change_': '_settingEvent.inputChange',
         // 组件设置，选择框值变化
-        '.form-designer-component-setting select.js-property-input change.setting_select_change_': '_settingEvent.selectChange',
-        '.form-designer-component-setting input[type=radio] click.setting_click_': '_settingEvent.radioClick',
+        '.form-designer-component-setting .js-property-select change.setting_select_change_': '_settingEvent.selectChange',
+        '.form-designer-component-setting input[type=radio] click.setting_radio_click_': '_settingEvent.radioClick',
         '.form-designer-component-setting .js-form-designer-component-datepicker change.setting_change_': '_settingEvent.datepickerChange',
         // 组件设置，删除组件
-        '.form-designer-component-setting .js-form-designer-component-del click.component_del_': '_settingEvent.delComponent'
+        '.form-designer-component-setting .js-form-designer-component-del click.component_del_': '_settingEvent.delComponent',
+        //
+        '#js-form-designer-verify-test click': '_settingEvent.verifyTest'
     };
 
     this.index = function() {
@@ -32,6 +34,8 @@ Controller.extend('form_designer', function () {
         this.watch(this.model.get(), 'layout.column', '_renderLayout');
         // 表单
         this.watch(this.model.get(), 'formElementsString', '_renderLayout');
+        //
+        this.watch(this.model.get(), 'verifyTipsType', '_renderLayout');
         // 渲染表单设计界面
         this.output('container', {
             componentSelector: {
@@ -76,14 +80,16 @@ Controller.extend('form_designer', function () {
         var row = this.model.get('layout.row'),
             column = this.model.get('layout.column'),
             formElements = this.model.get('formElements'),
-            openProperty = this.model.get('openPropertyTemp');
+            openProperty = this.model.get('openPropertyTemp'),
+            verifyTipsType = this.model.get('verifyTipsType');
 
         var data = {
             row: row,
             column: column,
             formElements: formElements,
             componentData: {},
-            openProperty: openProperty ? openProperty : ''
+            openProperty: openProperty ? openProperty : '',
+            verifyTipsType: verifyTipsType
         };
         //
         for (var i in formElements) {
@@ -117,8 +123,9 @@ Controller.extend('form_designer', function () {
     this._renderProperty = function() {
         var position = self.model.get('openProperty'),
             formElements = self.model.get('formElements'),
+            verifyTipsType = self.model.get('verifyTipsType'),
             name = '',
-            data = {property: {}, rules: {}};
+            data = {property: {}, rules: {}, verifyTipsType: verifyTipsType};
 
         if (position === 'global') {
             var rowAndColumn = self.model.get('layout');
@@ -135,6 +142,7 @@ Controller.extend('form_designer', function () {
                     property: formElements[position].property,
                     rules: formElements[position].rules
                 };
+                console.log(data);
                 self.output('property.layout', {
                     name: 'module.form_designer.property.' + name + '.view',
                     data: data
@@ -262,6 +270,16 @@ Controller.extend('form_designer', function () {
          */
         delComponent: function() {
             self.model.delComponent();
+        },
+        /**
+         * 测试验证
+         */
+        verifyTest: function() {
+            var message = '<span class="color-danger">校验失败!</span>';
+            if (self.callComponent({name: 'verification'})) {
+                message = '<span class="color-success">校验成功!</span>';
+            }
+            $('#js-form-verify-result').html(message);
         }
     }
 });

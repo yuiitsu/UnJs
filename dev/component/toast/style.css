@@ -13,7 +13,7 @@
     background-color:#fff;
     position: fixed;
     left:50%;
-    top:50%;
+    top:30%;
     transform: translate(-50%, -50%);
 }
 
@@ -25,7 +25,11 @@
 .toast-header-close {
     width:16px;
     height:16px;
-    float:right;
+    cursor: pointer;
+}
+
+.toast-header-close:hover {
+    color:#ff0000;
 }
 
 .toast-header-close button{border:0;}

@@ -1,6 +1,7 @@
 {{ var row = data['row'] ? data['row'] : 4 }}
 {{ var column = data['column'] ? data['column'] : 4 }}
-<table class="form-designer-layout" cellspacing="0">
+{{ var verifyTipsType = data['verifyTipsType'] ? data['verifyTipsType'] : '' }}
+<table class="form-designer-layout" cellspacing="0" id="js-verify-form" verify-tips-type="{{ verifyTipsType }}">
     {{ for var i = 0; i < row; i++ }}
     <tr>
         {{ for var j = 0; j < column; j++ }}

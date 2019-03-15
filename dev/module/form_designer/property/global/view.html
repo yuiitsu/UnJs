@@ -8,8 +8,9 @@
         </div>
         <div class="form-designer-form-label">验证提示类型:</div>
         <div class="form-designer-form-control-box flex-auto">
-            {{ var list = ['弹窗', '元素下'] }}
-            <component.basic.select.view list="{{ list }}"></component.basic.select.view>
+            {{ var list = [{text: '元素下', value: 'afterElement'}, {text: '弹窗', value: 'toast'}] }}
+            {{ var defaultType = data['verifyTipsType'] ? data['verifyTipsType'] : 'afterElement' }}
+            <component.basic.select.view list="{{ list }}" default="{{ defaultType }}" class="js-property-select-verify-tips-type"></component.basic.select.view>
         </div>
     </div>
 </div>

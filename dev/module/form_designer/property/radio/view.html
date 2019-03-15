@@ -15,7 +15,7 @@
         <div class="form-designer-form-control-box flex-auto">
             {{ var list = [{text: '自定义', value: 'custom'}] }}
             {{ var defaultType = property['dataSource'] ? property['dataSource'] : '' }}
-            <component.basic.select.view list="{{ list }}" default="{{ defaultType }}" class="js-property-input" name="property.dataSource"></component.basic.select.view>
+            <component.basic.select.view list="{{ list }}" default="{{ defaultType }}" class="js-property-select" name="property.dataSource"></component.basic.select.view>
         </div>
     </div>
     {{ var hideClass = defaultType === 'custom' ? '' : 'hide' }}

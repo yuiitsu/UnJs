@@ -61,6 +61,7 @@ Model.extend('form_designer', function () {
             //     rules: {}
             // }
         },
+        verifyTipsType: '',
         // 临时
         region: [
             {
@@ -152,18 +153,31 @@ Model.extend('form_designer', function () {
                 if (data.hasOwnProperty(i)) {
                     var keys = i.split('.');
                     if (keys.length > 1) {
-                        if (!formElements[keys[0]].hasOwnProperty(keys[1])) {
-                            if (keys[1] !== 'readonly' || (keys[1] === 'readonly' && data[i] === '1')) {
-                                formElements[keys[0]][keys[1]] = data[i];
-                            }
-                        } else {
-                            if (Object.prototype.toString.call(data[i]) === '[object Object]') {
-                                setValue(data[i], formElements[keys[0]][keys[1]]);
+                        if (keys[1] === 'minLength' || keys[1] === 'maxLength') {
+                            var length = [0, 0],
+                                index = keys[1] === 'minLength' ? 0 : 1;
+
+                            if (!formElements[keys[0]].hasOwnProperty('length')) {
+                                formElements[keys[0]]['length'] = ''
                             } else {
+                                length = JSON.parse(formElements[keys[0]]['length'].replace(/\'/g, '"'));
+                            }
+                            length[index] = data[i];
+                            formElements[keys[0]]['length'] = JSON.stringify(length).replace(/"/g, "'");
+                        } else {
+                            if (!formElements[keys[0]].hasOwnProperty(keys[1])) {
                                 if (keys[1] !== 'readonly' || (keys[1] === 'readonly' && data[i] === '1')) {
                                     formElements[keys[0]][keys[1]] = data[i];
+                                }
+                            } else {
+                                if (Object.prototype.toString.call(data[i]) === '[object Object]') {
+                                    setValue(data[i], formElements[keys[0]][keys[1]]);
                                 } else {
-                                    delete formElements[keys[0]][keys[1]];
+                                    if (keys[1] !== 'readonly' || (keys[1] === 'readonly' && data[i] === '1')) {
+                                        formElements[keys[0]][keys[1]] = data[i];
+                                    } else {
+                                        delete formElements[keys[0]][keys[1]];
+                                    }
                                 }
                             }
                         }

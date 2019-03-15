@@ -18,13 +18,12 @@ Component.extend('form_designer.layout.default', function() {
                     dataColumn = $(this).attr('data-column'),
                     formElements = self.model.form_designer.get('formElements'),
                     modelKey = 'openProperty',
-                    modelKeyTemp = 'openProperty';
+                    modelKeyTemp = 'openPropertyTemp';
 
                 dataRow = dataRow ? dataRow : '0';
                 dataColumn = dataColumn ? dataColumn : '0';
                 var position = dataRow + '' + dataColumn;
                 if (!formElements.hasOwnProperty(position)) {
-                    // modelKey = 'openEmptyProperty';
                     position = 'empty'
                 }
                 self.model.form_designer.set(modelKeyTemp, position);

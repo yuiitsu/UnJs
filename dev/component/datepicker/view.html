@@ -1,7 +1,7 @@
 {{ var id = 'datepicker-' + parseInt(Math.random() * 1000000) }}
 <div class="component-date-selector flex-row">
     <div class="component-input flex-auto">
-        <input id="{{ id }}"
+        <input id="{{ id }}" data-type="date"
             {{ for var i in data }}
                 {{ if data.hasOwnProperty(i) && i !== 'id' }}
                  {{ i }}="{{ data[i] }}"

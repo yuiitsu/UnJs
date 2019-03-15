@@ -1,0 +1,3 @@
+.component-uploader{}
+.component-uploader input{width:100%;height:35px;}
+.component-uploader .component-uploader-hidden{display: none;}

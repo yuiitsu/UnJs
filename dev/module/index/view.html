@@ -41,10 +41,13 @@
         <div>
             <component.datepicker.view></component.datepicker.view>
         </div>
+        <div>
+            <component.uploader.view></component.uploader.view>
+        </div>
     </div>
     <div>
         <div>
-            {{ var list = [{label: 'Yes', value: 1}, {label: 'No', value: 0}] }}
+            {{ var list = [{text: 'Yes', value: 1}, {text: 'No', value: 0}] }}
             <component.basic.radio.view name="radio" list="{{ list }}" default="0"></component.basic.radio.view>
         </div>
     </div>

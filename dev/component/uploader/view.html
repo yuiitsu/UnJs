@@ -1,0 +1,16 @@
+{{ var code = parseInt(Math.random() * 100000) }}
+{{ var id = 'js-component-upload-' + code }}
+<div class="component-uploader">
+    <input type="file" data-code="{{ code }}" id="{{ id }}" />
+    <div class="component-uploader-hidden">
+        <input type="text"
+            {{ for var i in data }}
+                {{ if data.hasOwnProperty(i) }}
+                 {{ i }}="{{ data[i] }}"
+                {{ end }}
+            {{ end }}
+            />
+    </div>
+</div>
+
+{{ var component = this.callComponent({name: 'uploader'}, {id: id}) }}

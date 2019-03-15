@@ -1,0 +1,31 @@
+{{ var property = data['property'] ? data['property'] : {} }}
+{{ var rules = data['rules'] ? data['rules'] : {} }}
+
+<h2>上传</h2>
+<div class="form-designer-component-setting-container">
+    <h3>属性</h3>
+    <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">名称(<span class="color-danger">*</span>):</div>
+        <div class="form-designer-form-control-box flex-auto">
+            <component.basic.input.view name="property.name" class="js-property-input" value="{{ property['name'] }}"></component.basic.input.view>
+        </div>
+    </div>
+</div>
+<div class="form-designer-component-setting-container">
+    <h3>验证规则</h3>
+    <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">必要:</div>
+        <div class="form-designer-form-control-box flex-auto">
+            {{ var defaultValue = rules['required'] ? rules['required'] : '0' }}
+            <component.basic.radio.view list="" default="{{ defaultValue }}" name="rules.required" class="js-property-control"></component.basic.radio.view>
+        </div>
+    </div>
+</div>
+<div class="form-designer-component-setting-container">
+    <h3>高级规则</h3>
+    <div class="form-designer-component-setting-item">
+        <div class="">
+            <component.basic.button.view class="" text="添加规则"></component.basic.button.view>
+        </div>
+    </div>
+</div>

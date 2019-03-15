@@ -18,7 +18,8 @@ Model.extend('form_designer', function () {
                     {component: 'basic.radio.view', key: 'radio', name: '单选'},
                     {component: 'basic.checkbox.view', key: 'checkbox', name: '多选'},
                     {component: 'datepicker.view', key: 'datepicker', name: '时间选择'},
-                    {component: 'tree.view', key: 'tree', name: '树形菜单'}
+                    {component: 'tree.view', key: 'tree', name: '树形菜单'},
+                    {component: 'uploader.view', key: 'uploader', name: '上传'}
                 ]
             },
             {

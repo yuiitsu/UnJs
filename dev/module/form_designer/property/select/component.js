@@ -9,7 +9,7 @@ Component.extend('form_designer.property.select', function() {
      */
     this.bind = {
         selectChange: function() {
-            $('select.js-property-input').on('change', function() {
+            $('select.js-property-select').on('change', function() {
                 var name = $(this).attr('name'),
                     value = $(this).val(),
                     target = $('#js-property-custom-option-container');

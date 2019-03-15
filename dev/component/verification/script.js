@@ -13,7 +13,7 @@ Component.extend('verification', function() {
     this.init = function(params) {
         var parent = $('#js-verify-form'),
             verifyTipsType = parent.attr('verify-tips-type'),
-            result = true;
+            result = [];
 
         verifyTipsType = verifyTipsType ? verifyTipsType : 'afterElement';
         parent.find('.js-form-control').each(function() {
@@ -22,17 +22,28 @@ Component.extend('verification', function() {
                 if (this.specified) {
                     var componentName = 'verification.' + this.name;
                     if (self.component.hasOwnProperty(componentName)) {
-                        result = self.callComponent({name: componentName}, {
+                        var r = self.callComponent({name: componentName}, {
                             target: _this,
                             attrValue: this.value,
                             verifyTipsType: verifyTipsType,
                             verifyResult: params
-                        })
+                        });
+                        result.push(r);
                     }
                 }
             });
         });
 
-        return result;
+        var resultLen = result.length;
+        if (resultLen === 0) {
+            return true;
+        } else {
+            for (var i = 0; i < resultLen; i++) {
+                if (!result[i]) {
+                    return false;
+                }
+            }
+        }
+        return true;
     };
 });

@@ -17,7 +17,8 @@ Component.extend('verification.length', function() {
             dataType = target.attr('data-type'),
             attrValue = params.attrValue,
             verifyTipsType = params.verifyTipsType,
-            name = target.attr('name');
+            name = target.attr('name'),
+            result = true;
 
         try {
             attrValue = JSON.parse(attrValue.replace(/\'/g, '"'));
@@ -45,10 +46,9 @@ Component.extend('verification.length', function() {
         var m = message.join("");
         if (m.length > 0) {
             target.addClass('error');
-            params.verifyResult = false;
+            result = false;
         } else {
             target.removeClass('error');
-            params.verifyResult = true;
         }
 
         // 显示提示
@@ -57,6 +57,8 @@ Component.extend('verification.length', function() {
             message: m,
             name: name
         });
+
+        return result;
     };
 
     this.text = function(minLength, maxLength, value, valueType, message, failed) {

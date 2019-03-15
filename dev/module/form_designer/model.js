@@ -7,13 +7,6 @@ Model.extend('form_designer', function () {
     //
     this.default = {
         components: [
-            // {
-            //     id: 'layout',
-            //     name: '布局',
-            //     children: [
-            //         {component: 'layout_default', key: 'default', name: '默认布局'},
-            //     ]
-            // },
             {
                 id: 'global',
                 name: '通用组件',
@@ -51,16 +44,9 @@ Model.extend('form_designer', function () {
             row: 4,
             column: 4
         },
+        formTitle: '',
         formElementsString: '',
-        formElements: {
-            // '00': {
-            //     name: 'label',
-            //     component: 'basic.label.view',
-            //     property: {
-            //     },
-            //     rules: {}
-            // }
-        },
+        formElements: {},
         verifyTipsType: '',
         // 临时
         region: [

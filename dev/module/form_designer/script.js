@@ -36,6 +36,8 @@ Controller.extend('form_designer', function () {
         this.watch(this.model.get(), 'formElementsString', '_renderLayout');
         //
         this.watch(this.model.get(), 'verifyTipsType', '_renderLayout');
+        //
+        this.watch(this.model.get(), 'formTitle', '_renderLayout');
         // 渲染表单设计界面
         this.output('container', {
             componentSelector: {
@@ -80,6 +82,7 @@ Controller.extend('form_designer', function () {
         var row = this.model.get('layout.row'),
             column = this.model.get('layout.column'),
             formElements = this.model.get('formElements'),
+            formTitle = this.model.get('formTitle'),
             openProperty = this.model.get('openPropertyTemp'),
             verifyTipsType = this.model.get('verifyTipsType');
 
@@ -87,6 +90,7 @@ Controller.extend('form_designer', function () {
             row: row,
             column: column,
             formElements: formElements,
+            formTitle: formTitle,
             componentData: {},
             openProperty: openProperty ? openProperty : '',
             verifyTipsType: verifyTipsType
@@ -123,9 +127,15 @@ Controller.extend('form_designer', function () {
     this._renderProperty = function() {
         var position = self.model.get('openProperty'),
             formElements = self.model.get('formElements'),
+            formTtile = self.model.get('formTitle'),
             verifyTipsType = self.model.get('verifyTipsType'),
             name = '',
-            data = {property: {}, rules: {}, verifyTipsType: verifyTipsType};
+            data = {
+                property: {},
+                rules: {},
+                verifyTipsType: verifyTipsType,
+                formTitle: formTtile
+            };
 
         if (position === 'global') {
             var rowAndColumn = self.model.get('layout');
@@ -142,7 +152,6 @@ Controller.extend('form_designer', function () {
                     property: formElements[position].property,
                     rules: formElements[position].rules
                 };
-                console.log(data);
                 self.output('property.layout', {
                     name: 'module.form_designer.property.' + name + '.view',
                     data: data

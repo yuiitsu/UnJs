@@ -20,6 +20,11 @@ Component.extend('form_designer.property.global', function() {
                 var value = $(this).val();
                 self.model.form_designer.set('verifyTipsType', value);
             });
+        },
+        setTitle: function() {
+            $('.js-form-designer-title-input').on('input', function() {
+                self.model.form_designer.set('formTitle', $.trim($(this).val()));
+            });
         }
     };
 

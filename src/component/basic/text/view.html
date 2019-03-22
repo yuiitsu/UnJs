@@ -1,3 +1,15 @@
-{{ var text = data['text'] ? data['text'] : '文本域' }}
+{{ var elements = data['elements'] ? data['elements'] : {} }}
+{{ var d = elements['data'] ? elements['data'] : {} }}
+{{ var text = d['text'] ? d['text'] : '文本域' }}
 {{ var index = data['index'] ? data['index'] : '0' }}
-<div class="component-text" data-index="{{ index }}">{{ text }}</div>
+{{ var className = data['className'] ? data['className'] : '' }}
+
+<div class="component-text {{ className }}" data-index="{{ index }}">
+    <div
+        {{ for var i in d }}
+            {{ if d.hasOwnProperty(i) }}
+             {{ i }}="{{ d[i] }}"
+            {{ end }}
+        {{ end }}
+    >{{ text }}</div>
+</div>

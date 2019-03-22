@@ -9,7 +9,8 @@
 .form-designer-component-content ul li{padding:10px;border-bottom:1px solid #f7f7f7;cursor: move;}
 .form-designer-component-content ul li:hover{background-color:#f7f7f7;}
 .form-designer-component-content ul li:last-child{border-bottom:1px solid #fff;}
-.form-designer-layout-container{padding:0 10px;user-select: none;height:100%;}
+.form-designer-layout-container{padding:0 10px;user-select: none;height:100%;
+    overflow-y: auto;}
 .form-designer-form{height:100%;border:1px solid #efefef;padding:10px;border-radius: 3px;}
 .form-designer-form-tips{text-align:center;font-size:28px;font-weight:700;color:#999;padding-top:30px;}
 .form-designer-component-container{height:100%;overflow-y: auto;}
@@ -27,3 +28,5 @@
 .form-designer-drag-tip{position: absolute;left:0;top:0;background-color:#000;color:#fff;opacity:.5;padding:5px 10px;
     min-width: 80px;border-radius: 3px;}
 .form-designer-form .component-text{padding:10px 0;}
+.form-layout-title-h1{font-size:36px;font-weight:bold;}
+.form-layout-title-h2{font-size:24px;font-weight:bold;}

@@ -22,7 +22,7 @@ Controller.extend('form_designer', function () {
         //
         '.form-designer-form #js-verify-form mouseenter.form_mouseenter_': '_settingEvent.formMouseEnter',
         '.form-designer-form #js-verify-form mouseleave.form_mouseleave_': '_settingEvent.formMouseLeave',
-        '.form-designer-layout-container .form-designer-component-container click.component_container_click_': '_settingEvent.editComponent'
+        '.form-designer-layout-container .js-form-designer-component-item click.component_container_click_': '_settingEvent.editComponent'
     };
 
     this.index = function() {
@@ -62,7 +62,7 @@ Controller.extend('form_designer', function () {
             this.model.set('openComponentId', id);
         } else {
             // 打开全局设置
-            this.model.set('openPropertyTemp', 'global');
+            this.model.set('openPropertyTemp', ':global');
             this.model.set('openProperty', 'global');
         }
     };
@@ -86,6 +86,7 @@ Controller.extend('form_designer', function () {
         var row = this.model.get('layout.row'),
             column = this.model.get('layout.column'),
             formElements = this.model.get('formElements'),
+            formElementsLen = formElements.length,
             formTitle = this.model.get('formTitle'),
             openProperty = this.model.get('openPropertyTemp'),
             verifyTipsType = this.model.get('verifyTipsType');
@@ -95,32 +96,53 @@ Controller.extend('form_designer', function () {
             column: column,
             formElements: formElements,
             formTitle: formTitle,
-            componentData: {},
-            openProperty: openProperty ? openProperty : '',
+            openProperty: openProperty ? openProperty.split(':') : ['', ''],
             verifyTipsType: verifyTipsType
         };
         //
-        // for (var i in formElements) {
-        //     if (formElements.hasOwnProperty(i)) {
-        //         var properties = formElements[i].property,
-        //             rules = formElements[i].rules;
+        for (var i = 0; i < formElementsLen; i++) {
+            var element = formElements[i],
+                properties = element.property,
+                rules = element.rules;
 
-        //         if (!data.componentData.hasOwnProperty(i)) {
-        //             data.componentData[i] = {};
-        //         }
+            if (!element.hasOwnProperty('data')) {
+                element['data'] = {};
+            }
 
-        //         for (var j in properties) {
-        //             if (properties.hasOwnProperty(j)) {
-        //                 data.componentData[i][j] = properties[j];
-        //             }
-        //         }
-        //         for (var m in rules) {
-        //             if (rules.hasOwnProperty(m)) {
-        //                 data.componentData[i][m] = rules[m];
-        //             }
-        //         }
-        //     }
-        // }
+            for (var n in properties) {
+                if (properties.hasOwnProperty(n)) {
+                    element['data'][n] = properties[n];
+                }
+            }
+            for (var m in rules) {
+                if (rules.hasOwnProperty(m)) {
+                    element['data'][n] = rules[n];
+                }
+            }
+
+            if (element.hasOwnProperty('children')) {
+                for (var j in element['children']) {
+                    if (element['children'].hasOwnProperty(j)) {
+                        var childElement = element['children'][j];
+                        if (!childElement.hasOwnProperty('data')) {
+                            childElement['data'] = {};
+                        }
+
+                        for (var n in childElement.property) {
+                            if (childElement.property.hasOwnProperty(n)) {
+                                childElement['data'][n] = childElement.property[n];
+                            }
+                        }
+                        for (var n in childElement.rules) {
+                            if (childElement.rules.hasOwnProperty(n)) {
+                                childElement['data'][n] = childElement.rules[n];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         this.output('layout.default', data, $('.form-designer-form'))
     };
 
@@ -129,37 +151,52 @@ Controller.extend('form_designer', function () {
      * @private
      */
     this._renderProperty = function() {
-        var position = self.model.get('openProperty'),
+        var openProperty = self.model.get('openProperty'),
+            positions = openProperty ? openProperty.split(':') : ['', ''],
+            index = positions[0],
+            position = positions[1],
             formElements = self.model.get('formElements'),
-            formTtile = self.model.get('formTitle'),
+            formTitle = self.model.get('formTitle'),
             verifyTipsType = self.model.get('verifyTipsType'),
             name = '',
             data = {
                 property: {},
                 rules: {},
                 verifyTipsType: verifyTipsType,
-                formTitle: formTtile
-            };
+                formTitle: formTitle
+            },
+            element = null;
 
-        if (position === 'global') {
+        if (index === 'global') {
             var rowAndColumn = self.model.get('layout');
             data['row'] = rowAndColumn.row;
             data['column'] = rowAndColumn.column;
             self.output('property.global.view', data, $('.form-designer-component-setting'));
         } else {
-            if (!formElements.hasOwnProperty(position)) {
-                this._renderEmptyProperty();
-                return false;
-            } else {
-                name = formElements[position].name;
+            if (formElements[index]) {
+                if (position === 'empty' || !position || !formElements[index].hasOwnProperty('children')) {
+                    self.model.set('openPropertyTemp', index + ':empty');
+                    element = formElements[index] ;
+                } else {
+                    if (!formElements[index]['children'].hasOwnProperty(position)) {
+                        this._renderEmptyProperty();
+                        return false;
+                    } else {
+                        element = formElements[index]['children'][position];
+                    }
+                }
+
+                name = element.name;
                 data = {
-                    property: formElements[position].property,
-                    rules: formElements[position].rules
+                    property: element.property,
+                    rules: element.rules
                 };
                 self.output('property.layout', {
                     name: 'module.form_designer.property.' + name + '.view',
                     data: data
                 }, $('.form-designer-component-setting'));
+            } else {
+                this._renderEmptyProperty();
             }
         }
     };
@@ -203,13 +240,13 @@ Controller.extend('form_designer', function () {
 
             if (component) {
                 if (_for === 'form') {
-                    if (target.hasClass('form-designer-component-container')) {
+                    if (target.hasClass('js-form-designer-component-item')) {
                         if (target.children().length === 0) {
                             // 更新数据对象
                             var index = target.attr('data-index'),
                                 row = target.attr('data-row'),
                                 column = target.attr('data-column'),
-                                position = row + '' + column;
+                                position = index + ':' + row + '' + column;
 
                             self.model.set('openPropertyTemp', position);
                             //
@@ -263,7 +300,7 @@ Controller.extend('form_designer', function () {
                 data = {};
 
             data[name] = $.trim(self.$(e).val());
-            self.model.setFormElements(data, true);
+            self.model.setFormElements(data, -1, true);
         },
         /**
          * 选择框
@@ -274,7 +311,7 @@ Controller.extend('form_designer', function () {
                 data = {};
 
             data[name] = self.$(e).val();
-            self.model.setFormElements(data, true);
+            self.model.setFormElements(data, -1, true);
         },
         /**
          * 单选
@@ -285,14 +322,14 @@ Controller.extend('form_designer', function () {
                 data = {};
 
             data[name] = self.$(e).val();
-            self.model.setFormElements(data, true);
+            self.model.setFormElements(data,  -1, true);
         },
         datepickerChange: function(e) {
             var name = self.$(e).attr('name'),
                 data = {};
 
             data[name] = self.$(e).val();
-            self.model.setFormElements(data, true);
+            self.model.setFormElements(data, -1, true);
         },
         /**
          * 删除组件
@@ -319,7 +356,37 @@ Controller.extend('form_designer', function () {
             self.inArea = false;
         },
         editComponent: function(e) {
+            var target = self.$(e),
+                index = target.attr('data-index'),
+                dataRow = target.attr('data-row'),
+                dataColumn = target.attr('data-column'),
+                formElements = self.model.get('formElements'),
+                position = '';
 
+            if (dataRow && dataColumn) {
+                dataRow = dataRow ? dataRow : '0';
+                dataColumn = dataColumn ? dataColumn : '0';
+                position = dataRow + '' + dataColumn;
+            }
+
+            if (!formElements[index]) {
+                position = 'empty'
+            } else {
+                if (formElements[index].hasOwnProperty('children') &&
+                    !formElements[index]['children'].hasOwnProperty(position)) {
+                    position = 'empty'
+                }
+            }
+
+            position = index + ':' + position;
+            self.model.set('openPropertyTemp', position);
+            self.model.set('openProperty', position);
+
+            //
+            $('.form-designer-layout-container').find('.js-form-designer-component-item').each(function() {
+                $(this).removeClass('focus');
+            });
+            target.addClass('focus');
         }
     }
 });

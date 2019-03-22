@@ -1,0 +1,28 @@
+{{ var property = data['property'] ? data['property'] : {} }}
+
+<h2>文本</h2>
+<div class="form-designer-component-setting-container">
+    <h3>属性</h3>
+    <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">文本:</div>
+        <div class="form-designer-form-control-box flex-auto">
+            <component.basic.input.view value="{{ property['text'] }}" class="form-designer-component-label" name="property.text"></component.basic.input.view>
+        </div>
+    </div>
+    <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">类型:</div>
+        <div class="form-designer-form-control-box flex-auto">
+            {{ var list = [{text: '标题1', value: 'form-layout-title-h1'}, {text: '标题2', value: 'form-layout-title-h2'}, {text: '正文', value: 'form-layout-content'}] }}
+            {{ var defaultValue = property['class'] ? property['class'] : 'form-layout-content' }}
+            <component.basic.select.view list="{{ list }}" default="{{ defaultValue }}" class="js-property-select" name="property.class"></component.basic.select.view>
+        </div>
+    </div>
+    <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">颜色:</div>
+        <div class="form-designer-form-control-box flex-auto">
+            {{ var list = [{text: '红色', value: 'color-danger'}, {text: '蓝色', value: 'color-blue'}, {text: '灰色', value: 'color-gray'}] }}
+            {{ var defaultValue = property['class'] ? property['class'] : '' }}
+            <component.basic.select.view list="{{ list }}" default="{{ defaultValue }}" class="js-property-select" name="property.class"></component.basic.select.view>
+        </div>
+    </div>
+</div>

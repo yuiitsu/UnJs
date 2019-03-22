@@ -6,8 +6,7 @@
     {{ if data['formElements'] && data['formElements'].length > 0 }}
     {{ for var i in data['formElements'] }}
         {{ var component = data['formElements'][i]['component'] }}
-        {{ var children = data['formElements'][i]['children'] ? data['formElements'][i]['children'] : {} }}
-        {{ func this.getView('component.'+ component, {index: i, elements: data['formElements'][i]}) }}
+        {{ func this.getView('component.'+ component, {index: i, className: 'js-form-designer-component-item', elements: data['formElements'][i], openProperty: data['openProperty']}) }}
     {{ end }}
     {{ else }}
     <div class="form-designer-form-tips">请先拖一个布局到这里</div>

@@ -1,0 +1,17 @@
+<h2>表格</h2>
+<div class="form-designer-component-setting-container">
+    <h3>布局</h3>
+    <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">行数:</div>
+        <div class="form-designer-form-control-box flex-auto">
+            {{ var row = data['row'] ? data['row'] : '4' }}
+            <component.basic.input.view value="{{ row }}" class="js-property-input" name="property.row"></component.basic.input.view>
+        </div>
+        <div class="form-designer-form-label">列数:</div>
+        <div class="form-designer-form-control-box flex-auto">
+            {{ var column = data['column'] ? data['column'] : '4' }}
+            <component.basic.input.view value="{{ column }}" class="js-property-input" name="property.column"></component.basic.input.view>
+        </div>
+    </div>
+</div>
+

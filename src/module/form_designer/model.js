@@ -24,7 +24,8 @@ Model.extend('form_designer', function () {
                     {component: 'basic.label.view', key: 'label', name: '标签'},
                     {component: 'basic.input.view', key: 'input', name: '文本/数值框'},
                     {component: 'basic.textarea.view', key: 'textarea', name: '内容框'},
-                    {component: 'basic.select.view', key: 'select', name: '选择菜单'},
+                    {component: 'basic.select.view', key: 'select', name: '下拉选择框'},
+                    {component: 'linkage_select.view', key: 'linkage_select', name: '联动下拉选择框'},
                     {component: 'basic.radio.view', key: 'radio', name: '单选'},
                     {component: 'basic.checkbox.view', key: 'checkbox', name: '多选'},
                     {component: 'datepicker.view', key: 'datepicker', name: '时间选择'},
@@ -129,15 +130,16 @@ Model.extend('form_designer', function () {
         var position = '',
             formElements = this.get('formElements');
         //
-        if (row === undefined && column === undefined) {
-            position = this.get('openPropertyTemp');
+        if (row === undefined && column === undefined && index === -1) {
+            var openPropertyTemp = this.get('openPropertyTemp'),
+                positions = openPropertyTemp.split(':');
+            index = positions[0];
+            position = positions[1];
         } else {
             row = row ? row : '0';
             column = column ? column : '0';
             position = row + '' + column;
         }
-
-
 
         /**
          * 设置值
@@ -196,12 +198,20 @@ Model.extend('form_designer', function () {
         if (!index) {
             formElements.push(data);
         } else {
-            if (!position) {
-                console.log('Set Form Elements Failed. position: ', position);
-                return false;
+            // if (position !== 'empty' && position) {
+            //     console.log('Set Form Elements Failed. position: ', position);
+            //     return false;
+            // }
+            if (!formElements[index].hasOwnProperty('children')) {
+                formElements[index]['children'] = {};
             }
-            formElements[index][position] = formElements[index][position] ? formElements[index][position] : {};
-            setValue(data, formElements[index][position]);
+            if (position !== 'empty' && position !== '') {
+                formElements[index]['children'][position] = formElements[index]['children'][position] ?
+                    formElements[index]['children'][position] : {};
+                setValue(data, formElements[index]['children'][position]);
+            } else {
+                setValue(data, formElements[index]);
+            }
         }
 
         this.set('formElements', formElements);
@@ -218,10 +228,19 @@ Model.extend('form_designer', function () {
             return false;
         }
 
+        var positions = openProperty.split(':'),
+            index = positions[0],
+            position = positions[1];
+
         if (openProperty === 'global') {
             formElements = {};
-        } else if (formElements.hasOwnProperty(openProperty)) {
-            delete formElements[openProperty];
+        } else {
+            if (position === 'empty' || position === '') {
+                formElements.splice(index, 1);
+            } else if (formElements[index].hasOwnProperty('children') ||
+                formElements[index]['children'].hasOwnProperty(position)) {
+                delete formElements[index]['children'][position];
+            }
         }
 
         this.set('openProperty', '');

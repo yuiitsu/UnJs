@@ -1,0 +1,7 @@
+{{ var id = parseInt(Math.random() * 1000000) }}
+<div class="component-linkage-select" id="component-linkage-select-{{ id }}">
+    {{ var list = [{text: '一级', value: 'custom'}] }}
+    <component.basic.select.view list="{{ list }}"></component.basic.select.view>
+</div>
+
+{{ var component = this.callComponent({name: 'linkage_select'}, {id: id}) }}

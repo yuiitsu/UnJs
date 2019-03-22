@@ -13,29 +13,29 @@ Component.extend('form_designer.layout.default', function() {
          * 选择元素，打开property面板
          */
         openProperty: function() {
-            $('.form-designer-layout').off('click').on('click', 'td', function(e) {
-                var dataRow = $(this).attr('data-row'),
-                    dataColumn = $(this).attr('data-column'),
-                    formElements = self.model.form_designer.get('formElements'),
-                    modelKey = 'openProperty',
-                    modelKeyTemp = 'openPropertyTemp';
+            // $('.form-designer-layout').off('click').on('click', 'td', function(e) {
+            //     var dataRow = $(this).attr('data-row'),
+            //         dataColumn = $(this).attr('data-column'),
+            //         formElements = self.model.form_designer.get('formElements'),
+            //         modelKey = 'openProperty',
+            //         modelKeyTemp = 'openPropertyTemp';
 
-                dataRow = dataRow ? dataRow : '0';
-                dataColumn = dataColumn ? dataColumn : '0';
-                var position = dataRow + '' + dataColumn;
-                if (!formElements.hasOwnProperty(position)) {
-                    position = 'empty'
-                }
-                self.model.form_designer.set(modelKeyTemp, position);
-                self.model.form_designer.set(modelKey, position);
-                //
-                $('.form-designer-layout').find('td').each(function() {
-                    $(this).removeClass('focus');
-                });
-                $(this).addClass('focus');
-                //
-                e.stopPropagation();
-            });
+            //     dataRow = dataRow ? dataRow : '0';
+            //     dataColumn = dataColumn ? dataColumn : '0';
+            //     var position = dataRow + '' + dataColumn;
+            //     if (!formElements.hasOwnProperty(position)) {
+            //         position = 'empty'
+            //     }
+            //     self.model.form_designer.set(modelKeyTemp, position);
+            //     self.model.form_designer.set(modelKey, position);
+            //     //
+            //     $('.form-designer-layout').find('td').each(function() {
+            //         $(this).removeClass('focus');
+            //     });
+            //     $(this).addClass('focus');
+            //     //
+            //     e.stopPropagation();
+            // });
         }
     };
 

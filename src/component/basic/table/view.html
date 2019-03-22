@@ -1,22 +1,24 @@
 {{ var index = data['index'] ? data['index'] : '0' }}
+{{ var className = data['className'] ? data['className'] : '' }}
 {{ var elements = data['elements'] ? data['elements'] : {} }}
-{{ var row = data['row'] ? data['row'] : 4 }}
-{{ var column = data['column'] ? data['column'] : 4 }}
-{{ var openProperty = data['openProperty'] ? data['openProperty'] : 4 }}
+{{ var d = elements['data'] ? elements['data'] : {} }}
+{{ var row = d['row'] ? d['row'] : 4 }}
+{{ var column = d['column'] ? d['column'] : 4 }}
+{{ var openProperty = data['openProperty'] ? data['openProperty'] : [] }}
 <table class="form-designer-layout" cellspacing="0" data-index="{{ index }}">
     {{ for var i = 0; i < row; i++ }}
     <tr>
         {{ for var j = 0; j < column; j++ }}
-        {{ var focus = i.toString() + j.toString() === openProperty ? ' focus' : '' }}
+        {{ var focus = index + ':' + i.toString() + j.toString() === openProperty.join(':') ? ' focus' : '' }}
         <td data-row="{{ i.toString() }}"
             data-column="{{ j.toString() }}"
             data-index="{{ index }}"
-            class="form-designer-component-container{{ focus }}">
+            class="{{ className }}{{ focus }}">
             {{ var position = i + '' + j }}
-            {{ if elements && elements[position] }}
-            {{ var item = elements[i + '' + j] }}
+            {{ if elements && elements['children'] && elements['children'][position] }}
+            {{ var item = elements['children'][i + '' + j] }}
             {{ var component = item['component'] }}
-            {{ func this.getView('component.'+ component, item) }}
+            {{ func this.getView('component.'+ component, item['data']) }}
             {{ end }}
         </td>
         {{ end }}

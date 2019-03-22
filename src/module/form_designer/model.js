@@ -8,7 +8,17 @@ Model.extend('form_designer', function () {
     this.default = {
         components: [
             {
+                id: 'layout',
+                for: 'layout',
+                name: '布局',
+                children: [
+                    {component: 'basic.text.view', key: 'text', name: '文本'},
+                    {component: 'basic.table.view', key: 'table', name: '表格'}
+                ]
+            },
+            {
                 id: 'global',
+                for: 'form',
                 name: '通用组件',
                 children: [
                     {component: 'basic.label.view', key: 'label', name: '标签'},
@@ -24,6 +34,7 @@ Model.extend('form_designer', function () {
             },
             {
                 id: 'combination',
+                for: 'layout',
                 name: '组合组件',
                 children: [
                     {component: 'basic.label.view', key: 'label', name: '标签'},
@@ -31,6 +42,7 @@ Model.extend('form_designer', function () {
             },
             {
                 id: 'business',
+                for: 'form',
                 name: '业务组件',
                 children: [
                     {component: 'basic.label.view', key: 'label', name: '标签'},
@@ -47,7 +59,7 @@ Model.extend('form_designer', function () {
         },
         formTitle: '',
         formElementsString: '',
-        formElements: {},
+        formElements: [],
         verifyTipsType: '',
         // 临时
         region: [
@@ -108,11 +120,12 @@ Model.extend('form_designer', function () {
     /**
      * 设置formElements数据
      * @param data
+     * @param index
      * @param isSet
      * @param row
      * @param column
      */
-    this.setFormElements = function(data, isSet, row, column) {
+    this.setFormElements = function(data, index, isSet, row, column) {
         var position = '',
             formElements = this.get('formElements');
         //
@@ -124,10 +137,7 @@ Model.extend('form_designer', function () {
             position = row + '' + column;
         }
 
-        if (!position) {
-            console.log('Set Form Elements Failed. position: ', position);
-            return false;
-        }
+
 
         /**
          * 设置值
@@ -183,8 +193,17 @@ Model.extend('form_designer', function () {
             }
         }
 
-        formElements[position] = formElements[position] ? formElements[position] : {};
-        setValue(data, formElements[position]);
+        if (!index) {
+            formElements.push(data);
+        } else {
+            if (!position) {
+                console.log('Set Form Elements Failed. position: ', position);
+                return false;
+            }
+            formElements[index][position] = formElements[index][position] ? formElements[index][position] : {};
+            setValue(data, formElements[index][position]);
+        }
+
         this.set('formElements', formElements);
         if (isSet) {
             this.set('formElementsString', JSON.stringify(formElements));

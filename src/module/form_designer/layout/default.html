@@ -1,0 +1,17 @@
+{{ var row = data['row'] ? data['row'] : 4 }}
+{{ var column = data['column'] ? data['column'] : 4 }}
+{{ var verifyTipsType = data['verifyTipsType'] ? data['verifyTipsType'] : '' }}
+{{ var formTitle = data['formTitle'] ? data['formTitle'] : '表单名称' }}
+<div id="js-verify-form" verify-tips-type="{{ verifyTipsType }}" class="flex-auto">
+    {{ if data['formElements'] && data['formElements'].length > 0 }}
+    {{ for var i in data['formElements'] }}
+        {{ var component = data['formElements'][i]['component'] }}
+        {{ var children = data['formElements'][i]['children'] ? data['formElements'][i]['children'] : {} }}
+        {{ func this.getView('component.'+ component, {index: i, elements: data['formElements'][i]}) }}
+    {{ end }}
+    {{ else }}
+    <div class="form-designer-form-tips">请先拖一个布局到这里</div>
+    {{ end }}
+</div>
+
+{{ var component = this.callComponent({name: 'form_designer.layout.default'}) }}

@@ -5,11 +5,11 @@ const Config = {
     'siteTitle': 'UnJs',
     'version': '4.0.0',
     // static
-    'static_dir': '/dev/',
+    'static_dir': '/src/',
 
     'output': {
         'base': {
-            'source': 'dev',
+            'source': 'src',
             'target': 'mobile'
         },
         'lib': 'lib',
@@ -24,7 +24,7 @@ const Config = {
     },
 
     // 开发目录
-    'devDir': 'dev',
+    'devDir': 'src',
 
     // 指定编译相关配置
     // 如果值类型为String，按目录处理，如果类型为List，按文件顺序处理
@@ -47,7 +47,7 @@ const Config = {
     'controller_dir': 'controller',
 
     // 模板相关
-    'template_dir': 'dev',
+    'template_dir': 'src',
 
     // 静态配置
     'static': {

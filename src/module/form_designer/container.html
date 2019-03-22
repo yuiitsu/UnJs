@@ -14,10 +14,7 @@
             {{ func this.getView('module.form_designer.component', data['componentSelector']) }}
         </div>
         <div class="form-designer-layout-container flex-auto flex-column">
-            <div class="form-designer-form flex-auto">
-                <!--
-                <div class="form-designer-form-tips">请先拖一个布局到这里</div>
-                -->
+            <div class="form-designer-form flex-auto flex-row">
                 {{ func this.getView('module.form_designer.layout.default', {}) }}
             </div>
         </div>

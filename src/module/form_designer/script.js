@@ -18,7 +18,11 @@ Controller.extend('form_designer', function () {
         // 组件设置，删除组件
         '.form-designer-component-setting .js-form-designer-component-del click.component_del_': '_settingEvent.delComponent',
         //
-        '#js-form-designer-verify-test click': '_settingEvent.verifyTest'
+        '#js-form-designer-verify-test click': '_settingEvent.verifyTest',
+        //
+        '.form-designer-form #js-verify-form mouseenter.form_mouseenter_': '_settingEvent.formMouseEnter',
+        '.form-designer-form #js-verify-form mouseleave.form_mouseleave_': '_settingEvent.formMouseLeave',
+        '.form-designer-layout-container .form-designer-component-container click.component_container_click_': '_settingEvent.editComponent'
     };
 
     this.index = function() {
@@ -96,27 +100,27 @@ Controller.extend('form_designer', function () {
             verifyTipsType: verifyTipsType
         };
         //
-        for (var i in formElements) {
-            if (formElements.hasOwnProperty(i)) {
-                var properties = formElements[i].property,
-                    rules = formElements[i].rules;
+        // for (var i in formElements) {
+        //     if (formElements.hasOwnProperty(i)) {
+        //         var properties = formElements[i].property,
+        //             rules = formElements[i].rules;
 
-                if (!data.componentData.hasOwnProperty(i)) {
-                    data.componentData[i] = {};
-                }
+        //         if (!data.componentData.hasOwnProperty(i)) {
+        //             data.componentData[i] = {};
+        //         }
 
-                for (var j in properties) {
-                    if (properties.hasOwnProperty(j)) {
-                        data.componentData[i][j] = properties[j];
-                    }
-                }
-                for (var m in rules) {
-                    if (rules.hasOwnProperty(m)) {
-                        data.componentData[i][m] = rules[m];
-                    }
-                }
-            }
-        }
+        //         for (var j in properties) {
+        //             if (properties.hasOwnProperty(j)) {
+        //                 data.componentData[i][j] = properties[j];
+        //             }
+        //         }
+        //         for (var m in rules) {
+        //             if (rules.hasOwnProperty(m)) {
+        //                 data.componentData[i][m] = rules[m];
+        //             }
+        //         }
+        //     }
+        // }
         this.output('layout.default', data, $('.form-designer-form'))
     };
 
@@ -177,46 +181,62 @@ Controller.extend('form_designer', function () {
         var target = this.$(e),
             text = target.text(),
             component = target.attr('data-component'),
+            _for = target.attr('data-for'),
             key = target.attr('data-key'),
-            parent = $('body');
+            _body = $('body'),
+            area = $('#js-verify-form');
 
         // 创建拖动浮动层
-        parent.append(this.getView('module.form_designer.drag_tip', text));
+        _body.append(this.getView('module.form_designer.drag_tip', text));
         //
         var o = $('.form-designer-drag-tip');
         o.css({top: e.clientY + 1, left: e.clientX + 1});
         //
-        parent.off('mousemove').on('mousemove', function(e) {
+        _body.off('mousemove').on('mousemove', function(e) {
             o.css({top: e.clientY + 1, left: e.clientX + 1});
             e.stopPropagation();
         });
         //
-        parent.off('mouseup').on('mouseup', function(e) {
+        _body.off('mouseup').on('mouseup', function(e) {
             var element = document.elementFromPoint(e.clientX, e.clientY),
                 target = $(element);
 
             if (component) {
-                if (target.hasClass('form-designer-component-container')) {
-                    if (target.children().length === 0) {
-                        // 渲染组件到目标区域
-                        // self.renderComponent(component, {}).to(target);
-                        // 更新数据对象
-                        var row = target.attr('data-row'),
-                            column = target.attr('data-column'),
-                            position = row + '' + column;
+                if (_for === 'form') {
+                    if (target.hasClass('form-designer-component-container')) {
+                        if (target.children().length === 0) {
+                            // 更新数据对象
+                            var index = target.attr('data-index'),
+                                row = target.attr('data-row'),
+                                column = target.attr('data-column'),
+                                position = row + '' + column;
 
-                        self.model.set('openPropertyTemp', position);
-                        //
+                            self.model.set('openPropertyTemp', position);
+                            //
+                            self.model.setFormElements({
+                                name: key,
+                                component: component,
+                                property: {
+                                    class: 'form-designer-component-item js-form-control'
+                                },
+                                rules: {}
+                            }, index, true, row, column);
+                            // 渲染property setting
+                            self.model.set('openProperty', position);
+                        }
+                    } else {
+                        console.log('通用组件须先有表格布局');
+                    }
+                }
+
+                if (_for === 'layout') {
+                    if (self.inArea) {
                         self.model.setFormElements({
                             name: key,
                             component: component,
-                            property: {
-                                class: 'form-designer-component-item js-form-control'
-                            },
+                            property: {},
                             rules: {}
-                        }, true, row, column);
-                        // 渲染property setting
-                        self.model.set('openProperty', position);
+                        }, null, true);
                     }
                 }
             }
@@ -289,6 +309,17 @@ Controller.extend('form_designer', function () {
                 message = '<span class="color-success">校验成功!</span>';
             }
             $('#js-form-verify-result').html(message);
+        },
+        formMouseEnter: function(e) {
+            var target = self.$(e);
+            self.inArea = true;
+        },
+        formMouseLeave: function(e) {
+            var target = self.$(e);
+            self.inArea = false;
+        },
+        editComponent: function(e) {
+
         }
     }
 });

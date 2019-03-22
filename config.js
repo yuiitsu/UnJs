@@ -4,7 +4,7 @@
 const Config = {
     'siteTitle': 'UnJs',
     'version': '4.0.0', // 版本号
-    'devDir': 'dev', // 开发目录
+    'devDir': 'src', // 开发目录
     'configFile': '/apps/conf/wmb2c/shop.json', // 配置文件
     // 指定编译相关配置
     // 如果值类型为String，按目录处理，如果类型为List，按文件顺序处理

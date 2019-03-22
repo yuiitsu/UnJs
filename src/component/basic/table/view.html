@@ -1,0 +1,25 @@
+{{ var index = data['index'] ? data['index'] : '0' }}
+{{ var elements = data['elements'] ? data['elements'] : {} }}
+{{ var row = data['row'] ? data['row'] : 4 }}
+{{ var column = data['column'] ? data['column'] : 4 }}
+{{ var openProperty = data['openProperty'] ? data['openProperty'] : 4 }}
+<table class="form-designer-layout" cellspacing="0" data-index="{{ index }}">
+    {{ for var i = 0; i < row; i++ }}
+    <tr>
+        {{ for var j = 0; j < column; j++ }}
+        {{ var focus = i.toString() + j.toString() === openProperty ? ' focus' : '' }}
+        <td data-row="{{ i.toString() }}"
+            data-column="{{ j.toString() }}"
+            data-index="{{ index }}"
+            class="form-designer-component-container{{ focus }}">
+            {{ var position = i + '' + j }}
+            {{ if elements && elements[position] }}
+            {{ var item = elements[i + '' + j] }}
+            {{ var component = item['component'] }}
+            {{ func this.getView('component.'+ component, item) }}
+            {{ end }}
+        </td>
+        {{ end }}
+    </tr>
+    {{ end }}
+</table>

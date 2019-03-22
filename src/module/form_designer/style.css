@@ -26,3 +26,4 @@
 .form-designer-form-control-box{height:35px;line-height:35px;}
 .form-designer-drag-tip{position: absolute;left:0;top:0;background-color:#000;color:#fff;opacity:.5;padding:5px 10px;
     min-width: 80px;border-radius: 3px;}
+.form-designer-form .component-text{padding:10px 0;}

@@ -10,7 +10,8 @@
         <ul>
             {{ for var j in component['children'] }}
             <li data-component="{{ component['children'][j]['component'] }}"
-                data-key="{{ component['children'][j]['key'] }}">{{ component['children'][j]['name'] }}</li>
+                data-key="{{ component['children'][j]['key'] }}"
+                data-for="{{ component['for'] }}">{{ component['children'][j]['name'] }}</li>
             {{ end }}
         </ul>
     </div>

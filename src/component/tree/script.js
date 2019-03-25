@@ -18,10 +18,14 @@ Component.extend('tree', function() {
             $(target).on('focus', function() {
                 if (data.length > 0) {
                     // 渲染
-                    self.callComponent({name: 'tooltip'}, {
+                    // self.callComponent({name: 'tooltip'}, {
+                    //     target: target,
+                    //     content: self.getView('component.tree.popup', data)
+                    // });
+                    self.renderComponent('tooltip.view', {
                         target: target,
                         content: self.getView('component.tree.popup', data)
-                    });
+                    }).appendTo($('body'));
                 }
             });
         },

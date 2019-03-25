@@ -220,8 +220,7 @@ Controller.extend('form_designer', function () {
             component = target.attr('data-component'),
             _for = target.attr('data-for'),
             key = target.attr('data-key'),
-            _body = $('body'),
-            area = $('#js-verify-form');
+            _body = $('body');
 
         // 创建拖动浮动层
         _body.append(this.getView('module.form_designer.drag_tip', text));

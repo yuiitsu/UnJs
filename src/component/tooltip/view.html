@@ -1,7 +1,10 @@
+{{ var id = parseInt(Math.random() * 1000000) }}
 
-<div class="component-tooltip" id="component-tooltip-{{ data['code'] }}">
+<div class="component-tooltip" id="component-tooltip-{{ id }}">
     <div class="component-tooltip-arrow"></div>
     <div class="component-tooltip-content">
         {{ data['content'] }}
     </div>
 </div>
+
+{{ var component = this.callComponent({name: 'tooltip'}, {target: data['target'], id: id}) }}

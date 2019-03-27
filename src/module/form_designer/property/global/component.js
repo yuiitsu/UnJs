@@ -53,7 +53,11 @@ Component.extend('form_designer.property.global', function() {
                             var evalString = ['self.model.form_designer.default.verifyAdvanceRulesFunc["0"] = function(callback) {'],
                                 isThen = false;
                             for (var j in verifyAdvanceRules[i]) {
-                                var item = verifyAdvanceRules[i][j];
+                                var item = verifyAdvanceRules[i][j],
+                                    preNodeVal = '',
+                                    preElement = '',
+                                    preSymbol = '',
+                                    index = 0;
                                 switch (item.t) {
                                     case 'condition':
                                         if (item.v === 'if') {
@@ -61,46 +65,69 @@ Component.extend('form_designer.property.global', function() {
                                         }
                                         if (item.v === 'then') {
                                             evalString.push('){');
+                                            evalString.push('}');
                                             isThen = true;
                                         }
                                         break;
                                     case 'element':
-                                        var preNodeVal = evalString[evalString.length - 1];
-                                        if (preNodeVal === '=') {
-                                            evalString[evalString.length - 2] = evalString[evalString.length - 2].replace('.val()', ".val($('.js-form-control[name=\""+ item.v +"\"]').val())");
-                                            evalString.pop();
+                                        preNodeVal = evalString[evalString.length - 1];
+                                        if (!isThen) {
+                                            if (preNodeVal === '=') {
+                                                evalString[evalString.length - 2] = evalString[evalString.length - 2].replace('.val()', ".val($('.js-form-control[name=\"" + item.v + "\"]').val())");
+                                                evalString.pop();
+                                            } else {
+                                                evalString.push("$('.js-form-control[name=\"" + item.v + "\"]').val()");
+                                            }
                                         } else {
-                                            evalString.push("$('.js-form-control[name=\""+ item.v +"\"]').val()");
-                                        }
-                                        // else if (preNodeVal === '>' || preNodeVal === '<') {
-                                        //     var preSymbol = evalString.pop(),
-                                        //         preElement = evalString.pop();
+                                            index = preNodeVal === '}' ? evalString.length - 2 : evalString.length - 1;
+                                            preNodeVal = evalString[index];
+                                            preElement = evalString[index - 1];
 
-                                        //     evalString.push('if ('+ preElement + preSymbol + item.v +') {return {status:true, element: "'+ verifyAdvanceRules[i][j - 2].v +'"};}else{return {status: false, element: "'+ verifyAdvanceRules[i][j - 2].v +'", message: "'+ preSymbol + item.v +'"};}');
-                                        // } else {
-                                        //     evalString.push("$('.js-form-control[name=\""+ item.v +"\"]').val()");
-                                        // }
+                                            if (preNodeVal === '>' || preNodeVal === '<') {
+                                                preSymbol = evalString.splice(index, 1)[0];
+                                                preElement = evalString.splice(index - 1, 1)[9];
+                                                evalString.splice(index - 1, 0, 'if ('+ preElement + preSymbol + item.v +') {return {status:true, element: "'+ verifyAdvanceRules[i][j - 2].v +'"};}else{return {status: false, element: "'+ verifyAdvanceRules[i][j - 2].v +'", message: "'+ preSymbol + item.v +'"};}');
+                                            } else {
+                                                evalString.splice(index + 1, 0, "$('.js-form-control[name=\""+ item.v +"\"]').val()");
+                                            }
+                                        }
                                         break;
                                     case 'symbol':
-                                        evalString.push(item.v);
+                                        if (!isThen) {
+                                            evalString.push(item.v);
+                                        } else {
+                                            evalString.splice(evalString.length - 1, 0, item.v);
+                                        }
                                         break;
                                     case 'custom':
-                                        var preNodeVal = evalString[evalString.length - 1];
-                                        if (preNodeVal === '=') {
-                                            evalString[evalString.length - 2] = evalString[evalString.length - 2].replace('.val()', '.val(' + item.v + ')');
-                                            evalString.pop();
-                                        } else if (preNodeVal === '>' || preNodeVal === '<') {
-                                            var preSymbol = evalString.pop(),
+                                        preNodeVal = evalString[evalString.length - 1];
+                                        if (!isThen) {
+                                            if (preNodeVal === '=') {
+                                                evalString[evalString.length - 2] = evalString[evalString.length - 2].replace('.val()', '.val(' + item.v + ')');
+                                                evalString.pop();
+                                            } else if (preNodeVal === '>' || preNodeVal === '<') {
+                                                preSymbol = evalString.pop();
                                                 preElement = evalString.pop();
-
-                                            evalString.push('if ('+ preElement + preSymbol + item.v +') {return {status:true, element: "'+ verifyAdvanceRules[i][j - 2].v +'"};}else{return {status: false, element: "'+ verifyAdvanceRules[i][j - 2].v +'", message: "'+ preSymbol + item.v +'"};}');
+                                                evalString.push('if (' + preElement + preSymbol + item.v + ') {return {status:true, element: "' + verifyAdvanceRules[i][j - 2].v + '"};}else{return {status: false, element: "' + verifyAdvanceRules[i][j - 2].v + '", message: "' + preSymbol + item.v + '"};}');
+                                            } else {
+                                                evalString.push(item.v);
+                                            }
                                         } else {
-                                            evalString.push(item.v);
+                                             index = preNodeVal === '}' ? evalString.length - 2 : evalString.length - 1;
+                                            preNodeVal = evalString[index];
+                                            preElement = evalString[index - 1];
+
+                                             if (preNodeVal === '>' || preNodeVal === '<') {
+                                                preSymbol = evalString.splice(index, 1)[0];
+                                                preElement = evalString.splice(index - 1, 1)[0];
+                                                evalString.splice(index - 1, 0, 'if (' + preElement + preSymbol + item.v + ') {return {status:true, element: "' + verifyAdvanceRules[i][j - 2].v + '"};}else{return {status: false, element: "' + verifyAdvanceRules[i][j - 2].v + '", message: "' + preSymbol + item.v + '"};}');
+                                            } else {
+                                                evalString.splice(index + 1, 0, item.v);
+                                            }
                                         }
                                         break;
                                 }
                             }
-                            evalString.push('}');
                             evalString.push('}');
                             console.log(evalString.join(""));
                             eval(evalString.join(""));

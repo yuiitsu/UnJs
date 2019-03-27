@@ -1,0 +1,14 @@
+.form-designer-rules-editor-action-bar {
+    margin-bottom:10px;
+}
+.form-designer-rules-editor-action-bar span {
+    cursor: pointer;
+}
+.form-designer-rules-editor-content {
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+.form-designer-rules-editor-item{
+    display: inline-block;
+    max-width: 80px;
+}

@@ -22,7 +22,8 @@ Controller.extend('form_designer', function () {
         //
         '.form-designer-form #js-verify-form mouseenter.form_mouseenter_': '_settingEvent.formMouseEnter',
         '.form-designer-form #js-verify-form mouseleave.form_mouseleave_': '_settingEvent.formMouseLeave',
-        '.form-designer-layout-container .js-form-designer-component-item click.component_container_click_': '_settingEvent.editComponent'
+        '.form-designer-layout-container .js-form-designer-component-item click.component_container_click_': '_settingEvent.editComponent',
+        'body .form-designer-rules-editor-action-add click.rules_editor_click_': '_settingEvent.rulesEditor'
     };
 
     this.index = function() {
@@ -386,6 +387,42 @@ Controller.extend('form_designer', function () {
                 $(this).removeClass('focus');
             });
             target.addClass('focus');
+        },
+        rulesEditor: function(e) {
+            var target = self.$(e),
+                dataType = target.attr('data-type'),
+                formElements = self.model.get('formElements'),
+                formElementsLen = formElements.length,
+                elements = [],
+                view = '';
+
+            console.log(formElements);
+            // 获取表单元素
+            for (var i = 0; i < formElementsLen; i++) {
+                if (formElements[i]['name'] === 'table') {
+                    var children = formElements[i]['children'];
+                    for (var j in children) {
+                        if (children.hasOwnProperty(j) && children[j]['name'] !== 'label') {
+                            if (children[j]['data'].hasOwnProperty('name')) {
+                                elements.push(children[j]['data']['name']);
+                            }
+                        }
+                    }
+                }
+            }
+
+            switch (dataType) {
+                case 'element':
+                    view = self.getView('module.form_designer.rules_editor.element', elements);
+                    break;
+                case 'symbol':
+                    view = self.getView('module.form_designer.rules_editor.symbol');
+                    break;
+                case 'custom':
+                    view = self.getView('module.form_designer.rules_editor.custom');
+                    break;
+            }
+            $('.form-designer-rules-editor-content').append(view);
         }
     }
 });

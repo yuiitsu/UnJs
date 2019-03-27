@@ -72,6 +72,14 @@
         </div>
     </div>
     <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">检查类型:</div>
+        <div class="form-designer-form-control-box flex-auto">
+            {{ var list = [{text: '手机', value: 'mobile'}, {text: '邮件', value: 'email'}] }}
+            {{ var defaultType = property['valueType'] ? property['valueType'] : 'string' }}
+            <component.basic.select.view list="{{ list }}" default="{{ defaultType }}" class="js-property-select" name="property.verifyType"></component.basic.select.view>
+        </div>
+    </div>
+    <div class="form-designer-component-setting-item">
         <div class="form-designer-form-label">最小长度:</div>
         <div class="form-designer-form-control-box flex-auto">
             <component.basic.input.view value="{{ rules.minLength ? rules.minLength : '0' }}" class="js-property-input" name="rules.minLength"></component.basic.input.view>

@@ -25,6 +25,22 @@ Component.extend('form_designer.property.global', function() {
             $('.js-form-designer-title-input').on('input', function() {
                 self.model.form_designer.set('formTitle', $.trim($(this).val()));
             });
+        },
+        openGlobalRule: function() {
+            $('.js-form-designer-add-global-rules').off('click').on('click', function() {
+                self.renderComponent('modal.view', {
+                    title: '添加规则',
+                    body: self.getView('module.form_designer.rules_editor.view'),
+                    callback: function(modal, res) {
+                        //
+                        var rules = [];
+                        $('.form-designer-rules-editor-item').each(function() {
+                            var dataType = $(this).attr('data-type');
+                            rules.push($(this).find())
+                        });
+                    }
+                }).appendTo($('body'));
+            });
         }
     };
 

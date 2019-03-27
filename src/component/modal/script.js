@@ -6,8 +6,21 @@ Component.extend('modal', function() {
     let self = this;
 
     this.bind = {
-        show: function(target) {
-            $(target).show();
+        show: function(params) {
+            $(params.target).show();
+        },
+        close: function(params) {
+            $('.modal-dialog').find('.close').on('click', function() {
+                $(params.target).remove();
+            });
+        },
+        ok: function(params) {
+            console.log(params);
+            $('.modal-button-confirm').on('click', function() {
+                if ($.isFunction(params.data.callback)) {
+                    params.data.callback(self, 'ok');
+                }
+            });
         }
     };
 

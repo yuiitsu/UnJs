@@ -51,6 +51,7 @@ Component.extend('form_designer.property.global', function() {
 
                         for (var i in verifyAdvanceRules) {
                             var evalString = ['self.model.form_designer.default.verifyAdvanceRulesFunc["0"] = function(callback) {'],
+                                isIf = false,
                                 isThen = false;
                             for (var j in verifyAdvanceRules[i]) {
                                 var item = verifyAdvanceRules[i][j],
@@ -62,6 +63,7 @@ Component.extend('form_designer.property.global', function() {
                                     case 'condition':
                                         if (item.v === 'if') {
                                             evalString.push(item.v + '(');
+                                            isIf = true;
                                         }
                                         if (item.v === 'then') {
                                             evalString.push('){');
@@ -72,12 +74,12 @@ Component.extend('form_designer.property.global', function() {
                                     case 'element':
                                         preNodeVal = evalString[evalString.length - 1];
                                         if (!isThen) {
-                                            if (preNodeVal === '=') {
-                                                evalString[evalString.length - 2] = evalString[evalString.length - 2].replace('.val()', ".val($('.js-form-control[name=\"" + item.v + "\"]').val())");
-                                                evalString.pop();
-                                            } else {
-                                                evalString.push("$('.js-form-control[name=\"" + item.v + "\"]').val()");
-                                            }
+                                            //if (preNodeVal === '=') {
+                                            //    evalString[evalString.length - 2] = evalString[evalString.length - 2].replace('.val()', ".val($('.js-form-control[name=\"" + item.v + "\"]').val())");
+                                            //    evalString.pop();
+                                            //} else {
+                                                evalString.push("document.getElementsByName('"+ item.v +"')[0].value");
+                                            //}
                                         } else {
                                             index = preNodeVal === '}' ? evalString.length - 2 : evalString.length - 1;
                                             preNodeVal = evalString[index];
@@ -88,30 +90,40 @@ Component.extend('form_designer.property.global', function() {
                                                 preElement = evalString.splice(index - 1, 1)[9];
                                                 evalString.splice(index - 1, 0, 'if ('+ preElement + preSymbol + item.v +') {return {status:true, element: "'+ verifyAdvanceRules[i][j - 2].v +'"};}else{return {status: false, element: "'+ verifyAdvanceRules[i][j - 2].v +'", message: "'+ preSymbol + item.v +'"};}');
                                             } else {
-                                                evalString.splice(index + 1, 0, "$('.js-form-control[name=\""+ item.v +"\"]').val()");
+                                                if (evalString[evalString.length - 2] === '+' || evalString[evalString.length - 2] === '-') {
+                                                    evalString.splice(index + 1, 0, "parseInt(document.getElementsByName('" + item.v + "')[0].value)");
+                                                } else {
+                                                    evalString.splice(index + 1, 0, "document.getElementsByName('" + item.v + "')[0].value");
+                                                }
                                             }
                                         }
                                         break;
                                     case 'symbol':
                                         if (!isThen) {
+                                            if (item.v === '+' || item.v === '-') {
+                                                evalString[evalString.length - 1] = "parseInt("+ evalString[evalString.length - 1] +")";
+                                            }
                                             evalString.push(item.v);
                                         } else {
+                                            if (item.v === '+' || item.v === '-') {
+                                                evalString[evalString.length - 2] = "parseInt("+ evalString[evalString.length - 2] +")";
+                                            }
                                             evalString.splice(evalString.length - 1, 0, item.v);
                                         }
                                         break;
                                     case 'custom':
                                         preNodeVal = evalString[evalString.length - 1];
                                         if (!isThen) {
-                                            if (preNodeVal === '=') {
-                                                evalString[evalString.length - 2] = evalString[evalString.length - 2].replace('.val()', '.val(' + item.v + ')');
-                                                evalString.pop();
-                                            } else if (preNodeVal === '>' || preNodeVal === '<') {
-                                                preSymbol = evalString.pop();
-                                                preElement = evalString.pop();
-                                                evalString.push('if (' + preElement + preSymbol + item.v + ') {return {status:true, element: "' + verifyAdvanceRules[i][j - 2].v + '"};}else{return {status: false, element: "' + verifyAdvanceRules[i][j - 2].v + '", message: "' + preSymbol + item.v + '"};}');
-                                            } else {
+                                            // if (preNodeVal === '=') {
+                                            //     evalString[evalString.length - 2] = evalString[evalString.length - 2].replace('.val()', '.val(' + item.v + ')');
+                                            //     evalString.pop();
+                                            // } else if (preNodeVal === '>' || preNodeVal === '<') {
+                                            //     preSymbol = evalString.pop();
+                                            //     preElement = evalString.pop();
+                                            //     evalString.push('if (' + preElement + preSymbol + item.v + ') {return {status:true, element: "' + verifyAdvanceRules[i][j - 2].v + '"};}else{return {status: false, element: "' + verifyAdvanceRules[i][j - 2].v + '", message: "' + preSymbol + item.v + '"};}');
+                                            // } else {
                                                 evalString.push(item.v);
-                                            }
+                                            // }
                                         } else {
                                              index = preNodeVal === '}' ? evalString.length - 2 : evalString.length - 1;
                                             preNodeVal = evalString[index];

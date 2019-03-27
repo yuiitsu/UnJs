@@ -343,7 +343,30 @@ Controller.extend('form_designer', function () {
         verifyTest: function() {
             var message = '<span class="color-danger">校验失败!</span>';
             if (self.callComponent({name: 'verification'})) {
-                message = '<span class="color-success">校验成功!</span>';
+                // 执行高级规则
+                var verifyAdvanceRulesFunc = self.model.get('verifyAdvanceRulesFunc'),
+                    isSuccess = true;
+                for (var i in verifyAdvanceRulesFunc) {
+                    if (verifyAdvanceRulesFunc.hasOwnProperty(i)) {
+                        var res = verifyAdvanceRulesFunc[i]();
+                        if (res && res.status === false) {
+                            self.callComponent({name: 'verification.afterElement'}, {
+                                target: $('.js-form-control[name="'+ res.element +'"]'),
+                                message: res.message
+                            });
+                            isSuccess = false;
+                            break;
+                        } else {
+                            self.callComponent({name: 'verification.afterElement'}, {
+                                target: '',
+                                message: ''
+                            })
+                        }
+                    }
+                }
+                if (isSuccess) {
+                    message = '<span class="color-success">校验成功!</span>';
+                }
             }
             $('#js-form-verify-result').html(message);
         },
@@ -417,6 +440,9 @@ Controller.extend('form_designer', function () {
                     break;
                 case 'symbol':
                     view = self.getView('module.form_designer.rules_editor.symbol');
+                    break;
+                case 'condition':
+                    view = self.getView('module.form_designer.rules_editor.condition');
                     break;
                 case 'custom':
                     view = self.getView('module.form_designer.rules_editor.custom');

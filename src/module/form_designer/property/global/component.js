@@ -35,9 +35,76 @@ Component.extend('form_designer.property.global', function() {
                         //
                         var rules = [];
                         $('.form-designer-rules-editor-item').each(function() {
-                            var dataType = $(this).attr('data-type');
-                            rules.push($(this).find())
+                            var dataType = $(this).attr('data-type'),
+                                target = null;
+
+                            if ($(this).find('select').length > 0) {
+                                target = $(this).find('select');
+                            } else if ($(this).find('input').length > 0) {
+                                target = $(this).find('input');
+                            }
+                            rules.push({t: dataType, v: $.trim(target.val())});
                         });
+                        var verifyAdvanceRules = self.model.form_designer.get('verifyAdvanceRules');
+                        verifyAdvanceRules.push(rules);
+                        self.model.form_designer.set('verifyAdvanceRules', verifyAdvanceRules);
+
+                        for (var i in verifyAdvanceRules) {
+                            var evalString = ['self.model.form_designer.default.verifyAdvanceRulesFunc["0"] = function(callback) {'],
+                                isThen = false;
+                            for (var j in verifyAdvanceRules[i]) {
+                                var item = verifyAdvanceRules[i][j];
+                                switch (item.t) {
+                                    case 'condition':
+                                        if (item.v === 'if') {
+                                            evalString.push(item.v + '(');
+                                        }
+                                        if (item.v === 'then') {
+                                            evalString.push('){');
+                                            isThen = true;
+                                        }
+                                        break;
+                                    case 'element':
+                                        var preNodeVal = evalString[evalString.length - 1];
+                                        if (preNodeVal === '=') {
+                                            evalString[evalString.length - 2] = evalString[evalString.length - 2].replace('.val()', ".val($('.js-form-control[name=\""+ item.v +"\"]').val())");
+                                            evalString.pop();
+                                        } else {
+                                            evalString.push("$('.js-form-control[name=\""+ item.v +"\"]').val()");
+                                        }
+                                        // else if (preNodeVal === '>' || preNodeVal === '<') {
+                                        //     var preSymbol = evalString.pop(),
+                                        //         preElement = evalString.pop();
+
+                                        //     evalString.push('if ('+ preElement + preSymbol + item.v +') {return {status:true, element: "'+ verifyAdvanceRules[i][j - 2].v +'"};}else{return {status: false, element: "'+ verifyAdvanceRules[i][j - 2].v +'", message: "'+ preSymbol + item.v +'"};}');
+                                        // } else {
+                                        //     evalString.push("$('.js-form-control[name=\""+ item.v +"\"]').val()");
+                                        // }
+                                        break;
+                                    case 'symbol':
+                                        evalString.push(item.v);
+                                        break;
+                                    case 'custom':
+                                        var preNodeVal = evalString[evalString.length - 1];
+                                        if (preNodeVal === '=') {
+                                            evalString[evalString.length - 2] = evalString[evalString.length - 2].replace('.val()', '.val(' + item.v + ')');
+                                            evalString.pop();
+                                        } else if (preNodeVal === '>' || preNodeVal === '<') {
+                                            var preSymbol = evalString.pop(),
+                                                preElement = evalString.pop();
+
+                                            evalString.push('if ('+ preElement + preSymbol + item.v +') {return {status:true, element: "'+ verifyAdvanceRules[i][j - 2].v +'"};}else{return {status: false, element: "'+ verifyAdvanceRules[i][j - 2].v +'", message: "'+ preSymbol + item.v +'"};}');
+                                        } else {
+                                            evalString.push(item.v);
+                                        }
+                                        break;
+                                }
+                            }
+                            evalString.push('}');
+                            evalString.push('}');
+                            console.log(evalString.join(""));
+                            eval(evalString.join(""));
+                        }
                     }
                 }).appendTo($('body'));
             });

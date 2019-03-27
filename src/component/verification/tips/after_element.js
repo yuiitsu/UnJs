@@ -12,12 +12,21 @@ Component.extend('verification.afterElement', function() {
      */
     this.init = function(params) {
         var target = params.target,
-            message = params.message,
-            parent = target.parent().parent();
+            message = params.message;
 
-        parent.find('.verify-error').remove();
-        if (message) {
-            target.parent().parent().append(this.getView('component.verification.tips.after_element', message));
+        if (target) {
+            var parent = target.parent().parent();
+            parent.find('.verify-error').remove();
+            if (message) {
+                target.addClass('error');
+                target.parent().parent().append(this.getView('component.verification.tips.after_element', message));
+            } else {
+                target.removeClass('error');
+            }
+        } else {
+            var form = $('#js-verify-form');
+            form.find('.verify-error').remove();
+            form.find('.js-form-control').removeClass('error');
         }
     };
 });

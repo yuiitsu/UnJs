@@ -3,15 +3,17 @@
  */
 Component.extend('modal', function() {
 
-    let self = this;
+    var self = this,
+        id = '';
 
     this.bind = {
         show: function(params) {
-            $(params.target).show();
+            id = params.target;
+            $(id).show();
         },
         close: function(params) {
             $('.modal-dialog').find('.close').on('click', function() {
-                $(params.target).remove();
+                self.close();
             });
         },
         ok: function(params) {
@@ -28,5 +30,9 @@ Component.extend('modal', function() {
      * 不指定方法，默认执行方法
      */
     this.init = function() {
+    };
+
+    this.close = function() {
+        $(id).remove();
     };
 });

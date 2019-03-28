@@ -13,6 +13,7 @@ ul{list-style: none;}
 .color-success{color:#009900;}
 .color-blue{color:blue;}
 /* display */
+.display-block{display: block;}
 .display-inline-block{display: inline-block;}
 
 /* margin */

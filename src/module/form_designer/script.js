@@ -419,7 +419,6 @@ Controller.extend('form_designer', function () {
                 elements = [],
                 view = '';
 
-            console.log(formElements);
             // 获取表单元素
             for (var i = 0; i < formElementsLen; i++) {
                 if (formElements[i]['name'] === 'table') {

@@ -1,4 +1,4 @@
-{{ var list = data ? data : ['元素1', '元素2', '元素3'] }}
+{{ var list = data ? data : [] }}
 <div class="form-designer-rules-editor-item" data-type="element">
-    <component.basic.select.view list="{{ list }}"></component.basic.select.view>
+    <component.basic.select.view default="{{ data }}" list="{{ list }}"></component.basic.select.view>
 </div>

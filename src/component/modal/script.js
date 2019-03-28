@@ -35,4 +35,8 @@ Component.extend('modal', function() {
     this.close = function() {
         $(id).remove();
     };
+
+    this.el = function(key) {
+        return $(id).find(key);
+    }
 });

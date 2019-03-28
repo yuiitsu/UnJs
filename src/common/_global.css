@@ -22,6 +22,9 @@ ul{list-style: none;}
 /* text align */
 .text-align-right{text-align: right;}
 
+/**/
+.cursor-point{cursor: pointer;}
+
 /* flex */
 .flex-column{
     display: -ms-flex;

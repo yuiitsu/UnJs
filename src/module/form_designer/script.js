@@ -31,6 +31,8 @@ Controller.extend('form_designer', function () {
         this.watch(this.model.get(), 'openComponentId', '_renderComponentSelector');
         // 属性
         this.watch(this.model.get(), 'openProperty', '_renderProperty');
+        this.watch(this.model.get(), 'verifyAdvanceRulesDataString', '_renderProperty');
+        this.watch(this.model.get(), 'verifyAdvanceRulesString', '_renderProperty');
         //this.watch(this.model.get(), 'openProperty', '_renderLayout');
         // 空Element
         this.watch(this.model.get(), 'openEmptyProperty', '_renderEmptyProperty');
@@ -168,10 +170,9 @@ Controller.extend('form_designer', function () {
             },
             element = null;
 
-        if (index === 'global') {
-            var rowAndColumn = self.model.get('layout');
-            data['row'] = rowAndColumn.row;
-            data['column'] = rowAndColumn.column;
+        if (!index || index === 'global') {
+            data['verifyAdvanceRulesData'] = self.model.get('verifyAdvanceRulesData');
+            data['verifyAdvanceRules'] = self.model.get('verifyAdvanceRules');
             self.output('property.global.view', data, $('.form-designer-component-setting'));
         } else {
             if (formElements[index]) {
@@ -416,7 +417,9 @@ Controller.extend('form_designer', function () {
                 dataType = target.attr('data-type'),
                 formElements = self.model.get('formElements'),
                 formElementsLen = formElements.length,
+                data = self.model.get('verifyAdvanceRulesData'),
                 elements = [],
+                dataKeys = [],
                 view = '';
 
             // 获取表单元素
@@ -433,6 +436,13 @@ Controller.extend('form_designer', function () {
                 }
             }
 
+            // 数据对象
+            for (var i in data) {
+                if (data.hasOwnProperty(i)) {
+                    dataKeys.push(i);
+                }
+            }
+
             switch (dataType) {
                 case 'element':
                     view = self.getView('module.form_designer.rules_editor.element', elements);
@@ -445,6 +455,12 @@ Controller.extend('form_designer', function () {
                     break;
                 case 'custom':
                     view = self.getView('module.form_designer.rules_editor.custom');
+                    break;
+                case 'keyOn':
+                    view = self.getView('module.form_designer.rules_editor.key_on');
+                    break;
+                case 'data':
+                    view = self.getView('module.form_designer.rules_editor.data', dataKeys);
                     break;
             }
             $('.form-designer-rules-editor-content').append(view);

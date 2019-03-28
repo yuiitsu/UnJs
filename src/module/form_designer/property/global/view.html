@@ -18,7 +18,33 @@
     <h3>自定义验证规则</h3>
     <div class="form-designer-component-setting-item">
         <div class="">
+            <component.basic.button.view class="js-form-designer-add-global-rules-data" text="添加数据"></component.basic.button.view>
+        </div>
+        <div class="flex-auto">
+            <ul class="form-designer-global-list">
+            {{ for var i in data['verifyAdvanceRulesData'] }}
+                <li class="flex-row">
+                    <span class="flex-auto cursor-point js-verify-advance-rules-data">{{ i }}</span>
+                    <i class="mdi mdi-close js-form-designer-delete-rules-data" data-key="{{ i }}"></i>
+                </li>
+            {{ end }}
+            </ul>
+        </div>
+    </div>
+    <div class="form-designer-component-setting-item">
+        <div class="">
             <component.basic.button.view class="js-form-designer-add-global-rules" text="添加规则"></component.basic.button.view>
+        </div>
+        <div class="flex-auto">
+            <ul class="form-designer-global-list">
+            {{ for var i in data['verifyAdvanceRules'] }}
+                {{ var number = parseInt(i) + 1 }}
+                <li class="flex-row">
+                    <span class="flex-auto cursor-point js-verify-advance-rules" data-key="{{ i }}">规则 {{ number }}</span>
+                    <i class="mdi mdi-close js-form-designer-delete-rules" data-key="{{ i }}"></i>
+                </li>
+            {{ end }}
+            </ul>
         </div>
     </div>
 </div>

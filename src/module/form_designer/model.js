@@ -62,43 +62,11 @@ Model.extend('form_designer', function () {
         formElementsString: '',
         formElements: [],
         verifyTipsType: '',
-        verifyAdvanceRules: [
-            // [
-            //     {
-            //         t: 'condition',
-            //         v: 'if'
-            //     },
-            //     {
-            //         t: 'element',
-            //         v: 'input1'
-            //     },
-            //     {
-            //         t: 'symbol',
-            //         v: '>'
-            //     },
-            //     {
-            //         t: 'element',
-            //         v: 'input2'
-            //     },
-            //     {
-            //         t: 'condition',
-            //         v: 'then'
-            //     },
-            //     {
-            //         t: 'element',
-            //         v: 'input3'
-            //     },
-            //     {
-            //         t: 'symbol',
-            //         v: '='
-            //     },
-            //     {
-            //         t: 'custom',
-            //         v: '100'
-            //     }
-            // ]
-        ],
+        verifyAdvanceRules: [],
+        verifyAdvanceRulesString: '',
         verifyAdvanceRulesFunc: {},
+        verifyAdvanceRulesData: {},
+        verifyAdvanceRulesDataString: '',
         // 临时
         region: [
             {

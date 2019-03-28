@@ -64,7 +64,7 @@ Component.extend('form_designer.property.select', function() {
                     //
                     if (list.length > 0) {
                         data['property.list'] = list;
-                        self.model.form_designer.setFormElements(data, true);
+                        self.model.form_designer.setFormElements(data, -1, true);
                     }
                 })
         }

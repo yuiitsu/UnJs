@@ -372,11 +372,9 @@ Controller.extend('form_designer', function () {
             $('#js-form-verify-result').html(message);
         },
         formMouseEnter: function(e) {
-            var target = self.$(e);
             self.inArea = true;
         },
         formMouseLeave: function(e) {
-            var target = self.$(e);
             self.inArea = false;
         },
         editComponent: function(e) {
@@ -456,7 +454,7 @@ Controller.extend('form_designer', function () {
                 case 'custom':
                     view = self.getView('module.form_designer.rules_editor.custom');
                     break;
-                case 'keyOn':
+                case 'key_on':
                     view = self.getView('module.form_designer.rules_editor.key_on');
                     break;
                 case 'data':

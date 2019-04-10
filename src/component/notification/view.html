@@ -1,0 +1,4 @@
+{{ var status = data['status'] ? data['status'] : 'success' }}
+<div class="component-notification">
+    <div class="{{ status }}">{{ data['message'] }}</div>
+</div>

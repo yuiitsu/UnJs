@@ -530,7 +530,7 @@ const Builder = {
             ];
             var scriptList = [];
             for (var i in scriptPathList) {
-                var src = host ? host + scriptPathList[i] : scriptPathList[i];
+                var src = scriptPathList[i];
                 scriptList.push('<script type="text/javascript" src="' + src + '?' + self.version + '"></script>\n');
             }
             file = file.replace('{{ scripts }}', scriptList.join(""));
@@ -543,13 +543,15 @@ const Builder = {
             ];
             var styleList = [];
             for (var i in stylePathList) {
-                var href = host ? host + stylePathList[i] : stylePathList[i];
+                var href = stylePathList[i];
                 styleList.push('<link rel="stylesheet" href="' + href + '?' + self.version + '" />\n');
             }
             file = file.replace('{{ styles }}', styleList.join(""));
 
             // 替换版本
             file = file.replace('{{ version }}', self.version);
+            // 替换host
+            file = file.replace('{{ apiHost }}', host);
 
             // 生成index.html
             var indexFile = distDir + '/' + fileName;

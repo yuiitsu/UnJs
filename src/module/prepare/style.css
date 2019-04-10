@@ -4,7 +4,7 @@
 }
 
 /* sidebar */
-.sidebar{width:200px;background-color:#222;height:100%;overflow:auto;}
+.sidebar{width:250px;background-color:#222;height:100%;overflow:auto;}
 /* system */
 .system-container{
     padding: 20px 0;
@@ -41,6 +41,6 @@
 .header-main{width:100%;}
 .user-container{width:45px;height:45px;padding:5px;}
 .user-container .avatar{width:35px;height:35px;border-radius: 50%;background-color:#ccc;}
-
-/**/
-.main-container{height:100%;padding:10px;overflow:auto;}
+.user-menu{width:100px;}
+.user-menu li{padding: 5px 10px;cursor: pointer;}
+.user-menu li:hover{background-color:#444;}

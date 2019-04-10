@@ -14,20 +14,6 @@ var _core = _core.extends(function () {
         return $(this.displayObject);
     };
 
-    this.getScreen = function (type) {
-        var result = [];
-        result['scrollTop'] = window.self.document.documentElement.scrollTop ?
-            window.self.document.documentElement.scrollTop : window.self.document.body.scrollTop;
-        result['scrollHeight'] = window.self.document.documentElement.scrollHeight ?
-            window.self.document.documentElement.scrollHeight : window.self.document.body.scrollHeight;
-        result['clientHeight'] = window.self.document.documentElement.clientHeight ?
-            window.self.document.documentElement.clientHeight : window.self.document.body.clientHeight;
-        result['clientWidth'] = window.self.document.documentElement.clientWidth ?
-            window.self.document.documentElement.clientWidth : window.self.document.body.clientWidth;
-
-        return result[type];
-    };
-
     /**
      * 获取当前页面地址或指定地址
      * @param url
@@ -182,31 +168,36 @@ var _core = _core.extends(function () {
      * @private
      */
     this._request_auth = function (options, successCallback, errCallback) {
-        var self = this;
-        var request_num = 1;
+        var self = this,
+            request_num = 1;
+
+        if (options.hasOwnProperty('headers')) {
+            options.headers['token'] = localStorage.getItem('token');
+        } else {
+            options['headers'] = {
+                token: localStorage.getItem('token')
+            }
+        }
         return this._request(options, function response(res) {
             if (options['needless_login']) {
                 successCallback(res);
             } else {
-                if (res && res.hasOwnProperty('code')) {
-                    if (res.code === 1007) {
+                if (res && res.hasOwnProperty('state')) {
+                    if (res.state === 401) {
                         // 调起登录组件
                         request_num++;
                         if (request_num > 2) {
                             //防止死循环
                             successCallback(res);
-                            return;
+                            return false;
                         }
-                        self.callComponent({
-                            name: 'login.login',
-                            callback: function () {
-                                self._request(options, response)
-                            },
-                            needless_check: true
-                        }, {});
-
+                        // 显示未登录提示
+                        self.renderComponent('notification.view', {
+                            status: 'danger',
+                            message: '未登录或登录过期，请<a href="?a=login&m=index">重新登录</a>'
+                        }).appendTo($('body'));
                     } else {
-                        successCallback(res);
+                     successCallback(res);
                     }
                 } else {
                     // 数据异常
@@ -223,14 +214,14 @@ var _core = _core.extends(function () {
      * @private
      */
     this._request = function (options, successCallback, errCallback) {
-        var self = this;
-        if (options['loading']) {
-            this.callComponent({
-                name: 'common.loading'
-            }, {
-                action: 'show',
-                object: options.loading.object
-            });
+        var self = this,
+            eventTarget = options.loading,
+            eventTargetText = '';
+
+        if (eventTarget) {
+            eventTargetText = options.loading.html();
+            eventTarget.attr('disabled', true);
+            this.renderComponent('basic.spinner.view').to(eventTarget);
         }
 
         var opt = {
@@ -240,11 +231,6 @@ var _core = _core.extends(function () {
             "timeout": 10000,
             "data": options.data,
             success: function (response) {
-                self.callComponent({
-                    name: 'common.loading'
-                }, {
-                    action: 'hide'
-                });
                 // 请求成功，调用回调函数
                 if (response === 'request error') {
                     if ($.isFunction(errCallback)) {
@@ -252,36 +238,29 @@ var _core = _core.extends(function () {
                     }
                 } else {
                     if ($.isFunction(successCallback)) {
-                        successCallback(response);
+                        if (Object.prototype.toString.call(response) !== '[object Object]') {
+                            console.log('Response data type error.');
+                        } else {
+                            successCallback(response);
+                        }
                     }
                 }
             },
             error: function () {
-                self.callComponent({
-                    name: 'common.loading'
-                }, {
-                    action: 'hide'
-                });
                 ajaxTimer.abort();
                 console.log('ajax error');
                 if ($.isFunction(errCallback)) {
                     errCallback('请求失败,请重试');
                 }
                 console.log('ajax request error');
-                !options.no_show_error && self.callComponent({
-                    name: 'common.top_notifications',
-                    data: {
-                        msg: '请求失败，请重试',
-                        type: 'danger'
-                    }
-                }, 'show');
             },
             complete: function (XMLHttpRequest, status) {
-                //self.callComponent({
-                //    name: 'common.loading'
-                //}, {
-                //    action: 'hide'
-                //});
+                //
+                if (eventTarget) {
+                    eventTarget.attr('disabled', false);
+                    eventTarget.html(eventTargetText);
+                }
+                //
                 if (status === 'timeout') {
                     ajaxTimer.abort();
                     console.log('ajax timeout');
@@ -296,6 +275,7 @@ var _core = _core.extends(function () {
         if (options.hasOwnProperty('headers') && options['headers']) {
             opt.headers = options.headers;
         }
+        console.log(opt);
 
         var ajaxTimer = this._ajax(opt);
     };

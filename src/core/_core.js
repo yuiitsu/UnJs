@@ -341,6 +341,20 @@ var _core = {
         }
     },
 
+    getScreen: function (type) {
+        var result = [];
+        result['scrollTop'] = window.self.document.documentElement.scrollTop ?
+            window.self.document.documentElement.scrollTop : window.self.document.body.scrollTop;
+        result['scrollHeight'] = window.self.document.documentElement.scrollHeight ?
+            window.self.document.documentElement.scrollHeight : window.self.document.body.scrollHeight;
+        result['clientHeight'] = window.self.document.documentElement.clientHeight ?
+            window.self.document.documentElement.clientHeight : window.self.document.body.clientHeight;
+        result['clientWidth'] = window.self.document.documentElement.clientWidth ?
+            window.self.document.documentElement.clientWidth : window.self.document.body.clientWidth;
+
+        return result[type];
+    },
+
     /**
      * 获取Event标记对象
      * @param tag
@@ -620,6 +634,11 @@ var _core = {
         if (options.type === 'GET') {
             if (options.data) {
                 xhr.open(options.type, options.url + '?' + para, true);
+            }
+            if (options.headers) {
+                for (var i in options.headers) {
+                    xhr.setRequestHeader(i, options.headers[i]);
+                }
             }
             xhr.send();
         } else if (options.type === 'POST' || options.type === 'PUT') {
@@ -1172,26 +1191,39 @@ var _core = {
                 }
             });
         } else {
-            this.import(prepare.module, function(module) {
-                var prepareMethod = prepare.method ? prepare.method : 'index';
-                if (module.hasOwnProperty(prepareMethod)) {
-                    module.params = params;
-                    module[prepareMethod] (function() {
-                        self.import(moduleName, function (module) {
-                            if (module.hasOwnProperty(methodName)) {
-                                module.params = params;
-                                module[methodName]();
-                            } else {
-                                //console.log('[UnJs]err: 未找到方法[' + moduleName + ' = > ' + methodName + ']');
-                                self.log('未找到方法[' + moduleName + ' = > ' + methodName + ']', 'err');
-                                self.err("未找到方法[" + moduleName + " = > " + methodName + "]");
-                            }
+            if (moduleName === 'login') {
+                this.import(moduleName, function (module) {
+                    if (module.hasOwnProperty(methodName)) {
+                        module.params = params;
+                        module[methodName]();
+                    } else {
+                        //console.log('[UnJs]err: 未找到方法[' + moduleName + ' = > ' + methodName + ']');
+                        self.log('未找到方法[' + moduleName + ' = > ' + methodName + ']', 'err');
+                        self.err("未找到方法[" + moduleName + " = > " + methodName + "]");
+                    }
+                });
+            } else {
+                this.import(prepare.module, function (module) {
+                    var prepareMethod = prepare.method ? prepare.method : 'index';
+                    if (module.hasOwnProperty(prepareMethod)) {
+                        module.params = params;
+                        module[prepareMethod](function () {
+                            self.import(moduleName, function (module) {
+                                if (module.hasOwnProperty(methodName)) {
+                                    module.params = params;
+                                    module[methodName]();
+                                } else {
+                                    //console.log('[UnJs]err: 未找到方法[' + moduleName + ' = > ' + methodName + ']');
+                                    self.log('未找到方法[' + moduleName + ' = > ' + methodName + ']', 'err');
+                                    self.err("未找到方法[" + moduleName + " = > " + methodName + "]");
+                                }
+                            });
                         });
-                    });
-                } else {
-                    self.err("未找到方法[" + moduleName + " = > " + methodName + "]");
-                }
-            });
+                    } else {
+                        self.err("未找到方法[" + moduleName + " = > " + methodName + "]");
+                    }
+                });
+            }
         }
         //}
     },

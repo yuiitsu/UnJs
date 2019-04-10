@@ -54,6 +54,10 @@ Controller.extend('form_designer', function () {
         });
     };
 
+    this.page = function() {
+        this.output('page', {});
+    };
+
     /**
      * 打开组件选择下拉菜单
      * @param e
@@ -405,7 +409,8 @@ Controller.extend('form_designer', function () {
             self.model.set('openProperty', position);
 
             //
-            $('.form-designer-layout-container').find('.js-form-designer-component-item').each(function() {
+            $('.form-designer-layout-container')
+                .find('.js-form-designer-component-item').each(function() {
                 $(this).removeClass('focus');
             });
             target.addClass('focus');

@@ -1,0 +1,53 @@
+.login{
+
+}
+.login-container {
+    width: 1000px;
+    margin: 0 auto;
+}
+.login-header {
+    height:80px;
+    line-height: 80px;
+}
+.login-header h1 {
+    font-size:28px;
+    font-weight:bold;
+    color:#333;
+}
+.login-content {
+    background:url('/static/images/login_bg.jpg') center;
+    height:500px;
+    padding-top:80px;
+}
+.login-form-container {
+    width:300px;
+    background-color:#fff;
+    padding: 20px;
+    border-radius: 3px;
+}
+.login-form-container h3 {
+    padding-bottom: 20px;
+    font-size:18px;
+    font-weight:bold;
+}
+.login-form-line {
+    margin-bottom: 10px;
+}
+.login-form-v-code {
+    margin-left:10px;
+}
+.login-form-forget-password-container {
+    text-align: right;
+    height:30px;
+    line-height:30px;
+}
+.login-footer .flex-row {
+    padding-top:20px;
+}
+.login-footer div {
+    font-size:12px;
+}
+.login-footer img {
+    height:25px;
+    vertical-align: middle;
+}

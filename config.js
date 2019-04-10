@@ -26,7 +26,13 @@ const Config = {
     'requestFlag': [
         '/api/',
         '/statistics/'
-    ]
+    ],
+    'apiHost': {
+        local: 'localhost:8082',
+        dev: '',
+        uat: '',
+        prod: ''
+    }
 };
 
 module.exports = Config;

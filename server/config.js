@@ -5,7 +5,7 @@ const Config = {
     'siteTitle': 'UnJs',
     'version': '4.0.0',
     // static
-    'static_dir': '/src/',
+    'staticDir': 'static',
 
     'output': {
         'base': {

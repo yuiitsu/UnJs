@@ -71,9 +71,9 @@ const Server = {
                     buildType = true;
                     buildHost = argv[i + 1];
                     break;
-                case '-h':
-                    apiHost = argv[i + 1];
-                    break;
+                // case '-h':
+                //     apiHost = argv[i + 1];
+                //     break;
                 case '-v':
                     this.version = argv[i + 1];
                     break;
@@ -93,13 +93,15 @@ const Server = {
         // } catch (e) {
         //     console.log(e);
         // }
-
+        buildHost = buildHost && paraConfig.apiHost.hasOwnProperty(buildHost)
+            ? buildHost : 'local';
+        apiHost = paraConfig['apiHost'][buildHost];
         if (buildType) {
-            Builder.build(buildHost, paraConfig);
+
+            Builder.build(apiHost, paraConfig);
         } else {
-            apiHost = !apiHost ? 'localhost:9000' : apiHost;
             this.server(port, paraConfig, route, {
-                // 'apiHost': apiHost,
+                'apiHost': apiHost,
                 'develop': develop,
                 'templateDir': develop ? paraConfig['devDir'] : paraConfig['build']['distDir']
             });

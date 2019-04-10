@@ -122,7 +122,7 @@ const UnJs = function () {
         //         isStatic = true;
         //     }
         // }
-        if (pathname.indexOf('/' + Config.devDir + '/') === 0) {
+        if (pathname.indexOf('/' + Config.devDir + '/') === 0 || pathname.indexOf('/' + Config.staticDir + '/') === 0) {
             isStatic = true;
         }
         if (pathname.indexOf('favicon.ico') !== -1) {
@@ -225,6 +225,7 @@ const UnJs = function () {
                 data['scripts'] = developData['scriptFileList'].join("");
                 data['styles'] = developData['styleFileList'].join("");
                 data['version'] = self.config.version;
+                data['apiHost'] = self.apiHost;
             }
 
             let query = self.params.query || {},
@@ -390,20 +391,18 @@ const UnJs = function () {
                 para = self.request.headers.para;
             }
 
-            var hosts = self.apiHost.split(":");
+            var hosts = self.apiHost.split(":"),
+                headers = self.request.headers;
+
+            headers['Content-Type'] = 'application/x-www-form-urlencoded';
+            headers['Cookie'] = 'buyer_token=' + token + '; unique_code=' + uniqueCode + '; JSESSIONID=' + jsessionid + ';webEventCode=' + web_event_code;
+            headers['remote_ip'] = self.getClientIp();
             var reqParams = {
                 hostname: hosts[0],
                 port: hosts[1] ? hosts[1] : '',
                 path: url,
                 method: method,
-                headers: {
-                    "Content-Type": 'application/x-www-form-urlencoded',
-                    'user-agent': self.request.headers['user-agent'],
-                    'host': self.request.headers['host'],
-                    //'host': 'shop10086.wesufu.com',
-                    'Cookie': 'buyer_token=' + token + '; unique_code=' + uniqueCode + '; JSESSIONID=' + jsessionid + ';webEventCode=' + web_event_code,
-                    remote_ip: self.getClientIp()
-                }
+                headers: headers
             };
 
             if (para) {

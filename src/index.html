@@ -13,22 +13,24 @@
 <body>
     <!-- main start -->
     <div class="app">
-        <div class="layout flex-row">
-            <!-- Sidebar start -->
-            <div class="sidebar">
-                <div id="sidebar-container"></div>
+        <div class="layout hide" id="app">
+            <div class="layout flex-row">
+                <!-- Sidebar start -->
+                <div class="sidebar">
+                    <div id="sidebar-container"></div>
+                </div>
+                <!-- Sidebar end -->
+                <!-- Main start -->
+                <div class="main flex-auto flex-column">
+                    <!-- Main header start -->
+                    <div class="header" id="header"></div>
+                    <!-- Main header end -->
+                    <!-- Main container start -->
+                    <div class="main-container flex-auto" id="container"></div>
+                    <!-- Main container end -->
+                </div>
+                <!-- Main end -->
             </div>
-            <!-- Sidebar end -->
-            <!-- Main start -->
-            <div class="main flex-auto flex-column">
-                <!-- Main header start -->
-                <div class="header" id="header"></div>
-                <!-- Main header end -->
-                <!-- Main container start -->
-                <div class="main-container flex-auto" id="container"></div>
-                <!-- Main container end -->
-            </div>
-            <!-- Main end -->
         </div>
     </div>
     <!-- main end -->
@@ -43,7 +45,8 @@
             'search': '{{ search }}',
             'prepare': {
                 'module': 'prepare'
-            }
+            },
+            'apiHost': '{{ apiHost }}'
         });
     </script>
 </body>

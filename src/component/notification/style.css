@@ -1,0 +1,18 @@
+.component-notification {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 300px;
+}
+.component-notification .danger {
+    background-color:#c82333;
+    padding:10px 20px;
+    color:#fff;
+    border-radius: 3px;
+    text-align: center;
+}
+.component-notification a {
+    color:#fff;
+    text-decoration: underline;
+}

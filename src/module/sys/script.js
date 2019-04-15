@@ -6,7 +6,6 @@ Controller.extend('sys', function () {
     var self = this;
     //
     this.bind = {
-        '.sys-control click': '_event.control'
     };
 
     /**
@@ -17,15 +16,5 @@ Controller.extend('sys', function () {
     };
 
     this._event = {
-        control: function(e) {
-            var target = self.$(e),
-                module = target.attr('data-module'),
-                method = target.attr('data-method'),
-                systemId = target.attr('data-sys-id');
-
-            self.callControl(module, method, {
-                systemId: systemId
-            });
-        }
     };
 });

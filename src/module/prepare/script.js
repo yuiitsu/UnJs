@@ -7,17 +7,21 @@ Controller.extend('prepare', function () {
     var self = this;
     //
     this.bind = {
-        '#sidebar-container li click.menu_': '_openModule',
+        '#sidebar-container .menu-level-1 click.menu_1_': '_openModule',
+        '#sidebar-container .menu-level-2 click.menu_2_': '_openModule',
         '#header #js-user-menu click.user_menu_': '_renderUserMenu',
         'body .user-menu-item click.user_menu_item_': '_userMenuAction'
     };
 
     this.index = function(callback) {
         // 数据监听
-        var model = this.model.get();
-        this.model.set('menuOpenModule', this.params.a);
+        var model = this.model.get(),
+            module = this.params.a,
+            method = this.params.m ? this.params.m : '';
+        this.model.set('menuOpenModule', module);
+        this.model.set('menuOpenMethod', method);
         this.watch(model, 'menuOpenModule', '_renderMenu');
-        this.watch(model, 'menuOpenChild', '_renderMenu');
+        this.watch(model, 'menuOpenMethod', '_renderMenu');
         //
         this._checkAuthorization();
         //
@@ -61,39 +65,47 @@ Controller.extend('prepare', function () {
     this._renderMenu = function() {
         var menuList = this.model.get('menuList'),
             module = this.model.get('menuOpenModule'),
-            parent = this.model.get('menuOpenChild');
+            method = this.model.get('menuOpenMethod'),
+            moduleNodes = module.split('.');
 
         module = module ? module : this.params.a;
 
         this.output('menu', {
-            openModule: module,
-            openChild: parent,
+            openModule: moduleNodes[0],
+            openMethod: module,
             list: menuList
         }, $('.menu-container'));
     };
 
     this._openModule = function(e) {
-        var module = this.$(e).attr('data-module'),
-            method = this.$(e).attr('data-method');
+        var module = self.$(e).attr('data-module'),
+            method = self.$(e).attr('data-method');
 
         module = module ? module : 'index';
+        method = method ? method : '';
         if (method) {
             method = method ? method : 'index';
             this.callControl(module, method, {});
             //
-            this.model.set('menuOpenModule', module);
         }
-        this.model.set('menuOpenChild', module);
+        this.model.set('menuOpenMethod', method);
+        this.model.set('menuOpenModule', module);
+        // this.model.set('menuOpenChild', module);
     };
 
     this._renderUserMenu = function(e) {
         var target = self.$(e);
         self.renderComponent('tooltip.view', {
             target: target,
-            content: self.getView('module.prepare.user_menu', {})
+            content: self.getView('module.prepare.view.user.menu', {})
         }).appendTo($('body'));
     };
 
+    /**
+     * 用户菜单事件处理，根本data-type调用对应的方法
+     * @param e
+     * @private
+     */
     this._userMenuAction = function(e) {
         var target = self.$(e),
             dataType = target.attr('data-type');
@@ -112,5 +124,74 @@ Controller.extend('prepare', function () {
     this._user_logout = function() {
         localStorage.setItem('token', '');
         self.jump('login', 'index', {});
+    };
+
+    /**
+     * 修改密码
+     * @private
+     */
+    this._user_password_update = function() {
+        //
+        self.renderComponent('modal.view', {
+            title: '修改密码',
+            body: self.getView('module.prepare.view.user.update_password', {}),
+            callback: function (modal, res) {
+                if (res === 'ok') {
+                    //
+                    if (self.callComponent({
+                        name: 'verification'
+                    }, {'form': $('#js-sys-user-password-form')})) {
+                        var oldPassword = modal.el('#js-sys-user-old-password').val(),
+                            newPassword = modal.el('#js-sys-user-new-password').val();
+
+                        oldPassword = oldPassword ? $.trim(oldPassword) : '';
+                        newPassword = newPassword ? $.trim(newPassword) : '';
+                        self.model.updateUserPassword({
+                            oldPwd: oldPassword,
+                            newPwd: newPassword
+                        }, modal.$confirm(), function(res) {
+                            if (res.state === 0) {
+                                modal.close();
+                            } else {
+                                self.notification.danger(res.message);
+                            }
+                        });
+                    }
+                }
+            }
+        }).appendTo($('body'));
+    };
+
+    this._user_edit = function() {
+        //
+        self.renderComponent('modal.view', {
+            title: '修改用户资料',
+            body: self.getView('module.prepare.view.user.update_info', {}),
+            callback: function (modal, res) {
+                if (res === 'ok') {
+                    //
+                    if (self.callComponent({
+                        name: 'verification'
+                    }, {'form': $('#js-sys-user-password-form')})) {
+                        // var oldPassword = modal.el('#js-sys-user-old-password').val(),
+                        //     newPassword = modal.el('#js-sys-user-new-password').val();
+
+                        // oldPassword = oldPassword ? $.trim(oldPassword) : '';
+                        // newPassword = newPassword ? $.trim(newPassword) : '';
+                        // self.model.updateUserPassword({
+                        //     oldPwd: oldPassword,
+                        //     newPwd: newPassword
+                        // }, modal.$confirm(), function(res) {
+                        //     if (res.state === 0) {
+                        //         modal.close();
+                        //     } else {
+                        //         self.notification.danger(res.message);
+                        //     }
+                        // });
+                        console.log('update user password');
+                    }
+                }
+            }
+        }).appendTo($('body'));
     };
 });

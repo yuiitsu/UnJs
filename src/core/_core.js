@@ -641,7 +641,7 @@ var _core = {
                 }
             }
             xhr.send();
-        } else if (options.type === 'POST' || options.type === 'PUT') {
+        } else if (options.type === 'POST' || options.type === 'PUT' || options.type === 'DELETE') {
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
             if (options.headers) {
                 for (var i in options.headers) {
@@ -649,11 +649,6 @@ var _core = {
                 }
             }
             xhr.send(para);
-        } else if (options.type === 'DELETE') {
-            if (options.headers) {
-                xhr.setRequestHeader("para", options.headers.para);
-            }
-            xhr.send(null);
         } else {
             options.error('request type error, ' + options.type + '');
         }

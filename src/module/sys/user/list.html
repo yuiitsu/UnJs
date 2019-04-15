@@ -1,0 +1,54 @@
+{{ if data.list.length > 0 }}
+<table>
+    <thead>
+    <tr>
+        <td>用户名</td>
+        <td>登录ID</td>
+        <td>所属地区</td>
+        <td>用户类型</td>
+        <td>状态</td>
+        <td>操作</td>
+    </tr>
+    </thead>
+    <tbody>
+    {{ var status = {'0': '正常', '1': '停用'} }}
+    {{ for var i in data.list }}
+    <tr>
+        <td>{{ data.list[i]['username'] }}</td>
+        <td>{{ data.list[i]['loginName'] }}</td>
+        <td>{{ data.list[i]['areaName'] }}</td>
+        <td>
+            {{ for var j in data.list[i]['role'] }}
+            {{ data.list[i]['role'][j]['name'] }}
+            {{ end }}
+        </td>
+        <td>{{ status[data.list[i]['status']] }}</td>
+        <td>
+            <a href="javascript:void(0);" class="js-sys-list-edit"
+               data-user-id="{{ data.list[i]['id'] }}"
+               data-email="{{ data.list[i]['email'] }}"
+               data-mobile="{{ data.list[i]['mobile'] }}"
+               data-username="{{ data.list[i]['username'] }}">
+                <i class="mdi mdi-square-edit-outline"></i>
+                编辑
+            </a>
+            <a href="javascript:void(0);"
+               class="js-user-reset-password"
+               data-user-id="{{ data.list[i]['id'] }}">
+                <i class="mdi mdi-numeric-0-box-outline"></i>
+                重置密码
+            </a>
+            {{ if data.currentUserId !== data.list[i]['id'] }}
+            <a href="javascript:void(0);" class="js-sys-del color-danger" data-user-id="{{ data.list[i]['id'] }}">
+                <i class="mdi mdi-trash-can-outline"></i>
+                删除
+            </a>
+            {{ end }}
+        </td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
+{{ else }}
+<div>还没有任何记录</div>
+{{ end }}

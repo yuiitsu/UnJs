@@ -12,12 +12,11 @@ Component.extend('modal', function() {
             $(id).show();
         },
         close: function(params) {
-            $('.modal-dialog').find('.close').on('click', function() {
+            $('.modal-content').find('.close').on('click', function() {
                 self.close();
             });
         },
         ok: function(params) {
-            console.log(params);
             $('.modal-button-confirm').on('click', function() {
                 if ($.isFunction(params.data.callback)) {
                     params.data.callback(self, 'ok');
@@ -38,5 +37,9 @@ Component.extend('modal', function() {
 
     this.el = function(key) {
         return $(id).find(key);
+    };
+
+    this.$confirm = function() {
+        return $(id).find('.modal-button-confirm');
     }
 });

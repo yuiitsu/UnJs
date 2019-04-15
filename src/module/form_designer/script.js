@@ -23,7 +23,8 @@ Controller.extend('form_designer', function () {
         '.form-designer-form #js-verify-form mouseenter.form_mouseenter_': '_settingEvent.formMouseEnter',
         '.form-designer-form #js-verify-form mouseleave.form_mouseleave_': '_settingEvent.formMouseLeave',
         '.form-designer-layout-container .js-form-designer-component-item click.component_container_click_': '_settingEvent.editComponent',
-        'body .form-designer-rules-editor-action-add click.rules_editor_click_': '_settingEvent.rulesEditor'
+        'body .form-designer-rules-editor-action-add click.rules_editor_click_': '_settingEvent.rulesEditor',
+        '.form-designer-control click': '_openFormDesigner'
     };
 
     this.index = function() {
@@ -52,10 +53,6 @@ Controller.extend('form_designer', function () {
                 openId: ''
             }
         });
-    };
-
-    this.page = function() {
-        this.output('page', {});
     };
 
     /**
@@ -468,5 +465,11 @@ Controller.extend('form_designer', function () {
             }
             $('.form-designer-rules-editor-content').append(view);
         }
+    };
+
+    this._openFormDesigner = function(e) {
+        var target = self.$(e);
+
+        this.callControl('form_designer', 'index', {});
     }
 });

@@ -150,7 +150,6 @@ ul {
 
 .main-search-container {
     border-bottom: 1px solid #ccc;
-    margin-bottom:10px;
 }
 
 .main-padding-container {
@@ -183,4 +182,12 @@ ul {
     border-right:1px solid #ccc;
     border-bottom:1px solid #ccc;
     padding: 10px;
+}
+
+.form-line {
+    margin-bottom:10px;
+}
+.form-line .form-label{
+    display: inline-block;
+    padding-bottom:5px;
 }

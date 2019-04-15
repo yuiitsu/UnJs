@@ -29,8 +29,10 @@
 .menu ul li{padding:10px 20px;color:#fff;cursor: pointer;border-left:3px solid #222;}
 .menu ul .menu-level-1.focus{border-left:3px solid #f26661;background-color:#444;}
 .menu ul .menu-level-1:hover{border-left:3px solid #fff000;background-color:#333;}
+.menu ul .menu-level-2:hover{border-left:3px solid #fff000;background-color:#333;}
+.menu ul .menu-level-2.focus{border-left:3px solid #f26661;background-color:#444;}
 .menu-child{}
-.menu-child ul{list-style: none;background-color:#444;}
+.menu-child ul{list-style: none;}
 .menu-child ul li{border-bottom:1px solid #333;}
 
 /* main */

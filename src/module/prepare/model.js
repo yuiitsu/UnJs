@@ -44,11 +44,6 @@ Model.extend('prepare', function () {
                         name: '首页',
                         module: 'index',
                         method: 'index'
-                    },
-                    {
-                        name: '表单设计',
-                        module: 'form_designer',
-                        method: 'index'
                     }
                 ],
                 resList = res.data.stcReses,
@@ -64,6 +59,25 @@ Model.extend('prepare', function () {
     };
 
     /**
+     * 修改用户密码
+     * @param params
+     *      params['oldPwd']
+     *      params['newPwd']
+     * @param target
+     * @param callback
+     */
+    this.updateUserPassword = function(params, target, callback) {
+        this._put({
+            url: '/api/v1/user/pwd',
+            data: params,
+            loading: target
+        }, function(res) {
+
+            callback(res);
+        });
+    };
+
+    /**
      * 构建菜单，将API数据转为可用于显示的菜单结构
      * @param data
      * @param menuList
@@ -74,7 +88,7 @@ Model.extend('prepare', function () {
             //
             var keys = data.key.split('_'),
                 keyLen = keys.length,
-                module = keys[0],
+                module = keys.join('.'),
                 method = keyLen === 1 ? '': keys.splice(1, keyLen - 1).join('_'),
                 children = data.children,
                 childrenLen = children ? children.length : 0;
@@ -84,7 +98,7 @@ Model.extend('prepare', function () {
                 'module': module,
             };
             if (method) {
-                menu['method'] = method;
+                menu['method'] = 'index';
             }
             menuList.push(menu);
             //

@@ -24,18 +24,21 @@
 }
 
 .modal-content {
-    position: relative;
-    display: -ms-flexbox;
+    position: absolute;
     display: flex;
-    -ms-flex-direction: column;
     flex-direction: column;
-    width: 100%;
+    min-width:500px;
+    max-width: 700px;
     pointer-events: auto;
     background-color: #fff;
     background-clip: padding-box;
     border: 1px solid rgba(0,0,0,.2);
     border-radius: .3rem;
     outline: 0;
+    left: 50%;
+    top: 200px;
+    transform: translate(-50%, 0);
+    animation: show .5s;
 }
 
 .modal-header {
@@ -49,6 +52,10 @@
     border-bottom: 1px solid #dee2e6;
     border-top-left-radius: .3rem;
     border-top-right-radius: .3rem;
+}
+
+.modal-header h5 {
+    font-weight:bold;
 }
 
 .modal-body {
@@ -72,3 +79,9 @@
 }
 
 .modal-footer-button{display: inline-block;height:35px;margin-left:10px;}
+
+@keyframes show
+{
+    0%   {top:100px;}
+    100% {top:200px;}
+}

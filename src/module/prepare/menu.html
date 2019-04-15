@@ -7,11 +7,13 @@
             data-module="{{ data['list'][i]['module'] }}"
             data-method="{{ data['list'][i]['method'] }}">{{ data['list'][i]['name'] }}</li>
         {{ if data['list'][i]['children'] }}
-        {{ var hide = data['list'][i]['module'] === data['openChild'] ? '' : 'hide' }}
+        {{ var hide = data['list'][i]['module'] === data['openModule'] ? '' : 'hide' }}
         <li class="menu-child {{ hide }}">
             <ul>
                 {{ for var j in data['list'][i]['children'] }}
-                <li class="menu-level-2" data-module="{{ data['list'][i]['children'][j]['module'] }}"
+                {{ var childFocus = data['list'][i]['children'][j]['module'] === data['openMethod'] ? 'focus' : '' }}
+                <li class="menu-level-2 {{ childFocus }}"
+                    data-module="{{ data['list'][i]['children'][j]['module'] }}"
                     data-method="{{ data['list'][i]['children'][j]['method'] }}">
                     {{ data['list'][i]['children'][j]['name'] }}
                 </li>

@@ -1,9 +1,24 @@
 .component-notification {
     position: absolute;
-    top: 80px;
+    top: 68px;
     left: 50%;
     transform: translate(-50%, -50%);
     min-width: 300px;
+    animation: move .5s;
+}
+.component-notification .default {
+    background-color: #005699;
+    padding:10px 20px;
+    color:#fff;
+    border-radius: 3px;
+    text-align: center;
+}
+.component-notification .success {
+    background-color:#009900;
+    padding:10px 20px;
+    color:#fff;
+    border-radius: 3px;
+    text-align: center;
 }
 .component-notification .danger {
     background-color:#c82333;
@@ -15,4 +30,14 @@
 .component-notification a {
     color:#fff;
     text-decoration: underline;
+}
+.component-notification .mdi-close {
+    float:right;
+    cursor: pointer;
+}
+
+@keyframes move
+{
+    0%   {top:0;}
+    100% {top:68px;}
 }

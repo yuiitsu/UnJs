@@ -28,6 +28,7 @@ const Config = {
         '/statistics/'
     ],
     'apiHost': {
+        // local: '10.10.33.43:8082',
         local: 'localhost:8082',
         dev: '',
         uat: '',

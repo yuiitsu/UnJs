@@ -1,0 +1,28 @@
+.component-confirm-container {
+    min-width: 300px;
+    border-radius: 3px;
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    transform: translate(-50%, -50%);
+    background-color:#fff;
+}
+.confirm-header {
+    height: 35px;
+    line-height:35px;
+    border-bottom: 1px solid #efefef;
+    padding: 0 10px;
+}
+.confirm-header .mdi-close {
+    float:right;
+}
+.confirm-body {
+    padding: 10px;
+}
+.confirm-footer {
+    padding: 10px;
+    text-align: right;
+}
+.confirm-footer-button {
+    display: inline-block;
+}

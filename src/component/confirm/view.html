@@ -1,0 +1,20 @@
+<div class="fixed-screen" id="confirm-{{ data['id'] }}">
+    <div class="mask"></div>
+    <div class="component-confirm-container">
+        <div class="confirm-header flex-row">
+            <h5 class="confirm-title flex-auto">系统</h5>
+            <i class="mdi mdi-close close"></i>
+        </div>
+        <div class="confirm-body">
+            {{ data['message'] }}
+        </div>
+        <div class="confirm-footer radius-small">
+            <div class="confirm-footer-button">
+                <component.basic.button.view class="close" text="Close"></component.basic.button.view>
+            </div>
+            <div class="confirm-footer-button">
+                <component.basic.button.view class="primary confirm-button-confirm" text="OK"></component.basic.button.view>
+            </div>
+        </div>
+    </div>
+</div>

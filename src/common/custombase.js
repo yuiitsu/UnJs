@@ -4,6 +4,8 @@
  */
 var _core = _core.extends(function () {
     //
+    var self = this;
+    //
     this.displayObject = document.getElementById('container');
 
     /**
@@ -12,6 +14,29 @@ var _core = _core.extends(function () {
      */
     this.$el = function () {
         return $(this.displayObject);
+    };
+
+    this.notification = {
+        danger: function(text, timeout) {
+            self.renderComponent('notification.view', {
+                status: 'danger',
+                timeout: timeout,
+                message: text
+            }).appendTo($('body'));
+        },
+        success: function(text, timeout) {
+            self.renderComponent('notification.view', {
+                status: 'success',
+                timeout: timeout,
+                message: text
+            }).appendTo($('body'));
+        },
+        default: function(text, timeout) {
+            self.renderComponent('notification.view', {
+                message: text,
+                timeout: timeout,
+            }).appendTo($('body'));
+        }
     };
 
     /**
@@ -240,6 +265,7 @@ var _core = _core.extends(function () {
                     if ($.isFunction(successCallback)) {
                         if (Object.prototype.toString.call(response) !== '[object Object]') {
                             console.log('Response data type error.');
+                            self.notification.danger('服务异常');
                         } else {
                             successCallback(response);
                         }
@@ -275,7 +301,6 @@ var _core = _core.extends(function () {
         if (options.hasOwnProperty('headers') && options['headers']) {
             opt.headers = options.headers;
         }
-        console.log(opt);
 
         var ajaxTimer = this._ajax(opt);
     };

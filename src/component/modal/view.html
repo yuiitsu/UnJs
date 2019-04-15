@@ -4,24 +4,17 @@
 <div class="fixed-screen" id="modal_{{ modalCode }}">
     <div class="mask"></div>
     <div class="modal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">{{ title }}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    {{ data['body'] }}
-                </div>
-                <div class="modal-footer radius-small">
-                    <div class="modal-footer-button">
-                        <component.basic.button.view class="close" text="Close"></component.basic.button.view>
-                    </div>
-                    <div class="modal-footer-button">
-                        <component.basic.button.view class="primary modal-button-confirm" text="OK"></component.basic.button.view>
-                    </div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">{{ title }}</h5>
+                <i class="mdi mdi-close close"></i>
+            </div>
+            <div class="modal-body">
+                {{ data['body'] }}
+            </div>
+            <div class="modal-footer radius-small">
+                <div class="modal-footer-button">
+                    <component.basic.button.view class="primary modal-button-confirm" text="确认"></component.basic.button.view>
                 </div>
             </div>
         </div>

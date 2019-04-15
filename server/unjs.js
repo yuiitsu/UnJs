@@ -473,10 +473,9 @@ const UnJs = function () {
             var url = self.request.url;
             var method = self.request.method;
             if (method === 'GET') {
-                var para = self._get('para');
                 request(url, method);
             }
-            if (method === 'POST') {
+            if (method === 'POST' || method === 'PUT' || method === 'DELETE') {
                 self._post(function (data) {
                     request(url, method, data);
                 });

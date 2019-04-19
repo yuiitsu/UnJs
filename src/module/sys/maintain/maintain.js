@@ -36,7 +36,8 @@ Controller.extend('sys.maintain', function () {
             sysList = [];
 
         try {
-            sysList = JSON.parse(sysListJson);
+            var o = JSON.parse(sysListJson);
+            sysList = o.list;
         } catch (e) {
             self.log('SysListJson parse failed.', 'danger');
         }

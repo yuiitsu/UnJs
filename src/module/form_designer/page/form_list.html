@@ -1,0 +1,42 @@
+<table>
+    <thead>
+    <tr>
+        <td>表单ID</td>
+        <td>表单名称</td>
+        <td>状态</td>
+        <td>操作</td>
+    </tr>
+    </thead>
+    <tbody>
+    {{ for var i in data['list'] }}
+    {{ var item = data['list'][i] }}
+    <tr>
+        <td>{{ item['id'] }}</td>
+        <td>{{ item['formName'] }}</td>
+        <td>正常</td>
+        <td>
+            <a href="javascript:void(0);"
+               data-form-id="{{ item['id'] }}"
+               data-form-name="{{ item['formName'] }}"
+               data-description="{{ item['description'] }}"
+               class="js-form-edit">
+                <i class="mdi mdi-square-edit-outline"></i>
+                编辑
+            </a>
+            <a href="javascript:void(0);"
+               class="form-designer-control"
+               data-module="form_designer"
+               data-method="page"
+               data-form-id="{{ item['id'] }}">
+                <i class="mdi mdi-table-edit"></i>
+                设计
+            </a>
+            <a href="javascript:void(0);" class="color-danger js-form-del" data-form-id="{{ item['id'] }}">
+                <i class="mdi mdi-trash-can-outline"></i>
+                删除
+            </a>
+        </td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>

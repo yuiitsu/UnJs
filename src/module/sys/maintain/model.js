@@ -12,7 +12,8 @@ Model.extend('sys.maintain', function () {
             pageSize: 15,
             systemid: '',
             systemname: '',
-            status: ''
+            status: '',
+            time: ''
         },
         searchJson: ''
     };
@@ -27,7 +28,11 @@ Model.extend('sys.maintain', function () {
             data: this.get('search')
         }, function(res) {
             if (res.state === 0) {
-                self.set('sysListJson', JSON.stringify(res.data.result));
+                var o = {
+                    list: res.data.result,
+                    time: new Date().getTime()
+                };
+                self.set('sysListJson', JSON.stringify(o));
             }
         });
     };

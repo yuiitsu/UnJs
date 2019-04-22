@@ -20,6 +20,8 @@ Controller.extend('form_designer', function () {
         //
         '#js-form-designer-verify-test click': '_settingEvent.verifyTest',
         //
+        '#js-form-designer-save click': '_saveForm',
+        //
         '.form-designer-form #js-verify-form mouseenter.form_mouseenter_': '_settingEvent.formMouseEnter',
         '.form-designer-form #js-verify-form mouseleave.form_mouseleave_': '_settingEvent.formMouseLeave',
         '.form-designer-layout-container .js-form-designer-component-item click.component_container_click_': '_settingEvent.editComponent',
@@ -46,6 +48,17 @@ Controller.extend('form_designer', function () {
         this.watch(this.model.get(), 'verifyTipsType', '_renderLayout');
         //
         this.watch(this.model.get(), 'formTitle', '_renderLayout');
+
+        //
+        var params = self.getParams(),
+            formId = params.formId;
+
+        if (!formId) {
+            this.notification.danger('参数不正确');
+            return false;
+        }
+        this.model.set('formData.formId', formId);
+
         // 渲染表单设计界面
         this.output('container', {
             componentSelector: {
@@ -53,6 +66,9 @@ Controller.extend('form_designer', function () {
                 openId: ''
             }
         });
+
+        // 请求数据
+        this.model.queryFormDesignerDetail();
     };
 
     /**
@@ -471,5 +487,9 @@ Controller.extend('form_designer', function () {
         var target = self.$(e);
 
         this.callControl('form_designer', 'index', {});
+    };
+
+    this._saveForm = function() {
+        var formData = self.model.get('formData');
     }
 });

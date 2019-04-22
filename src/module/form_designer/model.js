@@ -6,6 +6,12 @@ Model.extend('form_designer', function () {
     var self = this;
     //
     this.default = {
+        formData: {
+            formId: '',
+            formName: '',
+            formType: 'normal',
+            description: ''
+        },
         components: [
             {
                 id: 'layout',
@@ -253,4 +259,39 @@ Model.extend('form_designer', function () {
         this.set('formElements', formElements);
         this.set('formElementsString', JSON.stringify(formElements));
     };
+
+    this.queryFormDesignerDetail = function() {
+        var formId = this.get('formData.formId');
+        this._get({
+            url: '/api/v1/form/info',
+            data: {
+                formId: formId
+            }
+        }, function(res) {
+            if (res.state === 0) {
+                var formData = res.data.formData,
+                    formId = res.data.formId,
+                    formName = res.data.formName,
+                    formType = res.data.formType,
+                    description = res.data.description,
+                    formDataString = '';
+
+                if (formData) {
+                    try {
+                        formDataString = JSON.stringify(formData);
+                    } catch (e) {
+                        formData = []
+                    }
+                } else {
+                    formData = []
+                }
+                self.set('formElements', formData);
+                self.set('formElementsString', formDataString);
+                self.set('formData.formName', formName);
+                self.set('formData', {});
+            } else {
+                this.notification.danger(res.message);
+            }
+        });
+    }
 });

@@ -632,9 +632,11 @@ var _core = {
             // console.log(para);
         }
         if (options.type === 'GET') {
-            if (options.data) {
-                xhr.open(options.type, options.url + '?' + para, true);
+            var url = options.url;
+            if (para) {
+                url += '?' + para;
             }
+            xhr.open(options.type, url, true);
             if (options.headers) {
                 for (var i in options.headers) {
                     xhr.setRequestHeader(i, options.headers[i]);

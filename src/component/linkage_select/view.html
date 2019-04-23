@@ -1,7 +1,39 @@
 {{ var id = parseInt(Math.random() * 1000000) }}
 <div class="component-linkage-select" id="component-linkage-select-{{ id }}">
-    {{ var list = [{text: '一级', value: 'custom'}] }}
-    <component.basic.select.view list="{{ list }}"></component.basic.select.view>
+    {{ var list = [] }}
+    <div class="component-select radius-small">
+        <select
+            {{ for var i in data }}
+                {{ if i === 'dataSource' }}
+                {{ if data.hasOwnProperty(i) }}
+                 {{ i }}="{{ data[i] }}"
+                {{ end }}
+                {{ end }}
+            {{ end }}
+            >
+            <option value="">请选择</option>
+            {{ for var i in list }}
+            {{ if Object.prototype.toString.call(list[i]) === '[object Object]' }}
+                {{ var value = list[i]['value'] }}
+                {{ var text = list[i]['text'] }}
+            {{ else }}
+                {{ var value = list[i] }}
+                {{ var text = list[i] }}
+            {{ end }}
+            {{ var selected = data['default'] && value === data['default'] ? 'selected' : '' }}
+            <option value="{{ value }}" {{ selected }}>{{ text }}</option>
+            {{ end }}
+        </select>
+        <input type="hidden" parent="#component-linkage-select-{{ id }}" text=""
+               {{ for var i in data }}
+                    {{ if i !== 'list' }}
+                    {{ if data.hasOwnProperty(i) }}
+                     {{ i }}="{{ data[i] }}"
+                    {{ end }}
+                    {{ end }}
+                {{ end }}
+        />
+    </div>
 </div>
 
 {{ var component = this.callComponent({name: 'linkage_select'}, {id: id}) }}

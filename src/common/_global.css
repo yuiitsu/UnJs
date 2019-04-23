@@ -44,6 +44,11 @@ ul {
     color: blue;
 }
 
+/* background color */
+.bg-white {
+    background-color:#fff;
+}
+
 /* display */
 .display-block {
     display: block;
@@ -190,4 +195,11 @@ ul {
 .form-line .form-label{
     display: inline-block;
     padding-bottom:5px;
+}
+
+.mdi-close {
+    cursor: pointer;
+}
+.mdi-close:hover {
+    color:#ff0000;
 }

@@ -10,7 +10,7 @@ Controller.extend('form_designer', function () {
         // 拖拽组件到指定区域
         '.form-designer-component-selector li mousedown.drag_': '_drag',
         // 组件设置，文本框值变化
-        '.form-designer-component-setting input.js-property-input input.setting_change_': '_settingEvent.inputChange',
+        '.form-designer-component-setting .js-property-input input.setting_change_': '_settingEvent.inputChange',
         // 组件设置，选择框值变化
         '.form-designer-component-setting .js-property-select change.setting_select_change_': '_settingEvent.selectChange',
         '.form-designer-component-setting input[type=radio] click.setting_radio_click_': '_settingEvent.radioClick',
@@ -25,11 +25,11 @@ Controller.extend('form_designer', function () {
         '.form-designer-form #js-verify-form mouseenter.form_mouseenter_': '_settingEvent.formMouseEnter',
         '.form-designer-form #js-verify-form mouseleave.form_mouseleave_': '_settingEvent.formMouseLeave',
         '.form-designer-layout-container .js-form-designer-component-item click.component_container_click_': '_settingEvent.editComponent',
-        'body .form-designer-rules-editor-action-add click.rules_editor_click_': '_settingEvent.rulesEditor',
-        '.form-designer-control click': '_openFormDesigner'
     };
 
     this.index = function() {
+        //
+        this.watch(this.model.get(), 'formDataString', '_renderContainer');
         // 组件菜单
         this.watch(this.model.get(), 'openComponentId', '_renderComponentSelector');
         // 属性
@@ -45,9 +45,7 @@ Controller.extend('form_designer', function () {
         // 表单
         this.watch(this.model.get(), 'formElementsString', '_renderLayout');
         //
-        this.watch(this.model.get(), 'verifyTipsType', '_renderLayout');
-        //
-        this.watch(this.model.get(), 'formTitle', '_renderLayout');
+         this.watch(this.model.get(), 'verifyTipsType', '_renderLayout');
 
         //
         var params = self.getParams(),
@@ -59,16 +57,11 @@ Controller.extend('form_designer', function () {
         }
         this.model.set('formData.formId', formId);
 
-        // 渲染表单设计界面
-        this.output('container', {
-            componentSelector: {
-                list: this.model.get('components'),
-                openId: ''
-            }
-        });
-
         // 请求数据
-        this.model.queryFormDesignerDetail();
+        this.model.queryFormDesignerDetail(function() {
+            self.model.queryFormAdvanceRules();
+            self.model.queryFormSourceData();
+        });
     };
 
     /**
@@ -99,70 +92,26 @@ Controller.extend('form_designer', function () {
     };
 
     /**
+     * 渲染容器
+     * @private
+     */
+    this._renderContainer = function() {
+        var formData = self.model.get('formData');
+        // 渲染表单设计界面
+        this.output('container', {
+            componentSelector: {
+                list: this.model.get('components')
+            },
+            formData: formData
+        });
+    };
+
+    /**
      * 渲染布局
      * @private
      */
     this._renderLayout = function() {
-        var row = this.model.get('layout.row'),
-            column = this.model.get('layout.column'),
-            formElements = this.model.get('formElements'),
-            formElementsLen = formElements.length,
-            formTitle = this.model.get('formTitle'),
-            openProperty = this.model.get('openPropertyTemp'),
-            verifyTipsType = this.model.get('verifyTipsType');
-
-        var data = {
-            row: row,
-            column: column,
-            formElements: formElements,
-            formTitle: formTitle,
-            openProperty: openProperty ? openProperty.split(':') : ['', ''],
-            verifyTipsType: verifyTipsType
-        };
-        //
-        for (var i = 0; i < formElementsLen; i++) {
-            var element = formElements[i],
-                properties = element.property,
-                rules = element.rules;
-
-            if (!element.hasOwnProperty('data')) {
-                element['data'] = {};
-            }
-
-            for (var n in properties) {
-                if (properties.hasOwnProperty(n)) {
-                    element['data'][n] = properties[n];
-                }
-            }
-            for (var m in rules) {
-                if (rules.hasOwnProperty(m)) {
-                    element['data'][n] = rules[n];
-                }
-            }
-
-            if (element.hasOwnProperty('children')) {
-                for (var j in element['children']) {
-                    if (element['children'].hasOwnProperty(j)) {
-                        var childElement = element['children'][j];
-                        if (!childElement.hasOwnProperty('data')) {
-                            childElement['data'] = {};
-                        }
-
-                        for (var n in childElement.property) {
-                            if (childElement.property.hasOwnProperty(n)) {
-                                childElement['data'][n] = childElement.property[n];
-                            }
-                        }
-                        for (var n in childElement.rules) {
-                            if (childElement.rules.hasOwnProperty(n)) {
-                                childElement['data'][n] = childElement.rules[n];
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
+        var data = this.model.getFormRenderData();
         this.output('layout.default', data, $('.form-designer-form'))
     };
 
@@ -176,16 +125,21 @@ Controller.extend('form_designer', function () {
             index = positions[0],
             position = positions[1],
             formElements = self.model.get('formElements'),
-            formTitle = self.model.get('formTitle'),
-            verifyTipsType = self.model.get('verifyTipsType'),
+            data = self.model.get('formData'),
+            dataSource = self.model.get('dataSource'),
+            dataSourceLen = dataSource.length,
+            dataSourceCopy = [],
             name = '',
-            data = {
-                property: {},
-                rules: {},
-                verifyTipsType: verifyTipsType,
-                formTitle: formTitle
-            },
             element = null;
+        //
+        data['property'] = {};
+        data['rules'] = {};
+        //
+        for (var i = 0; i < dataSourceLen; i++) {
+            dataSourceCopy.push(dataSource[i]);
+        }
+        dataSourceCopy.push({text: '自定义', value: 'custom'});
+        data['dataSource'] = dataSourceCopy;
 
         if (!index || index === 'global') {
             data['verifyAdvanceRulesData'] = self.model.get('verifyAdvanceRulesData');
@@ -208,7 +162,8 @@ Controller.extend('form_designer', function () {
                 name = element.name;
                 data = {
                     property: element.property,
-                    rules: element.rules
+                    rules: element.rules,
+                    dataSource: dataSourceCopy
                 };
                 self.output('property.layout', {
                     name: 'module.form_designer.property.' + name + '.view',
@@ -221,7 +176,7 @@ Controller.extend('form_designer', function () {
     };
 
     /**
-     * 浸染空的设置界面
+     * 渲染空的设置界面
      * @private
      */
     this._renderEmptyProperty = function() {
@@ -427,69 +382,10 @@ Controller.extend('form_designer', function () {
                 $(this).removeClass('focus');
             });
             target.addClass('focus');
-        },
-        rulesEditor: function(e) {
-            var target = self.$(e),
-                dataType = target.attr('data-type'),
-                formElements = self.model.get('formElements'),
-                formElementsLen = formElements.length,
-                data = self.model.get('verifyAdvanceRulesData'),
-                elements = [],
-                dataKeys = [],
-                view = '';
-
-            // 获取表单元素
-            for (var i = 0; i < formElementsLen; i++) {
-                if (formElements[i]['name'] === 'table') {
-                    var children = formElements[i]['children'];
-                    for (var j in children) {
-                        if (children.hasOwnProperty(j) && children[j]['name'] !== 'label') {
-                            if (children[j]['data'].hasOwnProperty('name')) {
-                                elements.push(children[j]['data']['name']);
-                            }
-                        }
-                    }
-                }
-            }
-
-            // 数据对象
-            for (var i in data) {
-                if (data.hasOwnProperty(i)) {
-                    dataKeys.push(i);
-                }
-            }
-
-            switch (dataType) {
-                case 'element':
-                    view = self.getView('module.form_designer.rules_editor.element', elements);
-                    break;
-                case 'symbol':
-                    view = self.getView('module.form_designer.rules_editor.symbol');
-                    break;
-                case 'condition':
-                    view = self.getView('module.form_designer.rules_editor.condition');
-                    break;
-                case 'custom':
-                    view = self.getView('module.form_designer.rules_editor.custom');
-                    break;
-                case 'key_on':
-                    view = self.getView('module.form_designer.rules_editor.key_on');
-                    break;
-                case 'data':
-                    view = self.getView('module.form_designer.rules_editor.data', dataKeys);
-                    break;
-            }
-            $('.form-designer-rules-editor-content').append(view);
         }
     };
 
-    this._openFormDesigner = function(e) {
-        var target = self.$(e);
-
-        this.callControl('form_designer', 'index', {});
-    };
-
     this._saveForm = function() {
-        var formData = self.model.get('formData');
+        this.model.saveFormDesignerData();
     }
 });

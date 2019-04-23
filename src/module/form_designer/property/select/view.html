@@ -13,7 +13,7 @@
     <div class="form-designer-component-setting-item">
         <div class="form-designer-form-label">数据源:</div>
         <div class="form-designer-form-control-box flex-auto">
-            {{ var list = [{text: '自定义', value: 'custom'}] }}
+            {{ var list = data['dataSource'] }}
             {{ var defaultType = property['dataSource'] ? property['dataSource'] : '' }}
             <component.basic.select.view list="{{ list }}" default="{{ defaultType }}" class="js-property-select" name="property.dataSource"></component.basic.select.view>
         </div>
@@ -41,13 +41,6 @@
         </div>
     </div>
 </div>
-<div class="form-designer-component-setting-container">
-    <h3>高级规则</h3>
-    <div class="form-designer-component-setting-item">
-        <div class="">
-            <component.basic.button.view class="" text="添加规则"></component.basic.button.view>
-        </div>
-    </div>
-</div>
+{{ func this.getView('module.form_designer.property.common', data) }}
 
 {{ var component = this.callComponent({name: 'form_designer.property.select'}) }}

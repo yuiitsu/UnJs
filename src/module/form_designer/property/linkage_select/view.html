@@ -13,9 +13,25 @@
     <div class="form-designer-component-setting-item">
         <div class="form-designer-form-label">数据源:</div>
         <div class="form-designer-form-control-box flex-auto">
-            {{ var list = [{text: '自定义', value: 'custom'}] }}
+            {{ var list = data['dataSource'] ? data['dataSource'] : [{text: '自定义', value: 'custom'}] }}
             {{ var defaultType = property['dataSource'] ? property['dataSource'] : '' }}
             <component.basic.select.view list="{{ list }}" default="{{ defaultType }}" class="js-property-select" name="property.dataSource"></component.basic.select.view>
+        </div>
+    </div>
+    <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">值形式:</div>
+        <div class="form-designer-form-control-box flex-auto">
+            {{ var list = [{text: '最后元素值', value: 'last'}, {text: '所有元素组合', value: 'combination'}] }}
+            {{ var defaultType = property['valueType'] ? property['valueType'] : '' }}
+            <component.basic.select.view list="{{ list }}" default="{{ defaultType }}" class="js-property-select" name="property.valueType"></component.basic.select.view>
+        </div>
+    </div>
+    <div class="form-designer-component-setting-item">
+        <div class="form-designer-form-label">文本形式:</div>
+        <div class="form-designer-form-control-box flex-auto">
+            {{ var list = [{text: '最后元素值', value: 'last'}, {text: '所有元素组合', value: 'combination'}] }}
+            {{ var defaultType = property['textType'] ? property['textType'] : '' }}
+            <component.basic.select.view list="{{ list }}" default="{{ defaultType }}" class="js-property-select" name="property.textType"></component.basic.select.view>
         </div>
     </div>
     {{ var hideClass = defaultType === 'custom' ? '' : 'hide' }}
@@ -33,20 +49,14 @@
 <div class="form-designer-component-setting-container">
     <h3>验证规则</h3>
     <div class="form-designer-component-setting-item">
-        <div class="form-designer-form-label">必要:</div>
+        <div class="form-designer-form-label">必要层级:</div>
         <div class="form-designer-form-control-box">
-            {{ var list = [{text: '是', value: '1'}, {text: '否', value: '0'}] }}
-            {{ var defaultValue = rules['required'] ? rules['required'] : '0' }}
-            <component.basic.radio.view list="{{ list }}" default="{{ defaultValue }}" name="rules.required" class="js-property-control"></component.basic.radio.view>
+            {{ var list = [{text: '1', value: '1'}, {text: '2', value: '2'}, {text: '3', value: '3'}, {text: '4', value: '4'}, {text: '5', value: '5'}, {text: '6', value: '6'}, {text: 'last', value: 'last'}] }}
+            {{ var defaultType = rules['requiredLevel'] ? rules['requiredLevel'] : '' }}
+            <component.basic.select.view list="{{ list }}" default="{{ defaultType }}" class="js-property-select" name="rules.requiredLevel"></component.basic.select.view>
         </div>
     </div>
 </div>
-<div class="form-designer-component-setting-container">
-    <h3>高级规则</h3>
-    <div class="form-designer-component-setting-item">
-        <div class="">
-            <component.basic.button.view class="" text="添加规则"></component.basic.button.view>
-        </div>
-    </div>
-</div>
+{{ func this.getView('module.form_designer.property.common', data) }}
+
 

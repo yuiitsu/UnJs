@@ -4,7 +4,7 @@
     <div class="form-designer-component-setting-item">
         <div class="form-designer-form-label">表单名称:</div>
         <div class="form-designer-form-control-box flex-auto">
-            <component.basic.input.view value="{{ data['formTitle'] }}" class="js-form-designer-title-input"></component.basic.input.view>
+            <component.basic.input.view value="{{ data['formName'] }}" class="js-form-designer-title-input"></component.basic.input.view>
         </div>
         <div class="form-designer-form-label">验证提示类型:</div>
         <div class="form-designer-form-control-box flex-auto">
@@ -23,9 +23,12 @@
         <div class="flex-auto">
             <ul class="form-designer-global-list">
             {{ for var i in data['verifyAdvanceRulesData'] }}
+                {{ var name = data['verifyAdvanceRulesData'][i]['name'] }}
+                {{ var id = data['verifyAdvanceRulesData'][i]['id'] }}
                 <li class="flex-row">
-                    <span class="flex-auto cursor-point js-verify-advance-rules-data">{{ i }}</span>
-                    <i class="mdi mdi-close js-form-designer-delete-rules-data" data-key="{{ i }}"></i>
+                    <span class="flex-auto cursor-point js-verify-advance-rules-data"
+                          data-key="{{ i }}" data-id="{{ id }}">{{ name }}</span>
+                    <i class="mdi mdi-close js-form-designer-delete-rules-data" data-key="{{ i }}" data-id="{{ id }}"></i>
                 </li>
             {{ end }}
             </ul>
@@ -38,10 +41,12 @@
         <div class="flex-auto">
             <ul class="form-designer-global-list">
             {{ for var i in data['verifyAdvanceRules'] }}
-                {{ var number = parseInt(i) + 1 }}
+                {{ var id = data['verifyAdvanceRules'][i]['id'] }}
                 <li class="flex-row">
-                    <span class="flex-auto cursor-point js-verify-advance-rules" data-key="{{ i }}">规则 {{ number }}</span>
-                    <i class="mdi mdi-close js-form-designer-delete-rules" data-key="{{ i }}"></i>
+                    <span class="flex-auto cursor-point js-verify-advance-rules"
+                          data-key="{{ i }}"
+                          data-id="{{ id }}">{{ data['verifyAdvanceRules'][i]['name'] }}</span>
+                    <i class="mdi mdi-close js-form-designer-delete-rules" data-key="{{ i }}" data-id="{{ id }}"></i>
                 </li>
             {{ end }}
             </ul>

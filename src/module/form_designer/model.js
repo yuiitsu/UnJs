@@ -12,6 +12,7 @@ Model.extend('form_designer', function () {
             formType: 'normal',
             description: ''
         },
+        formDataString: '',
         components: [
             {
                 id: 'layout',
@@ -73,6 +74,17 @@ Model.extend('form_designer', function () {
         verifyAdvanceRulesFunc: {},
         verifyAdvanceRulesData: {},
         verifyAdvanceRulesDataString: '',
+        //
+        dataSource: [
+            {
+                text: '地区',
+                value: '{api}/api/v1/datasource/getByParentIdAndDicId?dicId=49'
+            },
+            {
+                text: '行业',
+                value: '{api}/api/v1/datasource/getByParentIdAndDicId?dicId=66'
+            }
+        ],
         // 临时
         region: [
             {
@@ -260,7 +272,7 @@ Model.extend('form_designer', function () {
         this.set('formElementsString', JSON.stringify(formElements));
     };
 
-    this.queryFormDesignerDetail = function() {
+    this.queryFormDesignerDetail = function(callback) {
         var formId = this.get('formData.formId');
         this._get({
             url: '/api/v1/form/info',
@@ -269,28 +281,301 @@ Model.extend('form_designer', function () {
             }
         }, function(res) {
             if (res.state === 0) {
-                var formData = res.data.formData,
-                    formId = res.data.formId,
+                var formDesignerDataString = res.data.formData,
+                    formId = res.data.id,
                     formName = res.data.formName,
                     formType = res.data.formType,
                     description = res.data.description,
-                    formDataString = '';
+                    formDesignerData = {},
+                    formElements = [],
+                    formElementsString = '',
+                    formData = {
+                        formId: formId,
+                        formName: formName,
+                        formType: formType,
+                        description: description
+                    };
 
-                if (formData) {
+                if (formDesignerDataString) {
                     try {
-                        formDataString = JSON.stringify(formData);
+                        formDesignerData = JSON.parse(formDesignerDataString);
+                        formData['verifyTipsType'] = formDesignerData['verifyTipsType'];
                     } catch (e) {
-                        formData = []
+                        formDesignerData = {}
                     }
                 } else {
-                    formData = []
+                    formDesignerData = {}
                 }
-                self.set('formElements', formData);
-                self.set('formElementsString', formDataString);
-                self.set('formData.formName', formName);
-                self.set('formData', {});
+                //
+                self.set('formData', formData);
+                self.set('formDataString', JSON.stringify(formData));
+
+                //
+                if (formDesignerData['formElements']) {
+                    formElements = formDesignerData['formElements'];
+                    formElementsString = JSON.stringify(formElements);
+                }
+                self.set('formElements', formElements);
+                self.set('formElementsString', formElementsString);
             } else {
-                this.notification.danger(res.message);
+                self.notification.danger(res.message);
+            }
+            //
+            callback();
+        });
+    };
+
+    this.getFormRenderData = function() {
+        var row = this.get('layout.row'),
+            column = this.get('layout.column'),
+            formElements = this.get('formElements'),
+            formElementsLen = formElements.length,
+            formTitle = this.get('formTitle'),
+            openProperty = this.get('openPropertyTemp'),
+            verifyTipsType = this.get('verifyTipsType');
+
+        var data = {
+            row: row,
+            column: column,
+            formElements: formElements,
+            formTitle: formTitle,
+            openProperty: openProperty ? openProperty.split(':') : ['', ''],
+            verifyTipsType: verifyTipsType
+        };
+        //
+        for (var i = 0; i < formElementsLen; i++) {
+            var element = formElements[i],
+                properties = element.property,
+                rules = element.rules;
+
+            if (!element.hasOwnProperty('data')) {
+                element['data'] = {};
+            }
+
+            for (var n in properties) {
+                if (properties.hasOwnProperty(n)) {
+                    element['data'][n] = properties[n];
+                }
+            }
+            for (var m in rules) {
+                if (rules.hasOwnProperty(m)) {
+                    element['data'][n] = rules[n];
+                }
+            }
+
+            if (element.hasOwnProperty('children')) {
+                for (var j in element['children']) {
+                    if (element['children'].hasOwnProperty(j)) {
+                        var childElement = element['children'][j];
+                        if (!childElement.hasOwnProperty('data')) {
+                            childElement['data'] = {};
+                        }
+
+                        for (var n in childElement.property) {
+                            if (childElement.property.hasOwnProperty(n)) {
+                                childElement['data'][n] = childElement.property[n];
+                            }
+                        }
+                        for (var n in childElement.rules) {
+                            if (childElement.rules.hasOwnProperty(n)) {
+                                childElement['data'][n] = childElement.rules[n];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return data;
+    };
+
+    this.saveFormDesignerData = function() {
+        var formData = this.get('formData');
+        //
+        formData['formData'] = {
+            verifyTipsType: this.get('verifyTipsType'),
+            formElements: this.get('formElements')
+        };
+        //
+        this._put({
+            url: '/api/v1/form/update',
+            data: formData
+        }, function(res) {
+            if (res.state === 0) {
+                self.notification.success('保存成功');
+            } else {
+                self.notification.danger(res.message);
+            }
+        });
+    };
+
+    this.queryFormAdvanceRules = function() {
+        var formId = this.get('formData.formId');
+        //
+        this._get({
+            url: '/api/v1/form/rule/list',
+            data: {
+                formId: formId
+            }
+        }, function(res) {
+            if (res.state === 0) {
+                var rules = [],
+                    dataLen = res.data.length;
+
+                for (var i = 0; i < dataLen; i++) {
+                    try {
+                        rules.push(JSON.parse(res.data[i]['rules']));
+                    } catch (e) {
+                    }
+                }
+
+                if (rules) {
+                    //
+                    self.set('verifyAdvanceRules', res.data);
+                    self.set('verifyAdvanceRulesString', JSON.stringify(res.data));
+                    // 执行rules
+                    self.callComponent({
+                        name: 'form_designer.property.global',
+                        method: 'evalRules'
+                    }, rules)
+                }
+            }
+        });
+    };
+
+    this.saveFormAdvanceRules = function(id, name, ruleString, target, callback) {
+        var formId = this.get('formData.formId'),
+            url = '/api/v1/form/rule/add',
+            data = {
+                formId: formId,
+                name: name,
+                rule: ruleString
+            };
+        //
+        if (id) {
+            url = '/api/v1/form/rule/update';
+            data['id'] = id;
+            //
+            this._put({
+                url: url,
+                data: data,
+                loading: target
+            }, function (res) {
+                if (res.state === 0) {
+                    self.notification.success('保存成功');
+                    callback();
+                } else {
+                    self.notification.danger(res.message);
+                }
+            });
+        } else {
+            this._post({
+                url: url,
+                data: data,
+                loading: target
+            }, function (res) {
+                if (res.state === 0) {
+                    self.notification.success('保存成功');
+                    callback();
+                } else {
+                    self.notification.danger(res.message);
+                }
+            });
+        }
+    };
+
+    this.delFormAdvanceRules = function(id, callback) {
+        this._post({
+            url: '/api/v1/form/rule/remove',
+            data: {
+                id: id
+            }
+        }, function(res) {
+            if (res.state === 0) {
+                self.notification.success('删除成功');
+                callback();
+            } else {
+                self.notification.danger(res.message);
+            }
+        });
+    };
+
+    this.queryFormSourceData = function() {
+        var formId = this.get('formData.formId');
+        //
+        this._get({
+            url: '/api/v1/form/source/list',
+            data: {
+                formId: formId
+            }
+        }, function(res) {
+            if (res.state === 0) {
+                //
+                var sourceData = res.data,
+                    dataLen = sourceData.length,
+                    cacheData = {};
+
+                for (var i = 0; i < dataLen; i++) {
+                    cacheData[sourceData[i]['name']] = sourceData[i];
+                }
+                self.set('verifyAdvanceRulesData', cacheData);
+                self.set('verifyAdvanceRulesDataString', JSON.stringify(cacheData));
+            }
+        });
+    };
+
+    this.saveFormSourceData = function(id, name, sourceData, target, callback) {
+        var formId = this.get('formData.formId'),
+            url = '/api/v1/form/source/add',
+            data = {
+                formId: formId,
+                name: name,
+                sourceData: sourceData
+            };
+        //
+        if (id) {
+            url = '/api/v1/form/source/update';
+            data['id'] = id;
+            //
+            this._put({
+                url: url,
+                data: data,
+                loading: target
+            }, function (res) {
+                if (res.state === 0) {
+                    self.notification.success('保存成功');
+                    callback();
+                } else {
+                    self.notification.danger(res.message);
+                }
+            });
+        } else {
+            this._post({
+                url: url,
+                data: data,
+                loading: target
+            }, function (res) {
+                if (res.state === 0) {
+                    self.notification.success('保存成功');
+                    callback();
+                } else {
+                    self.notification.danger(res.message);
+                }
+            });
+        }
+    };
+
+    this.delFormSourceData = function(id, callback) {
+        this._post({
+            url: '/api/v1/form/source/remove',
+            data: {
+                id: id
+            }
+        }, function(res) {
+            if (res.state === 0) {
+                self.notification.success('删除成功');
+                callback();
+            } else {
+                self.notification.danger(res.message);
             }
         });
     }

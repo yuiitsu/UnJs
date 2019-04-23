@@ -1,0 +1,29 @@
+<div class="main-box sys-maintain">
+    <h2 class="main-title">录入与查询</h2>
+    <div class="flex-column main-table-container">
+        <div class="main-search-container">
+            <div class="main-padding-container">
+                <label>系统ID</label>
+                <div class="display-inline-block">
+                    <component.basic.input.view id="js-sys-search-id"></component.basic.input.view>
+                </div>
+                <label>系统名称</label>
+                <div class="display-inline-block">
+                    <component.basic.input.view id="js-sys-search-name"></component.basic.input.view>
+                </div>
+                <label>状态</label>
+                <div class="display-inline-block">
+                    {{ var statusList = [{value: '0', text: '正常'}, {value: '1', text: '停用'}] }}
+                    <component.basic.select.view list="{{ statusList }}" id="js-sys-search-status"></component.basic.select.view>
+                </div>
+                <component.basic.button.view text="查询" id="js-sys-search"></component.basic.button.view>
+                <component.basic.button.view text="新增" class="primary" id="js-report-new"></component.basic.button.view>
+            </div>
+        </div>
+        <div class="main-table flex-auto overflow-y-auto">
+            <div class="main-padding-container" id="js-list-container">
+                {{ this.getView('component.basic.spinner.view') }}
+            </div>
+        </div>
+    </div>
+</div>

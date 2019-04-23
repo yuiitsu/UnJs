@@ -1,0 +1,18 @@
+<div class="form-designer-container flex-column">
+    <div class="form-designer-header flex-row">
+        <div class="flex-auto">
+            <h2>填报</h2>
+        </div>
+        <div>
+            <div class="display-inline-block" id="js-form-verify-result"></div>
+            <component.basic.button.view class="primary" text="保存" id="js-report-save"></component.basic.button.view>
+        </div>
+    </div>
+    <div class="flex-row flex-auto">
+        <div class="form-designer-layout-container flex-auto flex-column bg-white">
+            <div class="form-designer-form flex-auto flex-row">
+                {{ func this.getView('module.form_designer.layout.default', data) }}
+            </div>
+        </div>
+    </div>
+</div>

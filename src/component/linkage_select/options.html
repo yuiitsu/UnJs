@@ -1,0 +1,3 @@
+{{ for var i in data }}
+<option value="{{ data[i]['value'] }}" datasource="{{ data[i]['dataSource'] }}">{{ data[i]['text'] }}</option>
+{{ end }}

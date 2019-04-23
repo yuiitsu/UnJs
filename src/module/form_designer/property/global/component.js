@@ -16,24 +16,24 @@ Component.extend('form_designer.property.global', function () {
             });
         },
         verifyTipsType: function () {
-            $('.js-property-select-verify-tips-type').on('change', function () {
+            $('.js-property-select-verify-tips-type').off('change').on('change', function () {
                 var value = $(this).val();
                 self.model.form_designer.set('verifyTipsType', value);
             });
         },
         setTitle: function () {
-            $('.js-form-designer-title-input').on('input', function () {
-                self.model.form_designer.set('formTitle', $.trim($(this).val()));
+            $('.js-form-designer-title-input').off('input').on('input', function () {
+                self.model.form_designer.set('formData.formName', $.trim($(this).val()));
             });
         },
         openGlobalRule: function () {
             $('.js-form-designer-add-global-rules').off('click').on('click', function () {
                 self.renderComponent('modal.view', {
                     title: '添加规则',
-                    body: self.getView('module.form_designer.rules_editor.view', []),
+                    body: self.getView('module.form_designer.rules_editor.view', {name: '', rules: []}),
                     callback: function (modal, res) {
                         //
-                        self.createRulesFunc(modal);
+                        self.createRulesFunc(null, modal, null);
                     }
                 }).appendTo($('body'));
             });
@@ -48,27 +48,38 @@ Component.extend('form_designer.property.global', function () {
                             data = modal.el('#form-designer-rules-editor-data').val(),
                             savedData = self.model.form_designer.get('verifyAdvanceRulesData');
 
-                        name = name ? $.trim(name) : '';
-                        data = data ? $.trim(data) : '';
-                        savedData[name] = JSON.parse(data);
-                        self.model.form_designer.set('verifyAdvanceRulesData', savedData);
-                        self.model.form_designer.set('verifyAdvanceRulesDataString', JSON.stringify(savedData));
-                        modal.close();
+                        self.model.form_designer.saveFormSourceData(null, name, data, modal.$confirm(), function(res) {
+                            name = name ? $.trim(name) : '';
+                            data = data ? $.trim(data) : '';
+                            savedData[name] = {
+                                name: name,
+                                sourceData: JSON.parse(data)
+                            };
+                            self.model.form_designer.set('verifyAdvanceRulesData', savedData);
+                            self.model.form_designer.set('verifyAdvanceRulesDataString', JSON.stringify(savedData));
+                            modal.close();
+                        });
                     }
                 }).appendTo($('body'));
             });
         },
         editGlobalRuleData: function () {
             $('.js-verify-advance-rules-data').off('click').on('click', function () {
-                var key = $(this).text(),
+                var key = $(this).attr('data-key'),
+                    id = $(this).attr('data-id'),
                     verifyAdvanceRulesData = self.model.form_designer.get('verifyAdvanceRulesData'),
                     data = verifyAdvanceRulesData.hasOwnProperty(key) ? verifyAdvanceRulesData[key] : {};
+
+                try {
+                    data.sourceData = JSON.parse(data.sourceData);
+                } catch (e) {
+                }
 
                 self.renderComponent('modal.view', {
                     title: '编辑数据对象',
                     body: self.getView('module.form_designer.rules_editor.data_form', {
-                        name: key,
-                        data: JSON.stringify(data)
+                        name: data['name'],
+                        data: JSON.stringify(data.sourceData)
                     }),
                     callback: function (modal) {
                         var name = modal.el('#form-designer-rules-editor-data-name').val(),
@@ -76,13 +87,19 @@ Component.extend('form_designer.property.global', function () {
                             data = modal.el('#form-designer-rules-editor-data').val(),
                             savedData = self.model.form_designer.get('verifyAdvanceRulesData');
 
-                        name = name ? $.trim(name) : '';
-                        data = data ? $.trim(data) : '';
-                        delete savedData[originName];
-                        savedData[name] = JSON.parse(data);
-                        self.model.form_designer.set('verifyAdvanceRulesData', savedData);
-                        self.model.form_designer.set('verifyAdvanceRulesDataString', JSON.stringify(savedData));
-                        modal.close();
+                        self.model.form_designer.saveFormSourceData(id, name, data, modal.$confirm(), function(res) {
+                            name = name ? $.trim(name) : '';
+                            data = data ? $.trim(data) : '';
+                            delete savedData[originName];
+                            savedData[name] = {
+                                id: id,
+                                name: name,
+                                sourceData: JSON.parse(data)
+                            };
+                            self.model.form_designer.set('verifyAdvanceRulesData', savedData);
+                            self.model.form_designer.set('verifyAdvanceRulesDataString', JSON.stringify(savedData));
+                            modal.close();
+                        });
                     }
                 }).appendTo($('body'));
             })
@@ -90,74 +107,152 @@ Component.extend('form_designer.property.global', function () {
         editGlobalRule: function () {
             $('.js-verify-advance-rules').off('click').on('click', function () {
                 var index = $(this).attr('data-key'),
+                    id = $(this).attr('data-id'),
                     verifyAdvanceRules = self.model.form_designer.get('verifyAdvanceRules'),
                     verifyAdvanceRulesLen = verifyAdvanceRules.length,
-                    formElements = self.model.form_designer.get('formElements'),
-                    formElementsLen = formElements.length,
-                    elements = [],
-                    data = [];
-
-                // 获取表单元素
-                for (var j= 0; i < formElementsLen; i++) {
-                    if (formElements[j]['name'] === 'table') {
-                        var children = formElements[j]['children'];
-                        for (var c in children) {
-                            if (children.hasOwnProperty(c) && children[c]['name'] !== 'label') {
-                                if (children[c]['data'].hasOwnProperty('name')) {
-                                    elements.push(children[c]['data']['name']);
-                                }
-                            }
-                        }
-                    }
-                }
+                    elements = self.getComponents(),
+                    data = {
+                        name: '',
+                        rules: []
+                    };
 
                 for (var i = 0; i < verifyAdvanceRulesLen; i++) {
                     if (i === parseInt(index)) {
-                        if (verifyAdvanceRules[i].t === 'element') {
-                            data = {
-                                elements: elements,
-                                v: verifyAdvanceRules[i]
-                            }
-                        } else {
-                            data = verifyAdvanceRules[i];
+                        var rules = verifyAdvanceRules[i]['rules'];
+                        try {
+                            rules = JSON.parse(rules);
+                        } catch (e) {
+                            continue;
                         }
+                        data = {
+                            name: verifyAdvanceRules[i]['name'],
+                            elements: elements,
+                            rules: rules
+                        };
                     }
                 }
+                //
                 console.log(data);
+                //
                 self.renderComponent('modal.view', {
                     title: '编辑规则',
                     body: self.getView('module.form_designer.rules_editor.view', data),
                     callback: function (modal, res) {
-
+                        //
+                        self.createRulesFunc(id, modal, index);
                     }
                 }).appendTo($('body'));
             });
         },
+        rulesEditor: function() {
+            $('body').off('click.rule_editor_').on('click.rule_editor_', '.form-designer-rules-editor-action-add', function(e) {
+                var target = $(this),
+                    dataType = target.attr('data-type'),
+                    data = self.model.form_designer.get('verifyAdvanceRulesData'),
+                    dataKeys = [],
+                    view = '',
+                    elements = self.getComponents(),
+                    groupList = [];
+
+                // group
+                $('#js-verify-form').find('.js-form-control').each(function() {
+                    var groupName = $(this).attr('group');
+                    if (groupName) {
+                        groupList.push(groupName);
+                    }
+                });
+
+                // 数据对象
+                for (var i in data) {
+                    if (data.hasOwnProperty(i)) {
+                        dataKeys.push(i);
+                    }
+                }
+
+                switch (dataType) {
+                    case 'element':
+                        view = self.getView('module.form_designer.rules_editor.element', {
+                            elements: elements,
+                            default: ''
+                        });
+                        break;
+                    case 'group':
+                        view = self.getView('module.form_designer.rules_editor.group', {
+                            groupList: groupList,
+                            default: ''
+                        });
+                        break;
+                    case 'symbol':
+                        view = self.getView('module.form_designer.rules_editor.symbol');
+                        break;
+                    case 'condition':
+                        view = self.getView('module.form_designer.rules_editor.condition');
+                        break;
+                    case 'custom':
+                        view = self.getView('module.form_designer.rules_editor.custom');
+                        break;
+                    case 'value_type':
+                        view = self.getView('module.form_designer.rules_editor.value_type');
+                        break;
+                    case 'key_on':
+                        view = self.getView('module.form_designer.rules_editor.key_on');
+                        break;
+                    case 'data':
+                        view = self.getView('module.form_designer.rules_editor.data', dataKeys);
+                        break;
+                }
+                $('.form-designer-rules-editor-content').append(view);
+            });
+        },
         deleteGlobalRuleData: function () {
             $('.form-designer-global-list .js-form-designer-delete-rules-data').off('click').on('click', function () {
-                var key = $(this).attr('data-key'),
-                    savedData = self.model.form_designer.get('verifyAdvanceRulesData');
+                var _this = $(this);
+                self.callComponent({
+                    name: 'confirm'
+                }, {
+                    message: '确定要执行此操作吗？',
+                    callback: function(confirm, target) {
+                        var key = _this.attr('data-key'),
+                            id = _this.attr('data-id'),
+                            savedData = self.model.form_designer.get('verifyAdvanceRulesData');
 
-                if (savedData.hasOwnProperty(key)) {
-                    delete savedData[key];
-                }
-                self.model.form_designer.set('verifyAdvanceRulesData', savedData);
-                self.model.form_designer.set('verifyAdvanceRulesDataString', JSON.stringify(savedData));
+                        self.model.form_designer.delFormSourceData(id, function() {
+                            if (savedData.hasOwnProperty(key)) {
+                                delete savedData[key];
+                            }
+                            self.model.form_designer.set('verifyAdvanceRulesData', savedData);
+                            self.model.form_designer.set('verifyAdvanceRulesDataString', JSON.stringify(savedData));
+                            confirm.close();
+                        });
+                    }
+                });
             });
         },
         deleteGlobalRule: function () {
             $('.form-designer-global-list .js-form-designer-delete-rules').off('click').on('click', function () {
-                var key = $(this).attr('data-key'),
-                    savedRules = self.model.form_designer.get('verifyAdvanceRules'),
-                    savedRulesLen = savedRules.length;
+                var _this = $(this);
+                self.callComponent({
+                    name: 'confirm'
+                }, {
+                    message: '确定要执行此操作吗？',
+                    callback: function(confirm, target) {
+                        var key = _this.attr('data-key'),
+                            id = _this.attr('data-id'),
+                            savedRules = self.model.form_designer.get('verifyAdvanceRules'),
+                            savedRulesLen = savedRules.length;
 
-                for (var i = 0; i < savedRulesLen; i++) {
-                    if (i === parseInt(key)) {
-                        savedRules.splice(i, 1);
+                        self.model.form_designer.delFormAdvanceRules(id, function() {
+                            for (var i = 0; i < savedRulesLen; i++) {
+                                if (i === parseInt(key)) {
+                                    savedRules.splice(i, 1);
+                                }
+                            }
+                            self.model.form_designer.set('verifyAdvanceRules', savedRules);
+                            self.model.form_designer.set('verifyAdvanceRulesString', JSON.stringify(savedRules));
+                            confirm.close();
+                        });
                     }
-                }
-                self.model.form_designer.set('verifyAdvanceRules', savedRules);
-                self.model.form_designer.set('verifyAdvanceRulesString', JSON.stringify(savedRules));
+                });
             });
         }
     };
@@ -170,33 +265,66 @@ Component.extend('form_designer.property.global', function () {
 
     /**
      * 创建规则方法，挂到form_designer modal的verifyAdvanceRulesFunc下
+     * @param id
      * @param modal
+     * @param index
      */
-    this.createRulesFunc = function(modal) {
-        //
-        var rules = [];
-        $('.form-designer-rules-editor-item').each(function () {
-            var dataType = $(this).attr('data-type'),
-                target = null;
+    this.createRulesFunc = function(id, modal, index) {
+        if (self.callComponent({
+            name: 'verification'
+        }, {'form': $('.form-designer-rules-editor-container')})) {
+            //
+            var rules = [],
+                ruleName = $.trim($('#js-form-designer-rule-name').val());
 
-            if ($(this).find('select').length > 0) {
-                target = $(this).find('select');
-            } else if ($(this).find('input').length > 0) {
-                target = $(this).find('input');
-            }
-            if (target) {
-                rules.push({t: dataType, v: $.trim(target.val())});
-            }
-        });
-        var verifyAdvanceRules = self.model.form_designer.get('verifyAdvanceRules');
-        verifyAdvanceRules.push(rules);
-        self.model.form_designer.set('verifyAdvanceRules', verifyAdvanceRules);
-        self.model.form_designer.set('verifyAdvanceRulesString', JSON.stringify(verifyAdvanceRules));
+            //
+            $('.form-designer-rules-editor-item').each(function () {
+                var dataType = $(this).attr('data-type'),
+                    target = null;
 
+                if ($(this).find('select').length > 0) {
+                    target = $(this).find('select');
+                } else if ($(this).find('input').length > 0) {
+                    target = $(this).find('input');
+                }
+                if (target) {
+                    rules.push({t: dataType, v: $.trim(target.val())});
+                }
+            });
+
+            // 保存到数据库
+            self.model.form_designer.saveFormAdvanceRules(id, ruleName, JSON.stringify(rules), modal.$confirm(),function() {
+                var verifyAdvanceRules = self.model.form_designer.get('verifyAdvanceRules');
+                if (!index && !id) {
+                    verifyAdvanceRules.push({
+                        id: '',
+                        name: ruleName,
+                        rules: rules
+                    });
+                } else {
+                    var verifyAdvanceRulesLen = verifyAdvanceRules.length;
+                    for (var i = 0; i < verifyAdvanceRulesLen; i++) {
+                        if (i === parseInt(index)) {
+                            verifyAdvanceRules[i]['name'] = ruleName;
+                            verifyAdvanceRules[i]['rules'] = rules;
+                        }
+                    }
+                }
+                self.model.form_designer.set('verifyAdvanceRules', verifyAdvanceRules);
+                self.model.form_designer.set('verifyAdvanceRulesString', JSON.stringify(verifyAdvanceRules));
+                // 执行rule，将验证挂载到对象上
+                self.evalRules(verifyAdvanceRules);
+                //
+                modal.close();
+            });
+        }
+    };
+
+    this.evalRules = function(verifyAdvanceRules) {
         //
         var symbolTransformList = ['+', '-', '*', '/'],
             symbolConditionList = ['>', '<', '>=', '<=', '!=', '=='];
-
+        //
         for (var i in verifyAdvanceRules) {
             var evalString = ['self.model.form_designer.default.verifyAdvanceRulesFunc["' + i + '"] = function(callback) {'],
                 isIf = false,
@@ -242,8 +370,7 @@ Component.extend('form_designer.property.global', function () {
                                     preElement = evalString.pop();
                                     evalString.push('if (' + preElement + preSymbol + 'document.getElementsByName("' + item.v + '")[0].value) {return {status:true, element: "' + verifyAdvanceRules[i][j - 2].v + '"};}else{return {status: false, element: "' + verifyAdvanceRules[i][j - 2].v + '", message: "' + preSymbol + '"+ document.getElementsByName(\"' + item.v + '\")[0].value +""};}');
                                 } else {
-                                    if (symbolTransformList.indexOf(preNodeVal) !== -1) {
-                                        evalString.push("parseInt(" + elementValue + ")");
+                                    if (symbolTransformList.indexOf(preNodeVal) !== -1) { evalString.push("parseInt(" + elementValue + ")");
                                     } else {
                                         evalString.push("document.getElementsByName('" + item.v + "')[0].value");
                                     }
@@ -308,6 +435,14 @@ Component.extend('form_designer.property.global', function () {
                             }
                         }
                         break;
+                    case 'value_type':
+                        index = preNodeVal === '}' ? evalString.length - 2 : evalString.length - 1;
+                        preElement = evalString[index];
+
+                        if (item.v === 'text') {
+                            evalString.splice(index, 1, preElement.replace('value', 'getAttribute("text")'));
+                        }
+                        break;
                     case 'key_on':
                         evalString.push(item.v);
                         break;
@@ -321,8 +456,27 @@ Component.extend('form_designer.property.global', function () {
             evalString.push('}');
             console.log(evalString.join(""));
             eval(evalString.join(""));
-            //
-            modal.close();
         }
+    };
+
+    this.getComponents = function() {
+        var formElements = self.model.form_designer.get('formElements'),
+            formElementsLen = formElements.length,
+            elements = [];
+
+        // 获取表单元素
+        for (var i = 0; i < formElementsLen; i++) {
+            if (formElements[i]['name'] === 'table') {
+                var children = formElements[i]['children'];
+                for (var j in children) {
+                    if (children.hasOwnProperty(j) && children[j]['name'] !== 'label') {
+                        if (children[j]['data'].hasOwnProperty('name')) {
+                            elements.push(children[j]['data']['name']);
+                        }
+                    }
+                }
+            }
+        }
+        return elements;
     }
 });

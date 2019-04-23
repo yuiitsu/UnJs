@@ -1,18 +1,28 @@
 <div class="form-designer-rules-editor-container">
+    <div class="form-line">
+        <label class="form-label">规则名称:</label>
+        <component.basic.input.view value="{{ data['name'] }}" class="js-form-control" required="1" length="[2,20]" data_key="rule-name" id="js-form-designer-rule-name"></component.basic.input.view>
+    </div>
     <div class="form-designer-rules-editor-action-bar">
         <span class="form-designer-rules-editor-action-add" data-type="condition">条件</span>
         <span class="form-designer-rules-editor-action-add" data-type="element">元素</span>
+        <span class="form-designer-rules-editor-action-add" data-type="group">分组</span>
         <span class="form-designer-rules-editor-action-add" data-type="symbol">符号</span>
         <span class="form-designer-rules-editor-action-add" data-type="custom">自定值</span>
+        <span class="form-designer-rules-editor-action-add" data-type="value_type">值类型</span>
         <span class="form-designer-rules-editor-action-add" data-type="key_on">关联</span>
         <span class="form-designer-rules-editor-action-add" data-type="data">数据</span>
     </div>
     <div class="form-designer-rules-editor-content">
-        {{ if data.length > 0 }}
-        {{ for var i in data }}
-            {{ var t = data[i]['t'] }}
-            {{ var v = data[i]['v'] }}
-            {{ func this.getView('module.form_designer.rules_editor.' + t, v) }}
+        {{ if data['rules'].length > 0 }}
+        {{ for var i in data['rules'] }}
+            {{ var t = data['rules'][i]['t'] }}
+            {{ var v = data['rules'][i]['v'] }}
+            {{ if t === 'element' }}
+                {{ func this.getView('module.form_designer.rules_editor.' + t, {elements: data['elements'], default: v}) }}
+            {{ else }}
+                {{ func this.getView('module.form_designer.rules_editor.' + t, v) }}
+            {{ end }}
         {{ end }}
         {{ end }}
     </div>

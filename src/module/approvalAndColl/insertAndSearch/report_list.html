@@ -1,0 +1,53 @@
+{{ if data.length > 0 }}
+<table>
+    <thead>
+    <tr>
+        <td>系统ID</td>
+        <td>系统名称</td>
+        <td>创建人</td>
+        <td>状态</td>
+        <td>操作</td>
+    </tr>
+    </thead>
+    <tbody>
+    {{ var status = {'0': '正常', '1': '停用'} }}
+    {{ for var i in data }}
+    <tr>
+        <td>{{ data[i]['systemid'] }}</td>
+        <td>{{ data[i]['systemname'] }}</td>
+        <td></td>
+        <td>{{ status[data[i]['status']] }}</td>
+        <td>
+            <a href="javascript:void(0);" class="js-sys-list-edit"
+               data-id="{{ data[i]['systemid'] }}"
+               data-name="{{ data[i]['systemname'] }}">
+                <i class="mdi mdi-square-edit-outline"></i>
+                编辑
+            </a>
+            <a href="javascript:void(0);"
+               class="sys-control"
+               data-module="form_designer.page"
+               data-sys-id="{{ data[i]['systemid'] }}">
+                <i class="mdi mdi-table-edit"></i>
+                表单
+            </a>
+            <a href="javascript:void(0);"
+               class="js-sys-stop color-danger"
+               data-sys-id="{{ data[i]['systemid'] }}"
+               data-sys-status="{{ data[i]['status'] }}">
+                <i class="mdi mdi-stop"></i>
+                {{ var text = data[i]['status'] === '0' ? '停用' : '启用' }}
+                {{ text }}
+            </a>
+            <a href="javascript:void(0);" class="js-sys-del color-danger" data-sys-id="{{ data[i]['systemid'] }}">
+                <i class="mdi mdi-trash-can-outline"></i>
+                删除
+            </a>
+        </td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
+{{ else }}
+<div>还没有任何记录</div>
+{{ end }}

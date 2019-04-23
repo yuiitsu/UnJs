@@ -20,7 +20,7 @@
             {{ var text = list[i] }}
         {{ end }}
         {{ var selected = data['default'] && value === data['default'] ? 'selected' : '' }}
-        <option value="{{ value }}" {{ selected }}>{{ text }}</option>
+        <option value="{{ value }}" datasource="{{ list[i]['dataSource'] }}" {{ selected }}>{{ text }}</option>
         {{ end }}
     </select>
 </div>

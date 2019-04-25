@@ -9,16 +9,56 @@ Component.extend('linkage_select', function() {
      */
     this.bind =  {
         initDataSource: function(params) {
+            //
             var id = params.id,
                 parent = $('#component-linkage-select-' + id),
                 target = parent.find('select').eq(0),
-                dataSource = target.attr('datasource');
+                input = parent.find('input'),
+                itemValue = input.attr('data-item-value'),
+                dataSource = target.attr('datasource'),
+                itemValueList = [],
+                i = 0;
+
+            if (itemValue) {
+                itemValueList = itemValue.split('__');
+            }
+
+            /**
+             *
+             */
+            var autoLoadData = function(api, dataSource) {
+                self.queryData(api, dataSource, function(data) {
+                    //
+                    if (i === 0) {
+                        self.renderComponent('linkage_select.options', data).appendTo(target);
+                    } else {
+                        if (data.length > 0) {
+                            self.renderComponent('linkage_select.select', {list: data}).appendTo(parent);
+                        }
+                    }
+                    //
+                    if (itemValueList[i]) {
+                        parent.find('select').eq(i).val(itemValueList[i]);
+                        i++;
+                        //
+                        var apiList = api.split('&'),
+                            apiListLen = apiList.length,
+                            apiUrlItem = [];
+
+                        for (var j = 0; j < apiListLen; j++) {
+                            if (apiList[j].indexOf('code') === -1) {
+                                apiUrlItem.push(apiList[j])
+                            }
+                        }
+                        autoLoadData(apiUrlItem.join("&") + '&code=' + itemValueList[i - 1],
+                            apiUrlItem.join("&") + '&code=' + itemValueList[i - 1]);
+                    }
+                });
+            };
 
             if (dataSource && dataSource.indexOf('{api}') === 0) {
                 var api = dataSource.replace('{api}', '');
-                self.queryData(api, dataSource, function(data) {
-                    self.renderComponent('linkage_select.options', data).appendTo(target);
-                });
+                autoLoadData(api, dataSource);
             }
         },
         change: function(params) {
@@ -58,13 +98,19 @@ Component.extend('linkage_select', function() {
                 }
                 //
                 var thisIndex = _this.parent().index(),
-                    nextIndex = thisIndex + 1;
+                    inputItemValueList = [];
+
                 //
                 parent.find('select').each(function() {
-                    if (thisIndex < $(this).parent().index()) {
+                    var _index = $(this).parent().index();
+                    if (thisIndex < _index) {
                         $(this).parent().remove();
+                    } else {
+                        inputItemValueList.push($(this).val());
                     }
                 });
+
+                input.attr('data-item-value', inputItemValueList.join('__'));
             });
         }
     };

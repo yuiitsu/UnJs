@@ -102,15 +102,26 @@ Controller.extend('approvalAndColl.agencyReview', function () {
             return false;
         }
         // 获取所有字段信息
-        if (reportList.length > 0) {
-            var item = reportList[0].reportData;
-            for (var i in item) {
-                if (item.hasOwnProperty(i)) {
-                    allColumn.push(i);
+        var reportListLen = reportList.length;
+        if (reportListLen > 0) {
+            for (var i = 0; i < reportListLen; i++) {
+                for (var j in reportList[i]['reportData']) {
+                    if (reportList[i]['reportData'].hasOwnProperty(j)) {
+                        if (Object.prototype.toString.call(reportList[i]['reportData'][j]) === '[object Object]') {
+                            reportList[i]['reportData'][j] = reportList[i]['reportData'][j]['value']
+                        }
+                        if (i === 0) {
+                            allColumn.push(i);
+                        }
+                    }
                 }
             }
         }
-        this.output('report_list', {allColumn: allColumn, useColumn: formCondition, data: reportPageData}, $('#js-list-container'));
+        this.output('report_list', {
+            allColumn: allColumn,
+            useColumn: formCondition,
+            data: reportPageData
+        }, $('#js-list-container'));
     };
 
     this._search = function() {

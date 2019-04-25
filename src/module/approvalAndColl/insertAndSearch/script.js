@@ -55,7 +55,13 @@ Controller.extend('approvalAndColl.insertAndSearch', function () {
                     $('.js-form-control').each(function() {
                         var name = $(this).attr('name');
                         if (reportData.hasOwnProperty(name)) {
-                            $(this).val(reportData[name]);
+                            var value = reportData[name];
+                            if (Object.prototype.toString.call(value) === '[object Object]') {
+                                $(this).val(value.value);
+                                $(this).attr('data-item-value', value.itemValue);
+                            } else {
+                                $(this).val(reportData[name]);
+                            }
                         }
                     });
                 });
@@ -106,11 +112,18 @@ Controller.extend('approvalAndColl.insertAndSearch', function () {
         }
 
         // 获取所有字段信息
-        if (reportList.length > 0) {
-            var item = reportList[0].reportData;
-            for (var i in item) {
-                if (item.hasOwnProperty(i)) {
-                    allColumn.push(i);
+        var reportListLen = reportList.length;
+        if (reportListLen > 0) {
+            for (var i = 0; i < reportListLen; i++) {
+                for (var j in reportList[i]['reportData']) {
+                    if (reportList[i]['reportData'].hasOwnProperty(j)) {
+                        if (Object.prototype.toString.call(reportList[i]['reportData'][j]) === '[object Object]') {
+                            reportList[i]['reportData'][j] = reportList[i]['reportData'][j]['value']
+                        }
+                        if (i === 0) {
+                            allColumn.push(i);
+                        }
+                    }
                 }
             }
         }
@@ -184,11 +197,19 @@ Controller.extend('approvalAndColl.insertAndSearch', function () {
 
                 $('.js-form-control').each(function() {
                     var name = $(this).attr('name'),
+                        itemValue = $(this).attr('data-item-value'),
                         isSearchColumn = $(this).attr('issearchcolumn'),
                         value = $.trim($(this).val());
 
                     //
                     if (name) {
+
+                        if (itemValue) {
+                            value = {
+                                itemValue: itemValue,
+                                value: value
+                            }
+                        }
                         postData['reportData'][name] = value;
                         if (isSearchColumn === 'yes') {
                             postData['reportKey'][name] = value;

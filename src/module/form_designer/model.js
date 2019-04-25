@@ -78,11 +78,11 @@ Model.extend('form_designer', function () {
         dataSource: [
             {
                 text: '地区',
-                value: '{api}/api/v1/datasource/getByParentIdAndDicId?dicId=49'
+                value: '{api}/api/v1/datasource/getByParentIdAndCodeAndDicId?dicId=49'
             },
             {
                 text: '行业',
-                value: '{api}/api/v1/datasource/getByParentIdAndDicId?dicId=66'
+                value: '{api}/api/v1/datasource/getByParentIdAndCodeAndDicId?dicId=66'
             }
         ],
         // 临时

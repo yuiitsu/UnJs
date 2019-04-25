@@ -1,0 +1,24 @@
+<div class="main-box sys-maintain">
+    <h2 class="main-title">审核与验收</h2>
+    <div class="flex-column main-table-container">
+        <div class="main-search-container">
+            <div class="main-padding-container">
+                {{ for var i in data['searchCondition'] }}
+                {{ var component = data['searchCondition'][i]['component'] }}
+                {{ var elements = data['searchCondition'][i]['elements'] }}
+                <div class="display-inline-block search-item-container">
+                    {{ func this.getView('component.'+ component, elements['data']) }}
+                </div>
+                {{ end }}
+                <div>
+                    <component.basic.button.view text="查询" class="success" id="js-sys-search"></component.basic.button.view>
+                </div>
+            </div>
+        </div>
+        <div class="main-table flex-auto overflow-y-auto">
+            <div class="main-padding-container" id="js-list-container">
+                {{ this.getView('component.basic.spinner.view') }}
+            </div>
+        </div>
+    </div>
+</div>

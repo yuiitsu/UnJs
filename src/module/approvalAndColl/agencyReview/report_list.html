@@ -1,0 +1,39 @@
+{{ if data.data.result.length > 0 }}
+{{ var useColumn = data['useColumn'] }}
+<table>
+    <thead>
+    <tr>
+        <td>年份</td>
+        {{ for var i in useColumn }}
+        <td>{{ useColumn[i]['name'] }}</td>
+        {{ end }}
+        <td>异常数据数量</td>
+        <td>状态</td>
+        <td>操作</td>
+    </tr>
+    </thead>
+    <tbody>
+    {{ var status = {'0': '正常', '1': '停用'} }}
+    {{ for var i in data.data.result }}
+    {{ var item = data.data.result[i] }}
+    {{ var reportData = item.reportData }}
+    <tr>
+        <td>2019</td>
+        {{ for var j in useColumn }}
+        <td>{{ reportData[useColumn[j]['name']] }}</td>
+        {{ end }}
+        <td></td>
+        <td>{{ item.status }}</td>
+        <td>
+            <a href="javascript:void(0);" class="js-list-view"
+               data-id="{{ item['id'] }}">
+                查看
+            </a>
+        </td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
+{{ else }}
+<div>还没有任何记录</div>
+{{ end }}

@@ -1,16 +1,19 @@
 {{ var list = data['list'] }}
-
+{{ var emptyText = '请选择' }}
 <div class="component-select radius-small">
     <select
         {{ for var i in data }}
             {{ if i !== 'list' }}
             {{ if data.hasOwnProperty(i) }}
              {{ i }}="{{ data[i] }}"
+                {{ if i === 'placeholder' }}
+                {{ var emptyText = data[i] }}
+                {{ end }}
             {{ end }}
             {{ end }}
         {{ end }}
         >
-        <option value="">请选择</option>
+        <option value="">{{ emptyText }}</option>
         {{ for var i in list }}
         {{ if Object.prototype.toString.call(list[i]) === '[object Object]' }}
             {{ var value = list[i]['value'] }}

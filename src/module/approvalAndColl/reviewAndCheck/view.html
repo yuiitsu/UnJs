@@ -1,5 +1,5 @@
 <div class="main-box sys-maintain">
-    <h2 class="main-title">录入与查询</h2>
+    <h2 class="main-title">审核与验收</h2>
     <div class="flex-column main-table-container">
         <div class="main-search-container">
             <div class="main-padding-container">
@@ -10,13 +10,8 @@
                     {{ func this.getView('component.'+ component, elements['data']) }}
                 </div>
                 {{ end }}
-                <div class="display-inline-block search-item-container">
-                    {{ var statusList = [{"value":"waitingForSubmit","text":"暂存"},{"value":"WaitingForStreet","text":"待乡镇审核"},{"value":"WaitingForDistrict","text":"待区县审核"},{"value":"WaitingForCity","text":"待市局审核"},{"value":"StreetReject","text":"街道审核未通过"},{"value":"DistrictReject","text":"区县审核未通过"},{"value":"CityCouncilReject","text":"市局审核未通过"}] }}
-                    <component.basic.select.view placeholder="状态" list="{{ statusList }}" id="js-sys-search-status"></component.basic.select.view>
-                </div>
                 <div>
                     <component.basic.button.view text="查询" class="success" id="js-sys-search"></component.basic.button.view>
-                    <component.basic.button.view text="新增" class="primary" id="js-report-new"></component.basic.button.view>
                 </div>
             </div>
         </div>

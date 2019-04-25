@@ -158,7 +158,10 @@ Component.extend('form_designer.property.global', function () {
                 $('#js-verify-form').find('.js-form-control').each(function() {
                     var groupName = $(this).attr('group');
                     if (groupName) {
-                        groupList.push(groupName);
+                        var groupNamePre = groupName.split('.')[0];
+                        if (groupList.indexOf(groupNamePre) === -1) {
+                            groupList.push(groupNamePre);
+                        }
                     }
                 });
 
@@ -370,7 +373,8 @@ Component.extend('form_designer.property.global', function () {
                                     preElement = evalString.pop();
                                     evalString.push('if (' + preElement + preSymbol + 'document.getElementsByName("' + item.v + '")[0].value) {return {status:true, element: "' + verifyAdvanceRules[i][j - 2].v + '"};}else{return {status: false, element: "' + verifyAdvanceRules[i][j - 2].v + '", message: "' + preSymbol + '"+ document.getElementsByName(\"' + item.v + '\")[0].value +""};}');
                                 } else {
-                                    if (symbolTransformList.indexOf(preNodeVal) !== -1) { evalString.push("parseInt(" + elementValue + ")");
+                                    if (symbolTransformList.indexOf(preNodeVal) !== -1) {
+                                        evalString.push("parseInt(" + elementValue + ")");
                                     } else {
                                         evalString.push("document.getElementsByName('" + item.v + "')[0].value");
                                     }
@@ -393,6 +397,43 @@ Component.extend('form_designer.property.global', function () {
                                 }
                             }
                         }
+                        break;
+                    case 'group':
+                        // preNodeVal = evalString[evalString.length - 1];
+                        // if (!isThen) {
+                        //     if (isIf) {
+                        //         evalString.push("document.getElementsByName('" + item.v + "')[0].value");
+                        //     } else {
+                        //         var elementValue = "document.getElementsByName('" + item.v + "')[0].value";
+                        //         if (symbolConditionList.indexOf(preNodeVal) !== -1) {
+                        //             preSymbol = evalString.pop();
+                        //             preElement = evalString.pop();
+                        //             evalString.push('if (' + preElement + preSymbol + 'document.getElementsByName("' + item.v + '")[0].value) {return {status:true, element: "' + verifyAdvanceRules[i][j - 2].v + '"};}else{return {status: false, element: "' + verifyAdvanceRules[i][j - 2].v + '", message: "' + preSymbol + '"+ document.getElementsByName(\"' + item.v + '\")[0].value +""};}');
+                        //         } else {
+                        //             if (symbolTransformList.indexOf(preNodeVal) !== -1) {
+                        //                 evalString.push("parseInt(" + elementValue + ")");
+                        //             } else {
+                        //                 evalString.push("document.getElementsByName('" + item.v + "')[0].value");
+                        //             }
+                        //         }
+                        //     }
+                        // } else {
+                        //     index = preNodeVal === '}' ? evalString.length - 2 : evalString.length - 1;
+                        //     preNodeVal = evalString[index];
+                        //     preElement = evalString[index - 1];
+
+                        //     if (symbolConditionList.indexOf(preNodeVal) !== -1) {
+                        //         preSymbol = evalString.splice(index, 1)[0];
+                        //         preElement = evalString.splice(index - 1, 1)[0];
+                        //         evalString.splice(index - 1, 0, 'if (' + preElement + preSymbol + item.v + ') {return {status:true, element: "' + verifyAdvanceRules[i][j - 2].v + '"};}else{return {status: false, element: "' + verifyAdvanceRules[i][j - 2].v + '", message: "' + preSymbol + item.v + '"};}');
+                        //     } else {
+                        //         if (symbolTransformList.indexOf(evalString[evalString.length - 2]) !== -1) {
+                        //             evalString.splice(index + 1, 0, "parseInt(document.getElementsByName('" + item.v + "')[0].value)");
+                        //         } else {
+                        //             evalString.splice(index + 1, 0, "document.getElementsByName('" + item.v + "')[0].value");
+                        //         }
+                        //     }
+                        // }
                         break;
                     case 'symbol':
                         if (!isThen) {

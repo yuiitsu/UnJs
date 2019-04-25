@@ -285,6 +285,7 @@ Model.extend('form_designer', function () {
                     formId = res.data.id,
                     formName = res.data.formName,
                     formType = res.data.formType,
+                    systemId = res.data.systemId,
                     description = res.data.description,
                     formDesignerData = {},
                     formElements = [],
@@ -293,6 +294,7 @@ Model.extend('form_designer', function () {
                         formId: formId,
                         formName: formName,
                         formType: formType,
+                        systemId: systemId,
                         description: description
                     };
 
@@ -344,57 +346,141 @@ Model.extend('form_designer', function () {
         };
         //
         for (var i = 0; i < formElementsLen; i++) {
-            var element = formElements[i],
-                properties = element.property,
-                rules = element.rules;
+            self.buildElementData(formElements[i]);
+            // var element = formElements[i],
+            //     properties = element.property,
+            //     rules = element.rules;
 
-            if (!element.hasOwnProperty('data')) {
-                element['data'] = {};
-            }
+            // if (!element.hasOwnProperty('data')) {
+            //     element['data'] = {};
+            // }
 
-            for (var n in properties) {
-                if (properties.hasOwnProperty(n)) {
-                    element['data'][n] = properties[n];
-                }
-            }
-            for (var m in rules) {
-                if (rules.hasOwnProperty(m)) {
-                    element['data'][n] = rules[n];
-                }
-            }
+            // for (var n in properties) {
+            //     if (properties.hasOwnProperty(n)) {
+            //         element['data'][n] = properties[n];
+            //     }
+            // }
+            // for (var m in rules) {
+            //     if (rules.hasOwnProperty(m)) {
+            //         element['data'][n] = rules[n];
+            //     }
+            // }
 
-            if (element.hasOwnProperty('children')) {
-                for (var j in element['children']) {
-                    if (element['children'].hasOwnProperty(j)) {
-                        var childElement = element['children'][j];
-                        if (!childElement.hasOwnProperty('data')) {
-                            childElement['data'] = {};
+            // if (element.hasOwnProperty('children')) {
+            //     for (var j in element['children']) {
+            //         if (element['children'].hasOwnProperty(j)) {
+            //             var childElement = element['children'][j];
+            //             if (!childElement.hasOwnProperty('data')) {
+            //                 childElement['data'] = {};
+            //             }
+
+            //             for (var n in childElement.property) {
+            //                 if (childElement.property.hasOwnProperty(n)) {
+            //                     childElement['data'][n] = childElement.property[n];
+            //                 }
+            //             }
+            //             for (var n in childElement.rules) {
+            //                 if (childElement.rules.hasOwnProperty(n)) {
+            //                     childElement['data'][n] = childElement.rules[n];
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
+        }
+        return data;
+    };
+
+    this.buildElementData = function(element) {
+        var properties = element.property,
+            rules = element.rules;
+
+        if (!element.hasOwnProperty('data')) {
+            element['data'] = {};
+        }
+
+        for (var n in properties) {
+            if (properties.hasOwnProperty(n)) {
+                element['data'][n] = properties[n];
+            }
+        }
+        for (var m in rules) {
+            if (rules.hasOwnProperty(m)) {
+                element['data'][n] = rules[n];
+            }
+        }
+
+        if (element.hasOwnProperty('children')) {
+            for (var j in element['children']) {
+                if (element['children'].hasOwnProperty(j)) {
+                    var childElement = element['children'][j];
+                    if (!childElement.hasOwnProperty('data')) {
+                        childElement['data'] = {};
+                    }
+
+                    for (var n in childElement.property) {
+                        if (childElement.property.hasOwnProperty(n)) {
+                            childElement['data'][n] = childElement.property[n];
                         }
-
-                        for (var n in childElement.property) {
-                            if (childElement.property.hasOwnProperty(n)) {
-                                childElement['data'][n] = childElement.property[n];
-                            }
-                        }
-                        for (var n in childElement.rules) {
-                            if (childElement.rules.hasOwnProperty(n)) {
-                                childElement['data'][n] = childElement.rules[n];
-                            }
+                    }
+                    for (var n in childElement.rules) {
+                        if (childElement.rules.hasOwnProperty(n)) {
+                            childElement['data'][n] = childElement.rules[n];
                         }
                     }
                 }
             }
         }
-        return data;
     };
 
     this.saveFormDesignerData = function() {
-        var formData = this.get('formData');
+        var formData = this.get('formData'),
+            formElements = this.get('formElements'),
+            formElementsLen = formElements.length;
         //
         formData['formData'] = {
             verifyTipsType: this.get('verifyTipsType'),
-            formElements: this.get('formElements')
+            formElements: formElements
         };
+        // 找出需要用于搜索的字段
+        var formConditionName = [],
+            formConditionData = [];
+
+        $('.js-form-control').each(function() {
+            if ($(this).attr('issearchcolumn') === 'yes') {
+                var name = $(this).attr('name'),
+                    dataSource = $(this).attr('datasource');
+
+                formConditionName.push(name);
+                formConditionData.push({
+                    name: name,
+                    component: '',
+                    elements: {}
+                });
+            }
+        });
+        // 遍历formElements，找到名称相同的对象，获取它使用的组件
+        for (var i = 0; i < formElementsLen; i++) {
+            var children = formElements[i]['children'];
+            if (children) {
+                for (var j in children) {
+                    if (children.hasOwnProperty(j)) {
+                        var component = children[j],
+                            property = component.property,
+                            formConditionNameIndex = formConditionName.indexOf(property.name);
+
+                        if (formConditionNameIndex !== -1) {
+                            formConditionData[formConditionNameIndex]['component'] = component.component;
+                            self.buildElementData(component);
+                            delete component['data']['readonly'];
+                            formConditionData[formConditionNameIndex]['elements'] = component;
+                        }
+                    }
+                }
+            }
+        }
+
+        formData['formCondition'] = formConditionData;
         //
         this._put({
             url: '/api/v1/form/update',

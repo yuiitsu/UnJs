@@ -5,8 +5,8 @@
         <div class="form-designer-form-label">是否搜索条件:</div>
         <div class="form-designer-form-control-box flex-auto">
             {{ var list = [{text: '是', value: 'yes'}, {text: '否', value: 'no'}] }}
-            {{ var defaultType = property['isSearchColumn'] ? property['isSearchColumn'] : '' }}
-            <component.basic.select.view list="{{ list }}" default="{{ defaultType }}" class="js-property-select" name="property.isSearchColumn"></component.basic.select.view>
+            {{ var defaultValue = property['isSearchColumn'] ? property['isSearchColumn'] : '' }}
+            <component.basic.radio.view list="{{ list }}" default="{{ defaultValue }}" name="property.isSearchColumn" class="js-property-control"></component.basic.radio.view>
         </div>
     </div>
 </div>

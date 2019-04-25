@@ -1,12 +1,12 @@
 <div class="form-designer-container flex-column">
     <div class="form-designer-header flex-row">
         <div class="flex-auto">
-            <h2>填报</h2>
+            <h2>填报详情</h2>
         </div>
         <div>
             <div class="display-inline-block" id="js-form-verify-result"></div>
-            <component.basic.button.view class="success" text="保存" id="js-report-save"></component.basic.button.view>
-            <component.basic.button.view class="primary" disabled="true" text="提交" id="js-report-submit"></component.basic.button.view>
+            <component.basic.button.view class="success js-report-review" text="通过" data_type="true"></component.basic.button.view>
+            <component.basic.button.view class="danger js-report-review" text="拒绝" data_type="false"></component.basic.button.view>
         </div>
     </div>
     <div class="flex-row flex-auto">

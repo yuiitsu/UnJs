@@ -157,6 +157,11 @@ ul {
     border-bottom: 1px solid #ccc;
 }
 
+.search-item-container {
+    margin-bottom:5px;
+    width:150px;
+}
+
 .main-padding-container {
     padding:20px;
 }
@@ -182,6 +187,7 @@ ul {
 .main-table table thead td {
     font-weight:bold;
     background-color:#f7f7f7;
+    white-space: nowrap;
 }
 .main-table table td {
     border-right:1px solid #ccc;

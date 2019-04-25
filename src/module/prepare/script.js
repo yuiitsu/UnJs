@@ -123,7 +123,7 @@ Controller.extend('prepare', function () {
      */
     this._user_logout = function() {
         localStorage.setItem('token', '');
-        self.jump('login', 'index', {});
+        self.jump('login', 'index', {a: 'login'});
     };
 
     /**

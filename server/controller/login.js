@@ -4,6 +4,6 @@
 
 var Login = function(unjs){
 
-    unjs.display('login', {});
+    unjs.display('index', {});
 };
 module.exports = Login;

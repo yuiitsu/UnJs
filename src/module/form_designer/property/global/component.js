@@ -28,9 +28,10 @@ Component.extend('form_designer.property.global', function () {
         },
         openGlobalRule: function () {
             $('.js-form-designer-add-global-rules').off('click').on('click', function () {
+                var elements = self.getComponents();
                 self.renderComponent('modal.view', {
                     title: '添加规则',
-                    body: self.getView('module.form_designer.rules_editor.view', {name: '', rules: []}),
+                    body: self.getView('module.form_designer.rules_editor.view', {name: '', rules: [], elements: elements}),
                     callback: function (modal, res) {
                         //
                         self.createRulesFunc(null, modal, null);
@@ -145,7 +146,9 @@ Component.extend('form_designer.property.global', function () {
             });
         },
         rulesEditor: function() {
-            $('body').off('click.rule_editor_').on('click.rule_editor_', '.form-designer-rules-editor-action-add', function(e) {
+            var body = $('body');
+            //
+            body.off('click.rule_editor_').on('click.rule_editor_', '.form-designer-rules-editor-action-add', function(e) {
                 var target = $(this),
                     dataType = target.attr('data-type'),
                     data = self.model.form_designer.get('verifyAdvanceRulesData'),
@@ -204,7 +207,16 @@ Component.extend('form_designer.property.global', function () {
                         view = self.getView('module.form_designer.rules_editor.data', dataKeys);
                         break;
                 }
-                $('.form-designer-rules-editor-content').append(view);
+                var container = $('.form-designer-rules-editor-content');
+                if (container.find('div').length === 0) {
+                    container.html(view);
+                } else {
+                    container.append(view);
+                }
+            });
+            //
+            body.off('click.rule_script_').on('click.rule_script_', '.form-designer-rules-editor-script', function(e) {
+
             });
         },
         deleteGlobalRuleData: function () {

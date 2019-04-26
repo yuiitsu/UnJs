@@ -83,60 +83,10 @@ Model.extend('form_designer', function () {
             {
                 text: '行业',
                 value: '{api}/api/v1/datasource/getByParentIdAndCodeAndDicId?dicId=66'
-            }
-        ],
-        // 临时
-        region: [
-            {
-                name: '重庆',
-                children: [
-                    {
-                        name: '渝北区',
-                        children: [
-                            {
-                                name: '两路镇'
-                            },
-                            {
-                                name: '玉峰山镇'
-                            }
-                        ]
-                    },
-                    {
-                        name: '江北区',
-                        children: [
-                            {
-                                name: '观音桥'
-                            }
-                        ]
-                    }
-                ]
             },
             {
-                name: '上海',
-                children: [
-                    {
-                        name: '浦东新区',
-                        children: [
-                            {
-                                name: '张江镇'
-                            },
-                            {
-                                name: '梅西'
-                            }
-                        ]
-                    },
-                    {
-                        name: '闵行',
-                        children: [
-                            {
-                                name: '老外街'
-                            },
-                            {
-                                name: '大桥'
-                            }
-                        ]
-                    }
-                ]
+                text: '登记注册类型',
+                value: '{api}/api/v1/datasource/getByParentIdAndCodeAndDicId?dicId=78'
             }
         ]
     };

@@ -20,7 +20,12 @@
     <tr>
         <td>2019</td>
         {{ for var j in useColumn }}
+        {{ if j === '0' }}
+        <td><a href="javascript:void(0);" class="js-list-edit"
+               data-id="{{ item['id'] }}">{{ reportData[useColumn[j]['name']] }}</a></td>
+        {{ else }}
         <td>{{ reportData[useColumn[j]['name']] }}</td>
+        {{ end }}
         {{ end }}
         <td></td>
         <td>{{ item.status }}</td>

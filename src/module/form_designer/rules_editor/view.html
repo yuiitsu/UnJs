@@ -3,17 +3,55 @@
         <label class="form-label">规则名称:</label>
         <component.basic.input.view value="{{ data['name'] }}" class="js-form-control" required="1" length="[2,20]" data_key="rule-name" id="js-form-designer-rule-name"></component.basic.input.view>
     </div>
-    <div class="form-designer-rules-editor-action-bar">
-        <span class="form-designer-rules-editor-action-add" data-type="condition">条件</span>
-        <span class="form-designer-rules-editor-action-add" data-type="element">元素</span>
-        <span class="form-designer-rules-editor-action-add" data-type="group">分组</span>
-        <span class="form-designer-rules-editor-action-add" data-type="symbol">符号</span>
-        <span class="form-designer-rules-editor-action-add" data-type="custom">自定值</span>
-        <span class="form-designer-rules-editor-action-add" data-type="value_type">值类型</span>
-        <span class="form-designer-rules-editor-action-add" data-type="key_on">关联</span>
-        <span class="form-designer-rules-editor-action-add" data-type="data">数据</span>
+    <div class="form-line">
+        <label class="form-label">事件:</label>
     </div>
-    <div class="form-designer-rules-editor-content">
+    <div class="form-designer-rules-editor-action-bar flex-row">
+        <div class="flex-auto">
+            {{ var list = [{text: '元素1', value: 'element1'}, {text: '元素2', value: 'element2'}] }}
+            <component.basic.select.view list="{{ data['elements'] }}" placeholder="选择元素" default="" class="js-property-select"></component.basic.select.view>
+            {{ var list = [{text: '分组1', value: 'group1'}, {text: '分组2', value: 'group2'}] }}
+            <component.basic.select.view list="{{ list }}" placeholder="选择分组" default="" class="js-property-select"></component.basic.select.view>
+        </div>
+        <div style="width:20px;display: flex;align-items: center;text-align: center;"> > </div>
+        <div class="flex-auto" style="display: flex;align-items: center;">
+            {{ var event = [{text: 'Change', value: 'change'}, {text: 'Input', value: 'input'}] }}
+            <component.basic.select.view list="{{ event }}" default="" placeholder="选择事件" class="js-property-select"></component.basic.select.view>
+        </div>
+    </div>
+    <div class="form-line">
+        <label class="form-label">规则:</label>
+    </div>
+    <div class="form-designer-rules-editor-action-bar flex-row">
+        <div class="flex-auto">
+            <component.basic.button.view text="条件" data_type="condition" class="form-designer-rules-editor-action-add success"></component.basic.button.view>
+        </div>
+        <div class="flex-auto">
+            <component.basic.button.view text="元素" data_type="element" class="form-designer-rules-editor-action-add success"></component.basic.button.view>
+        </div>
+        <div class="flex-auto">
+            <component.basic.button.view text="分组" data_type="group" class="form-designer-rules-editor-action-add success"></component.basic.button.view>
+        </div>
+        <div class="flex-auto">
+            <component.basic.button.view text="符号" data_type="symbol" class="form-designer-rules-editor-action-add success"></component.basic.button.view>
+        </div>
+        <div class="flex-auto">
+            <component.basic.button.view text="自定值" data_type="custom" class="form-designer-rules-editor-action-add success"></component.basic.button.view>
+        </div>
+        <div class="flex-auto">
+            <component.basic.button.view text="值类型" data_type="value_type" class="form-designer-rules-editor-action-add success"></component.basic.button.view>
+        </div>
+        <div class="flex-auto">
+            <component.basic.button.view text="关联" data_type="key_on" class="form-designer-rules-editor-action-add success"></component.basic.button.view>
+        </div>
+        <div class="flex-auto">
+            <component.basic.button.view text="数据" data_type="data" class="form-designer-rules-editor-action-add success"></component.basic.button.view>
+        </div>
+        <div class="flex-auto">
+            <component.basic.button.view text="脚本" data_type="script" class="form-designer-rules-editor-script warning"></component.basic.button.view>
+        </div>
+    </div>
+    <div class="form-designer-rules-editor-content radius-small">
         {{ if data['rules'].length > 0 }}
         {{ for var i in data['rules'] }}
             {{ var t = data['rules'][i]['t'] }}
@@ -24,6 +62,8 @@
                 {{ func this.getView('module.form_designer.rules_editor.' + t, v) }}
             {{ end }}
         {{ end }}
+        {{ else }}
+        请选择要使用的对象
         {{ end }}
     </div>
 </div>

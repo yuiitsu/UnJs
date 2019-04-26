@@ -1,8 +1,17 @@
 .form-designer-rules-editor-action-bar {
     margin-bottom:10px;
 }
-.form-designer-rules-editor-action-bar span {
-    cursor: pointer;
+.form-designer-rules-editor-action-bar button {
+    white-space: nowrap;
+}
+.form-designer-rules-editor-action-bar .flex-auto {
+    margin-right: 5px;
+}
+.form-designer-rules-editor-action-bar .flex-auto:last-child {
+    margin-right:0;
+}
+.form-designer-rules-editor-action-bar .flex-auto .component-select {
+    display: inline-block;
 }
 .form-designer-rules-editor-content {
     padding: 10px;
@@ -10,5 +19,6 @@
 }
 .form-designer-rules-editor-item{
     display: inline-block;
-    max-width: 80px;
+    max-width: 100px;
+    margin-bottom: 5px;
 }
